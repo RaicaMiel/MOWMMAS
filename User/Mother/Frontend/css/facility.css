@@ -170,10 +170,6 @@
 .fac-map--off { min-height: 220px; }
 .fac-map .map-fallback { z-index: 800; background: linear-gradient(135deg, var(--rose-50), var(--violet-50)); }
 .fac-map .map-fallback .icon { color: var(--violet-600); }
-.fac-location .map-credit { margin-top: 10px; }
-/* buttons share a row when they fit, otherwise each takes the full width */
-.fac-location__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-.fac-location__btn { flex: 1 1 auto; padding: 0 18px; font-size: 15px; }
 
 /* What to bring + note */
 .fac-bring { display: flex; flex-direction: column; gap: 10px; }

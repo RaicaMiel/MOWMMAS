@@ -240,20 +240,11 @@
     '</section>';
   }
 
-  function locationPanel(f, source) {
-    var fetched = source && source.fetchedAt ? util.formatDate(source.fetchedAt) : '';
+  function locationPanel(f) {
     return '<section class="panel fac-panel fac-location" aria-labelledby="locTitle">' +
       '<div class="panel__head"><span class="panel__icon">' + ui.icon('i-map') + '</span>' +
         '<h2 class="panel__title" id="locTitle">Location</h2></div>' +
       '<div class="map fac-map" id="facMap" role="region" aria-label="Map showing ' + esc(f.name) + '"></div>' +
-      '<p class="map-credit">Facility locations: &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors' +
-        (fetched ? ' · updated ' + esc(fetched) : '') + '</p>' +
-      '<div class="fac-location__actions">' +
-        '<a class="btn btn--outline fac-location__btn" href="' + esc(f.directionsUrl) + '" target="_blank" rel="noopener">' +
-          ui.icon('i-navigation', 'icon--sm') + 'Get directions<span class="sr-only"> (opens in a new tab)</span></a>' +
-        '<a class="btn btn--outline fac-location__btn" href="' + esc(f.mapUrl) + '" target="_blank" rel="noopener">' +
-          ui.icon('i-external', 'icon--sm') + 'View on OpenStreetMap<span class="sr-only"> (opens in a new tab)</span></a>' +
-      '</div>' +
     '</section>';
   }
 
@@ -330,7 +321,7 @@
     var el = document.getElementById('facMap');
     if (!el) return;
     var MAP = window.MOWMMAS_MAP;
-    var offline = 'The map can\'t be shown right now. Use "Get directions" below to open the location in OpenStreetMap.';
+    var offline = 'The map can\'t be shown right now. Please check your connection and try again.';
     if (!MAP || !MAP.available() || !isFinite(f.lat) || !isFinite(f.lon)) {
       el.classList.add('fac-map--off');
       showMapFallback(el, offline);
@@ -398,7 +389,7 @@
     els.body.innerHTML =
       '<div class="fac-grid">' +
         '<div class="fac-col">' + infoPanel(f) + servicesPanel(f) + '</div>' +
-        '<div class="fac-col">' + locationPanel(f, data.source) + beforeYouGoPanel(f) + '</div>' +
+        '<div class="fac-col">' + locationPanel(f) + beforeYouGoPanel(f) + '</div>' +
       '</div>' +
       chooseSection(f);
     els.body.setAttribute('aria-busy', 'false');
