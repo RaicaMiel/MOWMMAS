@@ -84,6 +84,7 @@ async function createSubmission(build, saveKey) {
   // Marks this save, so a save whose answer was lost can be recognised (see below)
   const saveId = saveKey || crypto.randomUUID();
   let taken = 0;   // the highest number found in use while trying
+  let scanned = false;
   for (let attempt = 0; attempt < 20; attempt++) {
     if (attempt) await pause(Math.floor(Math.random() * 100 * Math.min(attempt, 5)));   // forms at the same moment: spread out
     let marker = null;
@@ -115,7 +116,15 @@ async function createSubmission(build, saveKey) {
         // Refused: the counter moved (read it again), that number is in use (the next one),
         // or the same form was saved meanwhile (the next round finds its marker)
         const there = await firestore.getDoc(SUBMISSIONS, ref).catch(() => null);
-        if (there) taken = Math.max(taken, number);
+        if (there) {
+          taken = Math.max(taken, number);
+          // The counter is behind numbers already in use (saved without it, e.g. by an older
+          // server): skip past them all at once, and the next save moves the counter there
+          if (!scanned) {
+            scanned = true;
+            taken = Math.max(taken, await highestRef(year).catch(() => 0));
+          }
+        }
         continue;
       }
       // No clear answer (the connection dropped, or Firestore took too long): it may have been
@@ -292,8 +301,9 @@ async function add(ids, n) {
   return firestore.increment(ids.map((id) => ({ collection: 'limits', id: limitId(id), field: 'count', n, data: { expiresAt } })));
 }
 
-// In a test run, only the test's own submissions (year 9999)
-const isOwn = (ref) => !TEST_RUN || /^MOW-[DRI]-9999-/.test(String(ref || ''));
+// Year 9999 belongs to test runs only: a test server handles only those, the real server never does
+const isTestRef = (ref) => /^MOW-[DRI]-9999-/.test(String(ref || ''));
+const isOwn = (ref) => (TEST_RUN ? isTestRef(ref) : !isTestRef(ref));
 
 module.exports = {
   REF_PATTERN, manilaHour, hash, isOwn,

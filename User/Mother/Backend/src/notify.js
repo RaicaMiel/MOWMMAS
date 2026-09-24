@@ -142,6 +142,7 @@ async function claim(note) {
 }
 
 async function text(sub, kind, key, fields) {
+  if (!cloud.isOwn(sub.ref)) return null;   // a test run's submission (year 9999) is never texted for real, and the reverse
   const to = sms.mobileKey(sub.contact && sub.contact.mobile);
   // If it can't be claimed at all, nothing is sent now: the next sweep finds it unclaimed and sends it
   const noteId = await claim({ ref: sub.ref, key, kind, to: to || null, message: fields.message });
@@ -265,17 +266,19 @@ async function updated(sub, deadline) {
    it goes, and only past a time no later document shares (the list is "later than"), so a
    pass that stops (the deadline, a server stopped) never skips one.
      start: where a first pass starts: 'day' (a day back) or 'now'
-     margin: how far before the saved place to look again (saves still landing) */
+     margin: the place stays at least this far back (saves still landing, clocks that differ) */
 async function pass(stateId, list, each, deadline, options) {
   const o = options || {};
   const state = await firestore.getDoc('counters', stateId);
   const dayAgo = Date.now() - DAY;
+  // The place never moves past the last `margin`: a save stamped a moment ago may still be landing,
+  // so the newest documents are listed again until they are that old (the notes stop a second text)
+  const settledBefore = o.margin ? Date.now() - o.margin : Infinity;
   let since;
-  if (state && typeof state.until === 'string') {
-    const from = Date.parse(state.until) - (o.margin || 0);
-    since = from > dayAgo ? (o.margin ? new Date(from).toISOString() : state.until) : new Date(dayAgo).toISOString();
+  if (state && typeof state.until === 'string' && Date.parse(state.until) > dayAgo) {
+    since = state.until;
   } else {
-    since = new Date(o.start === 'now' ? Date.now() : dayAgo).toISOString();
+    since = new Date(state || o.start !== 'now' ? dayAgo : Date.now()).toISOString();
   }
   const docs = await list(since);
   const records = [];
@@ -303,7 +306,8 @@ async function pass(stateId, list, each, deadline, options) {
       checked++;
     }
     const next = docs[i + 1];
-    if (doc._at && (!next || next._at !== doc._at) && Date.parse(doc._at) > Date.parse(reached)) reached = doc._at;
+    if (doc._at && (!next || next._at !== doc._at) && Date.parse(doc._at) > Date.parse(reached) &&
+        Date.parse(doc._at) <= settledBefore) reached = doc._at;
     if (++sinceSave >= 20) await save();
   }
   await save();
@@ -319,14 +323,14 @@ async function pass(stateId, list, each, deadline, options) {
 async function sweep(deadline) {
   if (!sms) return { checked: 0, records: [], done: true };
   const updates = await pass(cloud.limitId('notify-sweep'), (since) => cloud.changedByAdminSince(since),
-    (doc) => updated(doc, deadline), deadline, { start: 'day' });
+    (doc) => updated(doc, deadline), deadline, { start: 'day', margin: 2 * 60 * 1000 });
   if (!updates.done) return updates;
   const forms = await pass(cloud.limitId('notify-received'), (since) => cloud.savedSince(since), async (sub) => {
     if (!(Date.now() - (Date.parse(sub.savedAt || sub.createdAt) || 0) < DAY)) return { records: [], done: true };
     if (await cloud.hasNote('received|' + sub.ref)) return { records: [], done: true };
     const record = await received(sub);
     return { records: record ? [record] : [], done: true };
-  }, deadline, { start: 'day', margin: 60 * 1000 });
+  }, deadline, { start: 'day', margin: 2 * 60 * 1000 });
   return { checked: updates.checked + forms.checked, records: updates.records.concat(forms.records), done: forms.done };
 }
 

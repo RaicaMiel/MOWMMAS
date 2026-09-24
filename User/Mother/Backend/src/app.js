@@ -134,8 +134,8 @@ function forMother(message) {
      can't all slip under the limit. A try over the limit gives its place back (it didn't
      happen), and so does one that doesn't count: a form not saved because of our own
      trouble, a lookup that found hers, a lookup Firestore couldn't answer.
-   - An address at its limit is refused here, without asking Firestore, until its window
-     ends (a moment's crowd of tries: for 30 seconds). */
+   - An address over its limit is then refused here for 30 seconds without asking Firestore
+     (tries still under way may give their place back, so it asks again after that). */
 const FORMS_PER_IP_HOURLY = 30;
 const HOUR_MS = 60 * 60 * 1000;
 const LOOKUP_WINDOW_MS = 10 * 60 * 1000;
@@ -150,10 +150,8 @@ function refusedNow(id) {
 }
 
 /* Counts one try. Resolves with 'counted', 'over' (refused) or 'uncounted' (Firestore
-   couldn't count it: it goes ahead, and the work itself says if Firestore is down).
-   settled: the count holds only tries that stay counted (forms). Lookups also hold lookups
-   still running, which may be given back, so a lookup refusal is only kept briefly. */
-async function takeTry(id, max, windowEnd, settled) {
+   couldn't count it: it goes ahead, and the work itself says if Firestore is down) */
+async function takeTry(id, max, windowEnd) {
   if (refusedNow(id)) return 'over';
   let count;
   try {
@@ -170,12 +168,14 @@ async function takeTry(id, max, windowEnd, settled) {
     console.warn('[limits] Could not give back a refused try: ' + err.message);
   }
   if (refusedUntil.size > 5000) refusedUntil.clear();
-  refusedUntil.set(id, settled && after >= max ? windowEnd : Math.min(windowEnd, Date.now() + 30 * 1000));
+  // Kept here for 30 s only: tries still under way (here or on another server) may give their place back
+  refusedUntil.set(id, Math.min(windowEnd, Date.now() + 30 * 1000));
   return 'over';
 }
 
 function giveBack(id, taken) {
   if (taken !== 'counted') return Promise.resolve();
+  refusedUntil.delete(id);   // a place came free
   return cloud.add([id], -1).catch((err) => console.warn('[limits] Could not give back a try: ' + err.message));
 }
 
@@ -210,7 +210,7 @@ router.add('POST /api/submissions', async (req, res) => {
   const form = await submissions.prepare(body);
   const hour = Math.floor(Date.now() / HOUR_MS);
   const limitId = 'form-' + ipKey(req) + '-' + hour;
-  const taken = await takeTry(limitId, FORMS_PER_IP_HOURLY, (hour + 1) * HOUR_MS, true);
+  const taken = await takeTry(limitId, FORMS_PER_IP_HOURLY, (hour + 1) * HOUR_MS);
   if (taken === 'over') {
     throw httpError(429, 'Too many forms were sent from this connection in the last hour. Please try again later.', null, { 'Retry-After': '1800' });
   }
@@ -222,8 +222,9 @@ router.add('POST /api/submissions', async (req, res) => {
     if (ourTrouble(err)) await giveBack(limitId, taken);   // not saved because of us: it doesn't count
     throw err;
   }
-  // Her reference number by SMS, after the answer (a form sent again was texted the first time)
-  if (!created.again) await afterAnswer(later(notify.received(created.submission), 'Texting the reference number'), 8000);
+  // Her reference number by SMS, after the answer. A form sent again (its first answer was lost)
+  // may not have been texted then; the claim makes sure it is texted once, never twice.
+  await afterAnswer(later(notify.received(created.submission), 'Texting the reference number'), 8000);
   sendJson(res, 201, created.summary);
 });
 
@@ -236,7 +237,7 @@ async function track(req, res, ref, mobile) {
   }
   const slot = Math.floor(Date.now() / LOOKUP_WINDOW_MS);
   const limitId = 'lookup-' + ipKey(req) + '-' + slot;
-  const taken = await takeTry(limitId, LOOKUP_MAX_FAILURES, (slot + 1) * LOOKUP_WINDOW_MS, false);
+  const taken = await takeTry(limitId, LOOKUP_MAX_FAILURES, (slot + 1) * LOOKUP_WINDOW_MS);
   if (taken === 'over') {
     throw httpError(429, 'Too many tries. Please wait a few minutes, then try again.', null, { 'Retry-After': '600' });
   }
