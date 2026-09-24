@@ -9,6 +9,9 @@ const PROJECT_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 module.exports = {
   PROJECT_ROOT,
   PORT: Number(process.env.MOWMMA_MOTHER_PORT) || 3000,
+  // Online (Vercel): the project's files can't be changed there, so the facility data in
+  // data/ is used as uploaded (refresh it on a computer: node scripts/refresh-osm.js)
+  ONLINE: Boolean(process.env.VERCEL),
 
   // JSON "database" (OpenStreetMap cache, facility profiles, submissions, …).
   // It lives inside the Mother backend; the Admin backend reads and writes the same folder.

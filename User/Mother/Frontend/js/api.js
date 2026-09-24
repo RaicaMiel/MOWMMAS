@@ -144,7 +144,9 @@
       .then(function (res) {
         return res.json().catch(function () { return {}; }).then(function (data) {
           if (!res.ok) {
-            throw new ApiError((data && data.error) || 'Something went wrong. Please try again.', res.status, false, data && data.fields);
+            // Only MOWMMAS's own messages are shown (a host's error page may carry an object instead)
+            var said = data && typeof data.error === 'string' && data.error.trim() ? data.error : '';
+            throw new ApiError(said || 'Something went wrong. Please try again.', res.status, false, data && data.fields);
           }
           return data;
         });

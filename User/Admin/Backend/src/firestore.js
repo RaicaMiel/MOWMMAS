@@ -181,11 +181,34 @@ async function listAfter(collection, field, after) {
 
 /* Every document, page by page (300 at a time) */
 async function listDocs(collection) {
+  return pages(collection, (path) => request('GET', path));
+}
+
+/* Every document of a collection anyone may read (the rules say read: if true, like
+   facilities), without signing in: the mother site's map needs no admin account. */
+async function listPublic(collection) {
+  return pages(collection, async (path) => {
+    let response;
+    try {
+      response = await fetch(baseUrl() + path, { signal: AbortSignal.timeout(config.REQUEST_TIMEOUT_MS) });
+    } catch (err) {
+      throw new FirebaseError('unavailable', "Can't reach Firestore. Check the internet connection.", 503);
+    }
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const known = STATUS_CODES[(data.error && data.error.status) || ''];
+      throw known ? new FirebaseError(known[0], known[1], known[2]) : new FirebaseError('firestore-error', 'Firestore error ' + response.status, 502);
+    }
+    return data;
+  });
+}
+
+async function pages(collection, get) {
   const docs = [];
   let pageToken = '';
   do {
     const query = '?pageSize=300' + (pageToken ? '&pageToken=' + encodeURIComponent(pageToken) : '');
-    const page = await request('GET', '/' + encodeURIComponent(collection) + query);
+    const page = await get('/' + encodeURIComponent(collection) + query);
     for (const doc of page.documents || []) {
       docs.push(Object.assign(decodeFields(doc.fields), { _id: idOf(doc.name), _updateTime: doc.updateTime }));
     }
@@ -194,4 +217,4 @@ async function listDocs(collection) {
   return docs;
 }
 
-module.exports = { baseUrl, encode, decode, encodeFields, decodeFields, setDoc, getDoc, deleteDoc, listDocs, listAfter };
+module.exports = { baseUrl, encode, decode, encodeFields, decodeFields, setDoc, getDoc, deleteDoc, listDocs, listPublic, listAfter };

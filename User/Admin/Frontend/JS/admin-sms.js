@@ -78,7 +78,7 @@ function callApi(method, path, body, what) {
         if (response.status === 404) {
           throw apiError("old-server", "The MOWMMAS server running now is an older version without SMS. Restart it (close its window, then double-click start.bat in User/Mother/Backend).");
         }
-        throw apiError(String(response.status), data.error || "The MOWMMAS server answered with error " + response.status + ".");
+        throw apiError(String(response.status), (typeof data.error === "string" && data.error.trim()) || "The MOWMMAS server answered with error " + response.status + ".");
       });
     });
 }

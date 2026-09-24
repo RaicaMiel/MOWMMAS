@@ -148,17 +148,25 @@ function source(cache) {
   return Object.assign({}, cache.source, { fetchedAt: cache.fetchedAt });
 }
 
-/* All facilities, participating ones first, then by name. */
-function list() {
+function osmCache() {
   const cache = osm.getCached();
   if (!cache) {
     const err = new Error('Facility data has not been downloaded from OpenStreetMap yet. Run: node scripts/refresh-osm.js');
     err.status = 503;
     throw err;
   }
-  const photos = store.read('photos', {}).photos || {};
+  return cache;
+}
+
+/* All facilities, participating ones first, then by name. */
+function list() {
   const mirror = store.read('firestoreFacilities', null);
-  const managed = mirror && mirror.facilities && typeof mirror.facilities === 'object' ? mirror.facilities : null;
+  return combine(osmCache(), mirror && mirror.facilities && typeof mirror.facilities === 'object' ? mirror.facilities : null);
+}
+
+/* managed: the admin's facilities by id (see 4. above), or null when there are none to show */
+function combine(cache, managed) {
+  const photos = store.read('photos', {}).photos || {};
   let facilities;
   if (managed) {
     // The admin's facilities (Firestore) are the source; OpenStreetMap fills any gaps.
@@ -182,9 +190,56 @@ function list() {
 }
 
 function get(id) {
-  const data = list();
+  return pick(list(), id);
+}
+
+function pick(data, id) {
   const facility = data.facilities.find((f) => f.id === id) || null;
   return { facility, source: data.source };
 }
 
-module.exports = { SERVICE_KEYS, AVAILABILITY, merge, list, get };
+/* ───────────── online (Vercel): the admin's facilities straight from Firestore ─────────────
+   There is no copy on disk there, so the admin's facilities are read from Firestore
+   (public, like the map) at most once every LIVE_MS. If Firestore can't be read, the
+   last copy read is used; with none yet, the OpenStreetMap facts only (like a first start). */
+const LIVE_MS = 60 * 1000;
+let live = null;      // { at, managed }: the last copy read
+let reading = null;   // one read at a time
+
+function managedFacilities(readAll) {
+  if (live && Date.now() - live.at < LIVE_MS) return Promise.resolve(live.managed);
+  if (!reading) {
+    reading = readAll()
+      .then((docs) => {
+        const managed = {};
+        for (const doc of docs) {
+          const id = doc.id || doc._id;
+          if (!id) continue;
+          const plain = Object.assign({}, doc, { id });
+          delete plain._id;
+          delete plain._updateTime;
+          managed[id] = plain;
+        }
+        live = { at: Date.now(), managed };
+        return managed;
+      })
+      .catch((err) => {
+        console.warn('[facilities] Could not read the facilities from Firestore: ' + err.message);
+        return live ? live.managed : null;
+      })
+      .finally(() => { reading = null; });
+  }
+  return reading;
+}
+
+/* readAll() → every document in the facilities collection (Firestore) */
+async function listLive(readAll) {
+  const cache = osmCache();
+  return combine(cache, await managedFacilities(readAll));
+}
+
+async function getLive(id, readAll) {
+  return pick(await listLive(readAll), id);
+}
+
+module.exports = { SERVICE_KEYS, AVAILABILITY, merge, list, get, listLive, getLive };

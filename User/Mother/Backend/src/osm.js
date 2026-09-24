@@ -287,7 +287,7 @@ function isStale(cache) {
    refresh starts in the background; the next request gets the new data. */
 function getCached() {
   const cache = store.read('osm', null);
-  if (isStale(cache)) {
+  if (isStale(cache) && !config.ONLINE) {
     refresh().catch((err) => console.warn('[osm] background refresh failed:', err.message));
   }
   return cache;
