@@ -229,23 +229,16 @@
       }
       if (err && err.status === 404) {
         // Saved on this device (the same reference AND mobile number) but no longer in MOWMMAS:
-        // off the list, and she's told so. A saved one looked up with another number stays.
+        // off the list. A saved one looked up with another number stays.
         var saved = util.recentSubmissions().some(function (s) {
           return s && s.ref === ref && util.normalizeMobile(s.mobile) === util.normalizeMobile(mobile);
         });
-        // Sent from this phone with another mobile number: this phone knows which one, so say it
-        var other = util.recentSubmissions().filter(function (s) {
-          return s && s.ref === ref && s.mobile && util.normalizeMobile(s.mobile) !== util.normalizeMobile(mobile);
-        })[0];
         if (saved) {
           util.forgetSubmission(ref);
           renderRecent();
-          els.result.innerHTML = goneHtml();
-        } else if (other) {
-          els.result.innerHTML = otherNumberHtml(ref, other.mobile, mobile);
-        } else {
-          els.result.innerHTML = notFoundHtml(err.message);
         }
+        // Only what she typed is shown: nothing about any other submission or number
+        els.result.innerHTML = notFoundHtml(ref, mobile);
       } else if (err && err.status === 429) {
         els.result.innerHTML = stateHtml('i-clock', 'Please wait a few minutes', err.message, '');
       } else {
@@ -264,10 +257,13 @@
       '<p class="state__text">' + esc(text) + '</p>' + actions + '</div>';
   }
 
-  function notFoundHtml(message) {
+  // Nothing matches the reference AND mobile number she typed: say so, and show only what she typed
+  function notFoundHtml(ref, mobile) {
     return '<div class="state trk-state" role="alert" tabindex="-1" id="resultCard">' +
       '<span class="state__icon">' + ui.icon('i-search') + '</span>' +
-      '<h2 class="state__title">' + esc(message || 'We couldn\'t find a submission with that reference number and mobile number.') + '</h2>' +
+      '<h2 class="state__title">No submission found</h2>' +
+      '<p class="state__text">There is no submission with the reference number <strong class="trk-nowrap">' + esc(ref) + '</strong> ' +
+        'and the mobile number <strong class="trk-nowrap">' + esc(util.formatMobile(mobile)) + '</strong>.</p>' +
       '<ul class="trk-tips">' +
         '<li>' + ui.icon('i-check', 'icon--xs') + 'Check the reference number on your confirmation page or in the SMS.</li>' +
         '<li>' + ui.icon('i-check', 'icon--xs') + 'Use the same mobile number you entered on the form.</li>' +
@@ -276,36 +272,7 @@
         ui.icon('i-edit', 'icon--sm') + 'Check my details</button></div></div>';
   }
 
-  // A submission saved on this phone that MOWMMAS no longer has (e.g. removed by the health workers)
-  function goneHtml() {
-    return '<div class="state trk-state" role="alert" tabindex="-1" id="resultCard">' +
-      '<span class="state__icon">' + ui.icon('i-search') + '</span>' +
-      '<h2 class="state__title">This submission is no longer in MOWMMAS</h2>' +
-      '<p class="state__text">It may have been removed by the health workers, so we took it off this phone\'s list. ' +
-        'If you still need help, send a new form or call the facility.</p>' +
-      '<div class="state__actions"><a class="btn btn--primary btn--sm" href="hospitals.html">Find a facility</a></div></div>';
-  }
-
-  // She typed a reference this phone sent, with a different mobile number than the form had
-  function otherNumberHtml(ref, savedMobile, typedMobile) {
-    return '<div class="state trk-state" role="alert" tabindex="-1" id="resultCard">' +
-      '<span class="state__icon">' + ui.icon('i-phone') + '</span>' +
-      '<h2 class="state__title">This form was sent with another mobile number</h2>' +
-      '<p class="state__text">' + esc(ref) + ' was sent from this phone with the number ' +
-        '<strong>' + esc(util.formatMobile(savedMobile)) + '</strong>, not ' + esc(util.formatMobile(typedMobile)) + '. ' +
-        'Use the number that was on the form.</p>' +
-      '<div class="state__actions"><button class="btn btn--primary btn--sm" type="button" data-use-mobile="' + esc(util.normalizeMobile(savedMobile)) + '">' +
-        'Show it with ' + esc(util.formatMobile(savedMobile)) + '</button></div></div>';
-  }
-
   els.result.addEventListener('click', function (e) {
-    var use = e.target.closest('[data-use-mobile]');
-    if (use && last) {
-      els.mobile.value = util.formatMobile(use.getAttribute('data-use-mobile'));
-      setError('mobile', '');
-      lookup(last.ref, use.getAttribute('data-use-mobile'), { reveal: true });
-      return;
-    }
     if (e.target.closest('[data-retry]') && last) { lookup(last.ref, last.mobile, { reveal: false }); return; }
     if (e.target.closest('[data-refresh]') && last) { lookup(last.ref, last.mobile, { refresh: true }); return; }
     if (e.target.closest('[data-edit]')) {

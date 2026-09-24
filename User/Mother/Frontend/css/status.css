@@ -397,3 +397,6 @@
 .trk-tips li { display: flex; align-items: flex-start; gap: 8px; font-size: 14.5px; color: var(--ink-700); }
 .trk-tips .icon { flex: none; margin-top: 3px; color: var(--mint-700); }
 .trk-error .state { background: linear-gradient(135deg, var(--surface), var(--rose-50)); }
+
+/* A reference or mobile number stays on one line */
+.trk-nowrap { white-space: nowrap; }
