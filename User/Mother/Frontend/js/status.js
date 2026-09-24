@@ -228,12 +228,18 @@
         return;
       }
       if (err && err.status === 404) {
-        // Saved on this device but no longer in MOWMMAS: off the list
-        if (util.recentSubmissions().some(function (s) { return s && s.ref === ref; })) {
+        // Saved on this device (the same reference AND mobile number) but no longer in MOWMMAS:
+        // off the list, and she's told so. A saved one looked up with another number stays.
+        var saved = util.recentSubmissions().some(function (s) {
+          return s && s.ref === ref && util.normalizeMobile(s.mobile) === util.normalizeMobile(mobile);
+        });
+        if (saved) {
           util.forgetSubmission(ref);
           renderRecent();
+          els.result.innerHTML = goneHtml();
+        } else {
+          els.result.innerHTML = notFoundHtml(err.message);
         }
-        els.result.innerHTML = notFoundHtml(err.message);
       } else if (err && err.status === 429) {
         els.result.innerHTML = stateHtml('i-clock', 'Please wait a few minutes', err.message, '');
       } else {
@@ -262,6 +268,16 @@
       '</ul>' +
       '<div class="state__actions"><button class="btn btn--outline btn--sm" type="button" data-edit>' +
         ui.icon('i-edit', 'icon--sm') + 'Check my details</button></div></div>';
+  }
+
+  // A submission saved on this phone that MOWMMAS no longer has (e.g. removed by the health workers)
+  function goneHtml() {
+    return '<div class="state trk-state" role="alert" tabindex="-1" id="resultCard">' +
+      '<span class="state__icon">' + ui.icon('i-search') + '</span>' +
+      '<h2 class="state__title">This submission is no longer in MOWMMAS</h2>' +
+      '<p class="state__text">It may have been removed by the health workers, so we took it off this phone\'s list. ' +
+        'If you still need help, send a new form or call the facility.</p>' +
+      '<div class="state__actions"><a class="btn btn--primary btn--sm" href="hospitals.html">Find a facility</a></div></div>';
   }
 
   els.result.addEventListener('click', function (e) {
@@ -382,6 +398,8 @@
 
   /* ═════════════════════════ start ═════════════════════════ */
   renderRecent();
+  // Saved ones MOWMMAS no longer has come off the list before she taps them
+  api.pruneSaved({ force: true }).then(function (removed) { if (removed && !busy) renderRecent(); });
 
   var fromLink = util.normalizeRef(util.param('ref'));
   if (fromLink) {

@@ -166,10 +166,11 @@
     /* The submissions saved on this device that MOWMMAS no longer has (e.g. removed by
        the program) are taken off the list. Checked at most every 10 minutes; a lookup
        that can't reach the server keeps the entry. Resolves with how many were removed. */
-    pruneSaved: function () {
+    // options.force: check now (the Track page), else at most every 10 minutes (the home page)
+    pruneSaved: function (options) {
       var KEY = 'mowmmas.savedCheckedAt';
       try {
-        if (Date.now() - Number(sessionStorage.getItem(KEY) || 0) < 10 * 60 * 1000) return Promise.resolve(0);
+        if (!(options && options.force) && Date.now() - Number(sessionStorage.getItem(KEY) || 0) < 10 * 60 * 1000) return Promise.resolve(0);
         sessionStorage.setItem(KEY, String(Date.now()));
       } catch (e) { /* storage unavailable: check anyway */ }
       var saved = util.recentSubmissions().filter(function (s) { return s && s.ref && s.mobile; });
