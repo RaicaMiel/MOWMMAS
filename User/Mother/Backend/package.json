@@ -1,0 +1,11 @@
+{
+  "name": "mowmmas-mother-backend",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "refresh-osm": "node scripts/refresh-osm.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

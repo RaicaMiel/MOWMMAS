@@ -1,0 +1,259 @@
+/* ==========================================================================
+   MOWMMAS Admin · Facilities page
+   The location panel in the Add / Edit facility dialog: an address search,
+   a Leaflet map (OpenStreetMap tiles) with one draggable pin, and the picked
+   coordinates. Built only from the design tokens in mowmmas.css.
+   ========================================================================== */
+
+/* Filter bar on a phone: one filter per row, as mowmmas.css intends.
+   Its 599px rule is outranked by the 1279px ".mw-filters:not(.mw-filters--search)"
+   rule, which kept two columns and cut off "Search facilities…" and
+   "All HMB statuses". This page is the only one with the four-filter bar. */
+@media (max-width: 599px) {
+  .mw-filters:not(.mw-filters--search) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The panel: search row, map, then what was pinned */
+.fac-location__panel {
+  display: grid;
+  gap: var(--mw-s3);
+  padding: var(--mw-s3);
+  border: 1px solid var(--mw-border);
+  border-radius: var(--mw-r-md);
+  background: var(--mw-bg);
+}
+
+.fac-location.has-error .fac-location__panel {
+  border-color: var(--mw-danger-fg);
+}
+
+.fac-location > .mw-field__hint,
+.fac-location > .mw-field__error {
+  margin-top: var(--mw-s2);
+}
+
+.fac-location__search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--mw-s2);
+}
+
+/* The Find button is as tall as the field beside it */
+.fac-location__search > .mw-btn {
+  padding-inline: var(--mw-s4);
+}
+
+/* On a phone the address gets the full width, with Find under it */
+@media (max-width: 479px) {
+  .fac-location__search {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fac-location__search > .mw-btn {
+    justify-self: start;
+  }
+}
+
+/* The map. isolation keeps Leaflet's own z-indexes under the dialog's sticky header. */
+.fac-location__map {
+  position: relative;
+  height: 248px;
+  overflow: hidden;
+  border: 1px solid var(--mw-border);
+  border-radius: var(--mw-r-sm);
+  background: var(--mw-neutral-bg);
+  isolation: isolate;
+}
+
+@media (max-width: 599px) {
+  .fac-location__map {
+    height: 216px;
+  }
+}
+
+.fac-location__map.leaflet-container {
+  font: inherit;
+  font-size: 13px;
+}
+
+.fac-location__map.leaflet-container:focus-visible {
+  outline: 2px solid var(--mw-plum-700);
+  outline-offset: 2px;
+}
+
+.fac-location__map .leaflet-bar {
+  border: 1px solid var(--mw-border);
+  border-radius: var(--mw-r-sm);
+  box-shadow: var(--mw-shadow-card);
+  overflow: hidden;
+}
+
+.fac-location__map .leaflet-bar a {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  border-bottom-color: var(--mw-border);
+  color: var(--mw-plum-700);
+}
+
+.fac-location__map .leaflet-bar a:hover,
+.fac-location__map .leaflet-bar a:focus-visible {
+  background: var(--mw-pink-100);
+  color: var(--mw-plum-800);
+}
+
+.fac-location__map .leaflet-bar a.leaflet-disabled {
+  background: var(--mw-surface);
+  color: var(--mw-text-muted);
+}
+
+.fac-location__map .leaflet-control-attribution {
+  font-size: 11px;
+  background: color-mix(in srgb, var(--mw-surface) 88%, transparent);
+  color: var(--mw-neutral-fg);
+}
+
+.fac-location__map .leaflet-control-attribution a {
+  color: var(--mw-plum-700);
+}
+
+/* Shown in the map box when the map library can't load */
+.fac-location__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--mw-s2);
+  padding: var(--mw-s5);
+  color: var(--mw-text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.fac-location__fallback .mw-icon {
+  width: 28px;
+  height: 28px;
+}
+
+/* The pin: the mother side's pin shape, in the admin plum */
+.fac-pin {
+  border: 0;
+  background: none;
+  cursor: grab;
+}
+
+.fac-pin svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 6px color-mix(in srgb, var(--mw-plum-900) 35%, transparent));
+}
+
+.fac-pin path {
+  fill: var(--mw-plum-700);
+  stroke: var(--mw-surface);
+  stroke-width: 2;
+}
+
+.fac-pin circle {
+  fill: var(--mw-surface);
+}
+
+.fac-pin:hover path,
+.fac-pin.leaflet-drag-target path {
+  fill: var(--mw-plum-800);
+}
+
+.fac-pin.leaflet-drag-target {
+  cursor: grabbing;
+}
+
+.fac-pin:focus-visible {
+  outline: 2px solid var(--mw-plum-700);
+  outline-offset: 2px;
+  border-radius: var(--mw-r-sm);
+}
+
+/* What was pinned */
+.fac-location__readout {
+  display: grid;
+  gap: var(--mw-s1);
+  min-width: 0;
+}
+
+.fac-location__status {
+  color: var(--mw-neutral-fg);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.fac-location__status.is-found {
+  color: var(--mw-success-fg);
+}
+
+.fac-location__status.is-warning {
+  color: var(--mw-warning-fg);
+}
+
+.fac-location__status.is-busy {
+  color: var(--mw-text-muted);
+}
+
+.fac-location__coords {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mw-s1) var(--mw-s2);
+  color: var(--mw-text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.fac-location__coords .mw-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.fac-location__osm {
+  margin-left: auto;
+  font-weight: 500;
+}
+
+@media (max-width: 479px) {
+  .fac-location__osm {
+    margin-left: 0;
+  }
+}
+
+/* Other places the search found */
+.fac-location__matches {
+  display: grid;
+  gap: var(--mw-s1);
+  padding-top: var(--mw-s3);
+  border-top: 1px solid var(--mw-border);
+}
+
+.fac-location__matches-title {
+  color: var(--mw-neutral-fg);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.fac-location__match-list {
+  display: grid;
+  gap: var(--mw-s1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fac-location__match-list .mw-link {
+  font-size: 13px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}

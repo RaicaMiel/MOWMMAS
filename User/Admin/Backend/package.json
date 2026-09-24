@@ -1,0 +1,11 @@
+{
+  "name": "mowmmas-admin-backend",
+  "private": true,
+  "description": "MOWMMAS admin API: the mothers' donations, requests and inquiries in Firestore",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

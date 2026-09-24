@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Facilities · MOWMMAS Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../img/mowmmas-favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="../img/mowmmas-favicon-64.png">
+  <link rel="apple-touch-icon" href="../img/mowmmas-favicon-180.png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="../CSS/mowmmas.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="../CSS/facilities.css">
+  <script src="../JS/mowmmas.js"></script>
+  <script type="module" src="../JS/facilities.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+</head>
+<body data-page="facilities">
+  <a class="mw-skip-link" href="#main">Skip to main content</a>
+
+  <div class="mw-app">
+    <aside class="mw-sidebar" id="sidebar" aria-label="Sidebar">
+      <div class="mw-sidebar__header">
+        <div class="mw-brand mw-brand--sm">
+          <div class="mw-brand__mark">
+            <img class="mw-logo-mark" src="../img/mowmmas-mark.png" alt="" width="128" height="176">
+          </div>
+          <p class="mw-brand__name">MOWMMAS</p>
+        </div>
+        <button class="mw-icon-btn mw-icon-btn--inverse mw-sidebar__close" type="button" data-drawer-close aria-label="Close menu" hidden>
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <nav class="mw-nav" aria-label="Main">
+        <ul class="mw-nav__list">
+          <li>
+            <a class="mw-nav__link" href="dashboard.html" data-nav="dashboard">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="facilities.html" data-nav="facilities">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+              Facilities
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="donation-inquiries.html" data-nav="donation-inquiries">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/><path d="m18 15-2-2"/><path d="m15 18-2-2"/></svg>
+              Donation inquiries
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="milk-requests.html" data-nav="milk-requests">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+              Milk requests
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="records-reports.html" data-nav="records-reports">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+              Records &amp; reports
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="sms-notifications.html" data-nav="sms-notifications">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              SMS notifications
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="settings.html" data-nav="settings">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+              Settings
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="mw-sidebar__account">
+        <p class="mw-sidebar__account-label">Signed in as</p>
+        <div class="mw-user">
+          <span class="mw-user__avatar">
+            <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <div>
+            <p class="mw-user__name"></p>
+            <p class="mw-user__role"></p>
+          </div>
+        </div>
+        <a class="mw-sidebar__signout" href="login.html?signed_out" data-modal-open="signout_modal">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          Sign out
+        </a>
+      </div>
+    </aside>
+
+    <div class="mw-drawer-backdrop" data-drawer-close hidden></div>
+
+    <div class="mw-app__body">
+      <header class="mw-topbar">
+        <button class="mw-icon-btn mw-topbar__menu" type="button" data-drawer-toggle aria-controls="sidebar" aria-expanded="false" aria-label="Open menu" hidden>
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
+        </button>
+        <nav class="mw-breadcrumb" aria-label="Breadcrumb">
+          <ol class="mw-breadcrumb__list">
+            <li><a class="mw-breadcrumb__link" href="dashboard.html">Admin workspace</a></li>
+            <li class="mw-breadcrumb__current" aria-current="page">Facilities</li>
+          </ol>
+        </nav>
+        <div class="mw-topbar__actions">
+          <a class="mw-icon-btn mw-icon-btn--outline" href="sms-notifications.html" aria-label="Notifications">
+            <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          </a>
+        </div>
+      </header>
+
+      <main class="mw-page" id="main">
+        <header class="mw-page-header">
+          <h1>Facilities</h1>
+          <p class="mw-lead">Manage participating hospitals and health facilities, HMB status and services.</p>
+          <div class="mw-page-header__action">
+            <button class="mw-btn mw-btn--primary" type="button" data-modal-open="facility_modal" data-modal-heading="Add facility" hidden>
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              Add facility
+            </button>
+          </div>
+        </header>
+
+        <div class="mw-alert mw-alert--error" role="alert" hidden>Facilities couldn't be loaded. Refresh the page to try again.</div>
+
+        <section aria-labelledby="overview_title">
+          <h2 class="mw-visually-hidden" id="overview_title">Overview</h2>
+          <ul class="mw-stat-grid">
+            <li class="mw-stat">
+              <p class="mw-stat__label">Participating facilities</p>
+              <span class="mw-stat__icon">
+                <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+              </span>
+              <p class="mw-stat__value" data-stat="participating">&nbsp;</p>
+              <p class="mw-stat__caption" data-stat-caption="participating">Marked public</p>
+            </li>
+            <li class="mw-stat">
+              <p class="mw-stat__label">Verified HMBs</p>
+              <span class="mw-stat__icon">
+                <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+              </span>
+              <p class="mw-stat__value" data-stat="verified">&nbsp;</p>
+              <p class="mw-stat__caption">Verification on file</p>
+            </li>
+            <li class="mw-stat">
+              <p class="mw-stat__label">Donor milk available</p>
+              <span class="mw-stat__icon">
+                <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/><path d="m18 15-2-2"/><path d="m15 18-2-2"/></svg>
+              </span>
+              <p class="mw-stat__value" data-stat="donor_milk">&nbsp;</p>
+              <p class="mw-stat__caption">Available or limited, latest reports</p>
+            </li>
+            <li class="mw-stat">
+              <p class="mw-stat__label">Needs updating</p>
+              <span class="mw-stat__icon">
+                <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              </span>
+              <p class="mw-stat__value" data-stat="overdue">&nbsp;</p>
+              <p class="mw-stat__caption">Public, not updated in 30+ days</p>
+            </li>
+          </ul>
+        </section>
+
+        <section class="mw-card mw-card--flush" aria-labelledby="facility_list_title">
+          <h2 class="mw-visually-hidden" id="facility_list_title">Facility list</h2>
+          <form class="mw-filters" action="#" role="search" aria-label="Filter facilities">
+            <div class="mw-field">
+              <label class="mw-visually-hidden" for="filter_search">Search facilities</label>
+              <div class="mw-input-group">
+                <span class="mw-input-group__icon"><svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+                <input class="mw-input" id="filter_search" name="search" type="search" placeholder="Search facilities…" autocomplete="off">
+              </div>
+            </div>
+            <div class="mw-field">
+              <label class="mw-visually-hidden" for="filter_town">Town</label>
+              <div class="mw-select">
+                <select class="mw-input" id="filter_town" name="town">
+                  <option value="">All towns</option>
+                </select>
+              </div>
+            </div>
+            <div class="mw-field">
+              <label class="mw-visually-hidden" for="filter_hmb_status">HMB status</label>
+              <div class="mw-select">
+                <select class="mw-input" id="filter_hmb_status" name="hmb_status">
+                  <option value="">All HMB statuses</option>
+                  <option value="verified">HMB: Verified</option>
+                  <option value="not_verified">HMB: Not verified</option>
+                  <option value="no">HMB: No</option>
+                  <option value="unknown">HMB: Not reported</option>
+                </select>
+              </div>
+            </div>
+            <div class="mw-field">
+              <label class="mw-visually-hidden" for="filter_service">Service</label>
+              <div class="mw-select">
+                <select class="mw-input" id="filter_service" name="service">
+                  <option value="">All services</option>
+                  <option value="lactation">Lactation</option>
+                  <option value="donations">Donations</option>
+                  <option value="donor_milk">Donor milk</option>
+                  <option value="milk_storage">Milk storage</option>
+                </select>
+              </div>
+            </div>
+          </form>
+
+          <div class="mw-table-wrap">
+            <table class="mw-table mw-table--wide">
+              <caption class="mw-visually-hidden" data-table-caption>Facilities</caption>
+              <thead>
+                <tr>
+                  <th class="mw-table__main" scope="col">Facility</th>
+                  <th scope="col">Town</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">HMB status</th>
+                  <th scope="col">Services</th>
+                  <th scope="col">Donor milk</th>
+                  <th scope="col">Last updated</th>
+                  <th scope="col">Public</th>
+                  <th class="mw-table__js" scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody data-facility-rows>
+                <tr data-loading-row>
+                  <td class="mw-text-muted" colspan="9">Loading facilities…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mw-empty" data-empty hidden>
+            <p class="mw-empty__title" data-empty-title>No facilities match these filters</p>
+            <p class="mw-empty__text" data-empty-text>Try another town or status, or clear the filters to see every facility.</p>
+            <a class="mw-btn mw-btn--secondary mw-btn--sm" href="facilities.html" data-clear-filters>Clear filters</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="mw-modal" id="signout_modal" aria-modal="true" aria-labelledby="signout_modal_title" aria-describedby="signout_modal_text">
+    <div class="mw-modal__header">
+      <div class="mw-modal__heading">
+        <h2 id="signout_modal_title">Sign out of MOWMMAS?</h2>
+      </div>
+      <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+        <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="mw-modal__body">
+      <p id="signout_modal_text">You'll need to sign in again to manage facilities and notifications.</p>
+    </div>
+    <div class="mw-modal__footer">
+      <button class="mw-btn mw-btn--outline" type="button" data-modal-close>Cancel</button>
+      <a class="mw-btn mw-btn--primary" href="login.html?signed_out">
+        <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+        Sign out
+      </a>
+    </div>
+  </dialog>
+
+  <dialog class="mw-modal" id="facility_modal" aria-modal="true" aria-labelledby="facility_modal_title">
+    <form action="#" method="dialog" data-validate>
+      <div class="mw-modal__header">
+        <div class="mw-modal__heading">
+          <h2 id="facility_modal_title" data-modal-heading-target>Add facility</h2>
+        </div>
+        <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="mw-modal__body">
+        <div class="mw-alert mw-alert--error" role="alert" hidden>The facility couldn't be saved. Check your connection, then try again.</div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="facility_name">Facility name</label>
+          <input class="mw-input" id="facility_name" name="facility_name" type="text" autocomplete="organization" required aria-describedby="facility_name_error">
+          <p class="mw-field__error" id="facility_name_error" hidden>Enter the facility name.</p>
+        </div>
+        <div class="mw-form-row">
+          <div class="mw-field">
+            <label class="mw-field__label" for="facility_type">Type</label>
+            <div class="mw-select">
+              <select class="mw-input" id="facility_type" name="facility_type">
+                <option value="hospital">Hospital</option>
+                <option value="health_center">Rural health unit / primary care</option>
+                <option value="birthing">Birthing / lying-in facility</option>
+                <option value="clinic">Clinic</option>
+              </select>
+            </div>
+          </div>
+          <div class="mw-field">
+            <label class="mw-field__label" for="town">Town</label>
+            <input class="mw-input" id="town" name="town" type="text" list="town_options" autocomplete="address-level2" required aria-describedby="town_error">
+            <datalist id="town_options"></datalist>
+            <p class="mw-field__error" id="town_error" hidden>Enter the town.</p>
+          </div>
+        </div>
+        <div class="mw-form-row">
+          <div class="mw-field">
+            <label class="mw-field__label" for="address">Address</label>
+            <input class="mw-input" id="address" name="address" type="text" autocomplete="address-line1">
+          </div>
+          <div class="mw-field">
+            <label class="mw-field__label" for="barangay">Barangay</label>
+            <input class="mw-input" id="barangay" name="barangay" type="text">
+          </div>
+        </div>
+        <fieldset class="mw-fieldset fac-location" data-location aria-describedby="location_hint">
+          <legend class="mw-field__label">Location on the map</legend>
+          <div class="fac-location__panel">
+            <div class="fac-location__search">
+              <label class="mw-visually-hidden" for="location_search">Address to find on the map</label>
+              <div class="mw-input-group">
+                <span class="mw-input-group__icon"><svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></span>
+                <input class="mw-input" id="location_search" type="search" placeholder="Type an address or place" autocomplete="off" enterkeyhint="search" aria-describedby="location_hint">
+              </div>
+              <button class="mw-btn mw-btn--secondary" type="button" data-location-find>
+                <span class="mw-btn__label">
+                  <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  Find
+                </span>
+                <span class="mw-btn__loading">
+                  <svg class="mw-icon mw-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                  Finding…
+                </span>
+              </button>
+            </div>
+            <div class="fac-location__map" id="location_map" data-location-map></div>
+            <div class="fac-location__readout">
+              <p class="fac-location__status" role="status" data-location-status>No pin yet. Find the address or click the map.</p>
+              <p class="fac-location__coords">
+                <svg class="mw-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M22 12h-4"/><path d="M6 12H2"/><path d="M12 6V2"/><path d="M12 22v-4"/></svg>
+                <span data-location-coords>No location pinned</span>
+                <a class="fac-location__osm" href="https://www.openstreetmap.org/" target="_blank" rel="noopener" data-location-osm hidden>Open in OpenStreetMap<span class="mw-visually-hidden"> (opens in a new tab)</span></a>
+              </p>
+            </div>
+            <div class="fac-location__matches" data-location-matches hidden>
+              <p class="fac-location__matches-title" id="location_matches_title">Other matches</p>
+              <ul class="fac-location__match-list" aria-labelledby="location_matches_title" data-location-match-list></ul>
+            </div>
+          </div>
+          <p class="mw-field__hint" id="location_hint">Type the address and press Find, or click the map. Drag the pin to the exact spot.</p>
+          <p class="mw-field__error" id="location_error" hidden>Pin the facility's location. Find the address or click the map.</p>
+          <input id="latitude" name="latitude" type="hidden" value="">
+          <input id="longitude" name="longitude" type="hidden" value="">
+        </fieldset>
+        <div class="mw-form-row">
+          <div class="mw-field">
+            <label class="mw-field__label" for="landline">Landline</label>
+            <input class="mw-input" id="landline" name="landline" type="tel" autocomplete="tel">
+          </div>
+          <div class="mw-field">
+            <label class="mw-field__label" for="mobile">SMS-capable mobile</label>
+            <input class="mw-input" id="mobile" name="mobile" type="tel" placeholder="09XX-XXX-XXXX" autocomplete="tel">
+          </div>
+        </div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="email">Email</label>
+          <input class="mw-input" id="email" name="email" type="email" placeholder="facility@example.ph" autocomplete="email" aria-describedby="email_error">
+          <p class="mw-field__error" id="email_error" hidden>Check the email address. It should look like name@example.ph.</p>
+        </div>
+        <div class="mw-form-row">
+          <div class="mw-field">
+            <label class="mw-field__label" for="operating_hours">Operating hours</label>
+            <input class="mw-input" id="operating_hours" name="operating_hours" type="text" placeholder="e.g. Mon–Fri, 8:00 AM – 5:00 PM">
+          </div>
+          <div class="mw-checkbox">
+            <input class="mw-checkbox__input" id="open_24_hours" name="open_24_hours" type="checkbox" value="1">
+            <label class="mw-checkbox__label" for="open_24_hours">Open 24 hours</label>
+          </div>
+        </div>
+        <fieldset class="mw-fieldset">
+          <legend class="mw-field__label">Services</legend>
+          <div class="mw-checkbox-group">
+            <div class="mw-checkbox">
+              <input class="mw-checkbox__input" id="service_lactation" name="service_lactation" type="checkbox" value="1" checked>
+              <label class="mw-checkbox__label" for="service_lactation">Lactation support</label>
+            </div>
+            <div class="mw-checkbox">
+              <input class="mw-checkbox__input" id="service_donations" name="service_donations" type="checkbox" value="1">
+              <label class="mw-checkbox__label" for="service_donations">Accepts milk donations</label>
+            </div>
+            <div class="mw-checkbox">
+              <input class="mw-checkbox__input" id="service_donor_milk" name="service_donor_milk" type="checkbox" value="1">
+              <label class="mw-checkbox__label" for="service_donor_milk">Donor milk</label>
+            </div>
+          </div>
+        </fieldset>
+        <div class="mw-form-row">
+          <div class="mw-field">
+            <label class="mw-field__label" for="facility_hmb_status">HMB status</label>
+            <div class="mw-select">
+              <select class="mw-input" id="facility_hmb_status" name="hmb_status">
+                <option value="no">Not an HMB</option>
+                <option value="not_verified">HMB, not verified</option>
+                <option value="verified">Verified HMB</option>
+                <option value="unknown">Not reported</option>
+              </select>
+            </div>
+          </div>
+          <div class="mw-field">
+            <label class="mw-field__label" for="facility_donor_milk">Donor milk</label>
+            <div class="mw-select">
+              <select class="mw-input" id="facility_donor_milk" name="donor_milk">
+                <option value="unknown">Unknown</option>
+                <option value="available">Available</option>
+                <option value="limited">Limited</option>
+                <option value="not_available">Not available</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <label class="mw-toggle">
+          <input class="mw-toggle__input" id="is_public" name="is_public" type="checkbox" role="switch" value="1" checked>
+          <span class="mw-toggle__label">Show in the public directory</span>
+        </label>
+      </div>
+      <div class="mw-modal__footer">
+        <button class="mw-btn mw-btn--outline" type="button" data-modal-close>Cancel</button>
+        <button class="mw-btn mw-btn--primary" type="submit">
+          <span class="mw-btn__label">Save facility</span>
+          <span class="mw-btn__loading">
+            <svg class="mw-icon mw-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Saving…
+          </span>
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="mw-modal" id="update_status_modal" aria-modal="true" aria-labelledby="update_status_modal_title" aria-describedby="update_status_modal_context">
+    <form action="#" method="dialog">
+      <div class="mw-modal__header">
+        <div class="mw-modal__heading">
+          <h2 id="update_status_modal_title">Update status</h2>
+          <p class="mw-lead" id="update_status_modal_context" data-modal-context-target></p>
+        </div>
+        <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="mw-modal__body">
+        <div class="mw-alert mw-alert--error" role="alert" hidden>The status couldn't be saved. Check your connection, then try again.</div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="hmb_status">HMB status</label>
+          <div class="mw-select">
+            <select class="mw-input" id="hmb_status" name="hmb_status">
+              <option value="">No change</option>
+              <option value="verified">Verified HMB</option>
+              <option value="not_verified">HMB, not verified</option>
+              <option value="no">Not an HMB</option>
+            </select>
+          </div>
+        </div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="donor_milk">Donor milk</label>
+          <div class="mw-select">
+            <select class="mw-input" id="donor_milk" name="donor_milk">
+              <option value="">No change</option>
+              <option value="available">Available</option>
+              <option value="limited">Limited</option>
+              <option value="not_available">Not available</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </div>
+        </div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="status_note">Note</label>
+          <textarea class="mw-input" id="status_note" name="status_note" rows="3" maxlength="1000" aria-describedby="status_note_hint" placeholder="e.g. Call ahead before bringing a donation"></textarea>
+          <p class="mw-field__hint" id="status_note_hint">Optional. Saved as the facility's note. Saving also marks the facility as updated today.</p>
+        </div>
+      </div>
+      <div class="mw-modal__footer">
+        <button class="mw-btn mw-btn--outline" type="button" data-modal-close>Cancel</button>
+        <button class="mw-btn mw-btn--primary" type="submit">
+          <span class="mw-btn__label">Save status</span>
+          <span class="mw-btn__loading">
+            <svg class="mw-icon mw-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Saving…
+          </span>
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="mw-toast-region" data-toast-region aria-live="polite">
+    <div class="mw-toast" hidden>
+      <span class="mw-toast__icon"><svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <p data-toast-text></p>
+    </div>
+  </div>
+</body>
+</html>

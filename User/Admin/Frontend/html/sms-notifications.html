@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SMS notifications · MOWMMAS Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../img/mowmmas-favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="../img/mowmmas-favicon-64.png">
+  <link rel="apple-touch-icon" href="../img/mowmmas-favicon-180.png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="../CSS/mowmmas.css">
+  <script src="../JS/mowmmas.js"></script>
+  <script type="module" src="../JS/sms-notifications.js"></script>
+</head>
+<body data-page="sms-notifications">
+  <a class="mw-skip-link" href="#main">Skip to main content</a>
+
+  <div class="mw-app">
+    <aside class="mw-sidebar" id="sidebar" aria-label="Sidebar">
+      <div class="mw-sidebar__header">
+        <div class="mw-brand mw-brand--sm">
+          <div class="mw-brand__mark">
+            <img class="mw-logo-mark" src="../img/mowmmas-mark.png" alt="" width="128" height="176">
+          </div>
+          <p class="mw-brand__name">MOWMMAS</p>
+        </div>
+        <button class="mw-icon-btn mw-icon-btn--inverse mw-sidebar__close" type="button" data-drawer-close aria-label="Close menu" hidden>
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <nav class="mw-nav" aria-label="Main">
+        <ul class="mw-nav__list">
+          <li>
+            <a class="mw-nav__link" href="dashboard.html" data-nav="dashboard">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="facilities.html" data-nav="facilities">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+              Facilities
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="donation-inquiries.html" data-nav="donation-inquiries">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/><path d="m18 15-2-2"/><path d="m15 18-2-2"/></svg>
+              Donation inquiries
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="milk-requests.html" data-nav="milk-requests">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+              Milk requests
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="records-reports.html" data-nav="records-reports">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+              Records &amp; reports
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="sms-notifications.html" data-nav="sms-notifications">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              SMS notifications
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="settings.html" data-nav="settings">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+              Settings
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="mw-sidebar__account">
+        <p class="mw-sidebar__account-label">Signed in as</p>
+        <div class="mw-user">
+          <span class="mw-user__avatar">
+            <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <div>
+            <p class="mw-user__name"></p>
+            <p class="mw-user__role"></p>
+          </div>
+        </div>
+        <a class="mw-sidebar__signout" href="login.html?signed_out" data-modal-open="signout_modal">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          Sign out
+        </a>
+      </div>
+    </aside>
+
+    <div class="mw-drawer-backdrop" data-drawer-close hidden></div>
+
+    <div class="mw-app__body">
+      <header class="mw-topbar">
+        <button class="mw-icon-btn mw-topbar__menu" type="button" data-drawer-toggle aria-controls="sidebar" aria-expanded="false" aria-label="Open menu" hidden>
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
+        </button>
+        <nav class="mw-breadcrumb" aria-label="Breadcrumb">
+          <ol class="mw-breadcrumb__list">
+            <li><a class="mw-breadcrumb__link" href="dashboard.html">Admin workspace</a></li>
+            <li class="mw-breadcrumb__current" aria-current="page">SMS notifications</li>
+          </ol>
+        </nav>
+        <div class="mw-topbar__actions">
+          <a class="mw-icon-btn mw-icon-btn--outline" href="sms-notifications.html" aria-label="Notifications">
+            <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          </a>
+        </div>
+      </header>
+
+      <main class="mw-page" id="main">
+        <header class="mw-page-header">
+          <h1>SMS notifications</h1>
+          <p class="mw-lead">Send updates to mothers through the SMS gateway and check what was delivered.</p>
+          <div class="mw-page-header__action">
+            <button class="mw-btn mw-btn--primary" type="button" data-modal-open="send_modal" hidden>
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+              Send notification
+            </button>
+          </div>
+        </header>
+
+        <div class="mw-alert mw-alert--error" role="alert" hidden>Registered contacts couldn't be loaded. Refresh the page to try again.</div>
+
+        <div class="mw-alert mw-alert--info mw-alert--steps">
+          <ol class="mw-steps" aria-label="How an SMS notification is sent">
+            <li>Admin triggers notification</li>
+            <li><svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>MOWMMAS sends SMS (via SMS gateway)</li>
+            <li><svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>User receives SMS</li>
+          </ol>
+          <span class="mw-chip mw-chip--warning mw-alert__action">Gateway: Not set up yet</span>
+        </div>
+
+        <div class="mw-tabs mw-tabs--line" data-tabs>
+          <div class="mw-tabs__list" role="tablist" aria-label="SMS notifications">
+            <button class="mw-tabs__tab" id="tab_log" type="button" role="tab" aria-selected="true" aria-controls="panel_log" data-tab="panel_log">Message log</button>
+            <button class="mw-tabs__tab" id="tab_templates" type="button" role="tab" aria-selected="false" aria-controls="panel_templates" data-tab="panel_templates">Templates</button>
+            <button class="mw-tabs__tab" id="tab_contacts" type="button" role="tab" aria-selected="false" aria-controls="panel_contacts" data-tab="panel_contacts">Registered contacts</button>
+          </div>
+          <div class="mw-tabs__panel" id="panel_log" role="tabpanel" aria-labelledby="tab_log">
+            <h2 class="mw-tabs__panel-title">Message log</h2>
+            <section class="mw-card mw-card--flush" aria-label="Message log">
+              <div class="mw-table-wrap" hidden>
+                <table class="mw-table">
+                  <caption class="mw-visually-hidden">Message log, 0 messages</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Recipient</th>
+                      <th scope="col">Event</th>
+                      <th class="mw-table__long" scope="col">Message</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+              <div class="mw-empty">
+                <p class="mw-empty__title">No messages sent yet</p>
+                <p class="mw-empty__text">SMS notifications you send to mothers show up here, with their delivery status.</p>
+                <a class="mw-btn mw-btn--secondary mw-btn--sm" href="donation-inquiries.html">Go to donation inquiries</a>
+              </div>
+            </section>
+          </div>
+          <div class="mw-tabs__panel" id="panel_templates" role="tabpanel" aria-labelledby="tab_templates">
+            <h2 class="mw-tabs__panel-title">Templates</h2>
+            <section class="mw-card mw-card--flush" aria-label="Templates">
+              <div class="mw-table-wrap">
+                <table class="mw-table">
+                  <caption class="mw-visually-hidden">SMS templates, 4 templates</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Template</th>
+                      <th scope="col">Event</th>
+                      <th class="mw-table__long" scope="col">Message</th>
+                      <th scope="col">Length</th>
+                      <th class="mw-table__js" scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <span class="mw-table__name">Referral details</span>
+                        <span class="mw-table__sub">Default wording</span>
+                      </td>
+                      <td><span class="mw-chip mw-chip--brand">Referral sent</span></td>
+                      <td>Hi {name}, this is MOWMMAS. Please contact {facility} at {facility phone} to confirm requirements and schedule. - MOWMMAS</td>
+                      <td class="mw-table__nowrap">121 / 160</td>
+                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Referral details" data-modal-value="Hi {name}, this is MOWMMAS. Please contact {facility} at {facility phone} to confirm requirements and schedule. - MOWMMAS" hidden>Edit<span class="mw-visually-hidden"> Referral details</span></button></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="mw-table__name">Availability update</span>
+                        <span class="mw-table__sub">Default wording</span>
+                      </td>
+                      <td><span class="mw-chip mw-chip--info">Availability update</span></td>
+                      <td>Update: The facility you inquired about has a new availability of donor milk. Please contact the facility for details.</td>
+                      <td class="mw-table__nowrap">118 / 160</td>
+                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Availability update" data-modal-value="Update: The facility you inquired about has a new availability of donor milk. Please contact the facility for details." hidden>Edit<span class="mw-visually-hidden"> Availability update</span></button></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="mw-table__name">Visit reminder</span>
+                        <span class="mw-table__sub">Default wording</span>
+                      </td>
+                      <td><span class="mw-chip mw-chip--warning">Reminder</span></td>
+                      <td>Reminder: Please contact {facility} before your visit. - MOWMMAS</td>
+                      <td class="mw-table__nowrap">64 / 160</td>
+                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Visit reminder" data-modal-value="Reminder: Please contact {facility} before your visit. - MOWMMAS" hidden>Edit<span class="mw-visually-hidden"> Visit reminder</span></button></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="mw-table__name">Follow-up reminder</span>
+                        <span class="mw-table__sub">Default wording</span>
+                      </td>
+                      <td><span class="mw-chip mw-chip--warning">Reminder</span></td>
+                      <td>Reminder: Please contact the referred facility to confirm requirements and schedule. - MOWMMAS</td>
+                      <td class="mw-table__nowrap">94 / 160</td>
+                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Follow-up reminder" data-modal-value="Reminder: Please contact the referred facility to confirm requirements and schedule. - MOWMMAS" hidden>Edit<span class="mw-visually-hidden"> Follow-up reminder</span></button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="mw-empty" hidden>
+                <p class="mw-empty__title">No templates yet</p>
+                <p class="mw-empty__text">Templates keep SMS wording the same for every mother.</p>
+                <a class="mw-btn mw-btn--secondary mw-btn--sm" href="sms-notifications.html">Go to message log</a>
+              </div>
+            </section>
+          </div>
+          <div class="mw-tabs__panel" id="panel_contacts" role="tabpanel" aria-labelledby="tab_contacts">
+            <h2 class="mw-tabs__panel-title">Registered contacts</h2>
+            <section class="mw-card mw-card--flush" aria-label="Registered contacts">
+              <div class="mw-table-wrap">
+                <table class="mw-table">
+                  <caption class="mw-visually-hidden">Registered contacts</caption>
+                  <thead>
+                    <tr>
+                      <th class="mw-table__main" scope="col">Name</th>
+                      <th scope="col">Mobile number</th>
+                      <th scope="col">Barangay</th>
+                      <th scope="col">Role</th>
+                      <th scope="col">Registered</th>
+                      <th scope="col">SMS</th>
+                      <th class="mw-table__js" scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+              <div class="mw-empty" hidden>
+                <p class="mw-empty__title">No registered contacts yet</p>
+                <p class="mw-empty__text">Mothers show up here after they send a donation offer, milk request or question through MOWMMAS.</p>
+                <a class="mw-btn mw-btn--secondary mw-btn--sm" href="donation-inquiries.html">Go to donation inquiries</a>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="mw-modal" id="signout_modal" aria-modal="true" aria-labelledby="signout_modal_title" aria-describedby="signout_modal_text">
+    <div class="mw-modal__header">
+      <div class="mw-modal__heading">
+        <h2 id="signout_modal_title">Sign out of MOWMMAS?</h2>
+      </div>
+      <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+        <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="mw-modal__body">
+      <p id="signout_modal_text">You'll need to sign in again to manage facilities and notifications.</p>
+    </div>
+    <div class="mw-modal__footer">
+      <button class="mw-btn mw-btn--outline" type="button" data-modal-close>Cancel</button>
+      <a class="mw-btn mw-btn--primary" href="login.html?signed_out">
+        <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+        Sign out
+      </a>
+    </div>
+  </dialog>
+
+  <dialog class="mw-modal" id="send_modal" aria-modal="true" aria-labelledby="send_modal_title">
+    <form action="#" method="dialog">
+      <div class="mw-modal__header">
+        <div class="mw-modal__heading">
+          <h2 id="send_modal_title">Send notification</h2>
+        </div>
+        <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="mw-modal__body">
+        <div class="mw-alert mw-alert--error" role="alert" hidden>The SMS couldn't be sent. Check the connection, then try again.</div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="send_type">Notification type</label>
+          <div class="mw-select">
+            <select class="mw-input" id="send_type" name="send_type">
+              <option value="update">Update</option>
+              <option value="referral">Referral</option>
+              <option value="reminder">Reminder</option>
+            </select>
+          </div>
+        </div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="send_recipient">Recipients</label>
+          <div class="mw-select">
+            <select class="mw-input" id="send_recipient" name="send_recipient">
+              <option value="">Loading contacts…</option>
+            </select>
+          </div>
+        </div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="send_message">Message</label>
+          <textarea class="mw-input" id="send_message" name="send_message" rows="5" maxlength="160" aria-describedby="send_message_count">Update: The facility you inquired about has a new availability of donor milk. Please contact the facility for details.</textarea>
+          <p class="mw-field__count" id="send_message_count" data-count-for="send_message">118 / 160</p>
+        </div>
+        <div class="mw-preview">
+          <p class="mw-preview__title">SMS preview</p>
+          <p class="mw-preview__text" data-preview-for="send_message">Update: The facility you inquired about has a new availability of donor milk. Please contact the facility for details.</p>
+        </div>
+      </div>
+      <div class="mw-modal__footer">
+        <button class="mw-btn mw-btn--primary mw-btn--block" type="submit">
+          <span class="mw-btn__label">
+            <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+            Send SMS
+          </span>
+          <span class="mw-btn__loading">
+            <svg class="mw-icon mw-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Sending…
+          </span>
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="mw-modal" id="template_modal" aria-modal="true" aria-labelledby="template_modal_title" aria-describedby="template_modal_context">
+    <form action="#" method="dialog">
+      <div class="mw-modal__header">
+        <div class="mw-modal__heading">
+          <h2 id="template_modal_title">Edit template</h2>
+          <p class="mw-lead" id="template_modal_context" data-modal-context-target>Referral details</p>
+        </div>
+        <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="mw-modal__body">
+        <div class="mw-alert mw-alert--error" role="alert" hidden>The template couldn't be saved. Check the connection, then try again.</div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="template_message">Message</label>
+          <textarea class="mw-input" id="template_message" name="template_message" rows="4" maxlength="160" data-modal-value-target aria-describedby="template_message_hint"></textarea>
+          <p class="mw-field__hint" id="template_message_hint">Up to 160 characters. {name} (her complete name), {facility} and {facility phone} are filled in when the SMS is sent. If her complete name makes it longer than one SMS, her first name is used.</p>
+        </div>
+      </div>
+      <div class="mw-modal__footer">
+        <button class="mw-btn mw-btn--outline" type="button" data-modal-close>Cancel</button>
+        <button class="mw-btn mw-btn--primary" type="submit">
+          <span class="mw-btn__label">Save template</span>
+          <span class="mw-btn__loading">
+            <svg class="mw-icon mw-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Saving…
+          </span>
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="mw-toast-region" data-toast-region aria-live="polite">
+    <div class="mw-toast" hidden>
+      <span class="mw-toast__icon"><svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <p data-toast-text></p>
+    </div>
+  </div>
+</body>
+</html>

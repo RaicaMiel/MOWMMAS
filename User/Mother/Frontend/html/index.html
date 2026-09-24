@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>MOWMMAS | Mothers Online With Milk Management, Access, and Support</title>
+  <meta name="description" content="MOWMMAS helps mothers find participating health facilities, donate or request breast milk, ask about available services, and receive SMS updates from health workers. An information and referral service, not a human milk bank." />
+  <meta name="theme-color" content="#FFF7FA" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="../img/mowmmas-icon.png" />
+
+  <link rel="stylesheet" href="../css/style.css" />
+  <!-- Loaded in <head> on purpose: it sets the .js class before first paint -->
+  <script src="../js/script.js"></script>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- Icon sprite: one stroke family, referenced with <use href="#i-…"> -->
+  <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gradBrand" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#F8719B" />
+        <stop offset="55%" stop-color="#EC4A7B" />
+        <stop offset="100%" stop-color="#8B5CF6" />
+      </linearGradient>
+    </defs>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.2s7.2-6.4 7.2-11.2a7.2 7.2 0 1 0-14.4 0c0 4.8 7.2 11.2 7.2 11.2Z"/><circle cx="12" cy="9.8" r="2.7"/></symbol>
+    <symbol id="i-hospital" viewBox="0 0 24 24"><path d="M2.8 21h18.4"/><path d="M5 21V7.4L12 3l7 4.4V21"/><path d="M12 8.6v4.8"/><path d="M9.6 11h4.8"/><path d="M9.6 21v-4.2h4.8V21"/></symbol>
+    <symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 3.2c4 4.4 6.5 7.7 6.5 10.7a6.5 6.5 0 0 1-13 0c0-3 2.5-6.3 6.5-10.7Z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.4 4.9 13.3a4.6 4.6 0 0 1 6.5-6.5l.6.6.6-.6a4.6 4.6 0 0 1 6.5 6.5Z"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.8"/><path d="M9.4 9.5a2.7 2.7 0 1 1 3.7 2.5c-.7.3-1.1.9-1.1 1.7v.5"/><path d="M12 17.4h.01"/></symbol>
+    <symbol id="i-message" viewBox="0 0 24 24"><path d="M20.8 11.8a8.4 8.4 0 0 1-12.2 7.5L3.4 20.8l1.5-5.1A8.4 8.4 0 1 1 20.8 11.8Z"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 15.6V11a6 6 0 1 0-12 0v4.6L4.4 18.2h15.2Z"/><path d="M9.8 21h4.4"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M21.4 16.9v2.8a2 2 0 0 1-2.2 2 19.6 19.6 0 0 1-8.5-3 19.2 19.2 0 0 1-5.9-5.9 19.6 19.6 0 0 1-3-8.6 2 2 0 0 1 2-2.2h2.8a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L7.6 10.5a15.8 15.8 0 0 0 5.9 5.9l1.9-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.1 1.5Z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.8"/><path d="M12 7.2V12l3.2 1.9"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 19.6 6v5.4c0 4.6-3.2 8.4-7.6 9.6-4.4-1.2-7.6-5-7.6-9.6V6Z"/><path d="M9.2 12.1 11.3 14.2 15.2 10.3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.8 12.6 9.6 17.4 19.2 6.6"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><path d="M20.8 11.1V12a8.8 8.8 0 1 1-5.2-8"/><path d="M8.8 11.9l2.6 2.6 9-9"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.8"/><path d="M12 11.2v5"/><path d="M12 7.8h.01"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4.2 12h15.2"/><path d="M13.2 5.8 19.4 12l-6.2 6.2"/></symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 4.2v15.2"/><path d="M5.8 13.2 12 19.4l6.2-6.2"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M5.2 8.8 12 15.6l6.8-6.8"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3.8 6.8h16.4"/><path d="M3.8 12h16.4"/><path d="M3.8 17.2h16.4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.2 6.2 17.8 17.8"/><path d="M17.8 6.2 6.2 17.8"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.8"/><path d="M20.4 20.4 15.9 15.9"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.2" r="4"/><path d="M4.4 20.4a7.6 7.6 0 0 1 15.2 0"/></symbol>
+    <symbol id="i-nurse" viewBox="0 0 24 24"><circle cx="12" cy="8.4" r="3.8"/><path d="M4.4 20.6a7.6 7.6 0 0 1 15.2 0"/><path d="M16.6 15.6v3.6"/><path d="M14.8 17.4h3.6"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20.4 12a8.4 8.4 0 0 1-14.6 5.7"/><path d="M3.6 12A8.4 8.4 0 0 1 18.2 6.3"/><path d="M18.4 2.8v3.7h-3.7"/><path d="M5.6 21.2v-3.7h3.7"/></symbol>
+    <symbol id="i-browser" viewBox="0 0 24 24"><rect x="3" y="4.4" width="18" height="15.2" rx="2.6"/><path d="M3 9h18"/><path d="M6.4 6.7h.01"/><path d="M9 6.7h.01"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8.6 6.4h12"/><path d="M8.6 12h12"/><path d="M8.6 17.6h12"/><path d="M4 6.4h.01"/><path d="M4 12h.01"/><path d="M4 17.6h.01"/></symbol>  </svg>
+
+  <!-- ═════════════════════════ HEADER ═════════════════════════ -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header__inner">
+      <a class="brand" href="#top" aria-label="MOWMMAS home">
+        <img class="brand__mark" src="../img/mowmmas-mark.png" alt="" width="32" height="44" />
+        <span class="brand__text">
+          <span class="brand__name">MOWMMAS</span>
+          <span class="brand__sub">Milk Management, Access &amp; Support</span>
+        </span>
+      </a>
+
+      <nav class="nav" id="siteNav" aria-label="Main">
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#offers">What We Offer</a></li>
+          <li><a class="nav__link" href="#about">About</a></li>
+          <li><a class="nav__link" href="#faq">FAQ</a></li>
+        </ul>
+        <a class="btn btn--primary btn--sm nav__cta" href="home.html" data-start>Let's Get Started</a>
+      </nav>
+
+      <button class="menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="Open menu">
+        <svg class="icon menu-btn__open" aria-hidden="true"><use href="#i-menu"/></svg>
+        <svg class="icon menu-btn__close" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ═════════════════════════ 1 · HERO ═════════════════════════ -->
+    <section class="hero" id="top" aria-labelledby="heroTitle">
+      <div class="hero__bg" aria-hidden="true"><span></span><span></span><span></span></div>
+
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <p class="eyebrow"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-heart"/></svg> Breastfeeding &amp; breast milk support</p>
+
+          <h1 class="hero__title" id="heroTitle">
+            Breast milk support for mothers, <span class="text-gradient">made easier to find.</span>
+          </h1>
+
+          <p class="hero__lede">
+            <strong>MOWMMAS</strong> (Mothers Online With Milk Management, Access, and Support) is a web
+            application that connects you with participating health facilities. Donate breast milk, request
+            donor milk, or ask about available services, and receive SMS updates from health workers.
+          </p>
+
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--lg" href="home.html" data-start>
+              Let's Get Started
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </a>
+            <a class="btn btn--outline btn--lg" href="#offers">
+              See what we offer
+            </a>
+          </div>
+
+          <ul class="hero__trust">
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check-circle"/></svg> Free to use</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-browser"/></svg> Works in any web browser</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-message"/></svg> Updates by SMS</li>
+          </ul>
+        </div>
+
+        <!-- Illustrative preview of the system (decorative) -->
+        <div class="hero__visual" aria-hidden="true">
+          <div class="mock">
+            <div class="mock__bar">
+              <span class="mock__dots"><i></i><i></i><i></i></span>
+              <span class="mock__url"><svg class="icon icon--xs"><use href="#i-shield"/></svg> MOWMMAS</span>
+            </div>
+            <div class="mock__body">
+              <p class="mock__title">Hospitals Near Me</p>
+              <div class="mock__search"><svg class="icon icon--xs"><use href="#i-search"/></svg> Search participating facilities</div>
+
+              <div class="mock__row">
+                <span class="mock__ico"><svg class="icon icon--sm"><use href="#i-hospital"/></svg></span>
+                <span class="mock__info">
+                  <span class="mock__name">District Hospital</span>
+                  <span class="mock__pills"><em class="chip chip--mint">HMB on site</em><em class="chip chip--rose">Donor milk available</em></span>
+                </span>
+                <span class="mock__km">1.2 km</span>
+              </div>
+              <div class="mock__row">
+                <span class="mock__ico"><svg class="icon icon--sm"><use href="#i-hospital"/></svg></span>
+                <span class="mock__info">
+                  <span class="mock__name">Maternity &amp; Children's Clinic</span>
+                  <span class="mock__pills"><em class="chip chip--violet">Partner HMB</em><em class="chip chip--amber">Limited</em></span>
+                </span>
+                <span class="mock__km">2.8 km</span>
+              </div>
+              <div class="mock__row">
+                <span class="mock__ico"><svg class="icon icon--sm"><use href="#i-hospital"/></svg></span>
+                <span class="mock__info">
+                  <span class="mock__name">Community Health Center</span>
+                  <span class="mock__pills"><em class="chip chip--grey">Lactation support</em></span>
+                </span>
+                <span class="mock__km">3.5 km</span>
+              </div>
+              <p class="mock__foot">View all facilities <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></p>
+            </div>
+          </div>
+
+          <div class="float float--status">
+            <span class="float__ico float__ico--rose"><svg class="icon icon--sm"><use href="#i-check"/></svg></span>
+            <span>
+              <span class="float__title">Request received</span>
+              <span class="float__text">Reviewed by health worker</span>
+            </span>
+          </div>
+
+          <div class="float float--sms">
+            <span class="float__ico float__ico--mint"><svg class="icon icon--sm"><use href="#i-message"/></svg></span>
+            <span>
+              <span class="float__title">SMS from MOWMMAS</span>
+              <span class="float__text">Your request was reviewed. Please contact the facility for details.</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <a class="hero__scroll" href="#offers" aria-label="Scroll to what MOWMMAS offers">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-down"/></svg>
+      </a>
+    </section>
+
+    <!-- ═════════════════════════ 2 · WHAT WE OFFER ═════════════════════════ -->
+    <section class="section" id="offers" aria-labelledby="offersTitle">
+      <div class="container">
+        <header class="section-head reveal">
+          <p class="eyebrow">What MOWMMAS offers</p>
+          <h2 class="section-title" id="offersTitle">Choose the support you need</h2>
+          <p class="section-lede">
+            Whether you have milk to share, need milk for your baby, or simply have questions,
+            MOWMMAS guides you to the right health facility.
+          </p>
+        </header>
+
+        <div class="service-grid">
+          <article class="service service--rose reveal">
+            <span class="service__icon"><svg class="icon" aria-hidden="true"><use href="#i-droplet"/></svg></span>
+            <h3 class="service__title">Donate Breast Milk</h3>
+            <p class="service__text">
+              Have extra breast milk? Offer it to a participating facility. Their health workers will
+              guide you through screening and drop-off.
+            </p>
+            <ul class="service__list">
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Find facilities that accept donations</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Submit a short donor form</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Get updates on your donation</li>
+            </ul>
+            <a class="service__link" href="hospitals.html?service=donate">
+              Donate milk <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </a>
+          </article>
+
+          <article class="service service--violet reveal">
+            <span class="service__icon"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></span>
+            <h3 class="service__title">Request Breast Milk</h3>
+            <p class="service__text">
+              Need donor milk for your baby? Send a request and an authorized health worker will review it
+              and let you know the next steps.
+            </p>
+            <ul class="service__list">
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> See where donor milk is available</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Submit a request form</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Track the status of your request</li>
+            </ul>
+            <a class="service__link" href="hospitals.html?service=request">
+              Request milk <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </a>
+          </article>
+
+          <article class="service service--mint reveal">
+            <span class="service__icon"><svg class="icon" aria-hidden="true"><use href="#i-help"/></svg></span>
+            <h3 class="service__title">Inquire About Services</h3>
+            <p class="service__text">
+              Not sure where to start? Ask about available breast-milk services, requirements, and
+              donation or receiving procedures.
+            </p>
+            <ul class="service__list">
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Ask about requirements</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Confirm current availability</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Contact the facility directly</li>
+            </ul>
+            <a class="service__link" href="inquire.html">
+              Ask a question <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </a>
+          </article>
+        </div>
+
+        <!-- Hospitals Near Me — Find · Check · Contact -->
+        <div class="finder reveal">
+          <div class="finder__copy">
+            <p class="eyebrow eyebrow--light"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"/></svg> Hospitals Near Me</p>
+            <h3 class="finder__title">Find, check, and contact facilities near you</h3>
+            <p class="finder__text">
+              View a list of participating health facilities and their locations. Select one to see
+              everything you need before you call or visit.
+            </p>
+            <ol class="finder__steps">
+              <li><span>1</span> Find a facility</li>
+              <li><span>2</span> Check its details</li>
+              <li><span>3</span> Contact or inquire</li>
+            </ol>
+            <a class="btn btn--light" href="hospitals.html">
+              Browse Hospitals Near Me
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </a>
+          </div>
+
+          <div class="finder__panel">
+            <p class="finder__panelTitle">Each facility page shows</p>
+            <ul class="detail-list">
+              <li><span class="detail-list__ico"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"/></svg></span> Address &amp; location</li>
+              <li><span class="detail-list__ico"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-phone"/></svg></span> Contact number</li>
+              <li><span class="detail-list__ico"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"/></svg></span> Operating hours</li>
+              <li><span class="detail-list__ico"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-shield"/></svg></span> Human Milk Bank (HMB) status</li>
+              <li><span class="detail-list__ico"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-droplet"/></svg></span> Breast-milk-related services</li>
+              <li><span class="detail-list__ico"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-refresh"/></svg></span> Reported availability</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature reveal">
+            <span class="feature__icon feature__icon--mint"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg></span>
+            <div>
+              <h3 class="feature__title">SMS notifications</h3>
+              <p class="feature__text">Receive updates, reminders, and alerts on your phone. No mobile data or app needed.</p>
+            </div>
+          </div>
+          <div class="feature reveal">
+            <span class="feature__icon feature__icon--violet"><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg></span>
+            <div>
+              <h3 class="feature__title">Status updates</h3>
+              <p class="feature__text">Check the status of your donation, request, or inquiry at any time.</p>
+            </div>
+          </div>
+          <div class="feature reveal">
+            <span class="feature__icon feature__icon--rose"><svg class="icon" aria-hidden="true"><use href="#i-nurse"/></svg></span>
+            <div>
+              <h3 class="feature__title">Managed by health workers</h3>
+              <p class="feature__text">Authorized health personnel review your information and keep facility details accurate.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════════════════ 3 · ABOUT ═════════════════════════ -->
+    <section class="section section--tint" id="about" aria-labelledby="aboutTitle">
+      <div class="container">
+        <header class="section-head reveal">
+          <p class="eyebrow">About MOWMMAS</p>
+          <h2 class="section-title" id="aboutTitle">A bridge between mothers and health facilities</h2>
+          <p class="section-lede">
+            MOWMMAS brings mothers and authorized health personnel onto one web application, so
+            information about breast milk services is easier to find and keep up to date.
+          </p>
+        </header>
+
+        <div class="roles">
+          <article class="role role--mother reveal">
+            <div class="role__head">
+              <span class="role__icon"><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg></span>
+              <div>
+                <h3 class="role__title">For mothers</h3>
+                <p class="role__sub">Find · Check · Contact</p>
+              </div>
+            </div>
+            <ul class="role__list">
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Browse participating hospitals and health centers near you</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Check facility details before calling or visiting</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Donate, request, or inquire through simple forms</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Receive SMS updates about your submission</li>
+            </ul>
+          </article>
+
+          <article class="role role--worker reveal">
+            <div class="role__head">
+              <span class="role__icon"><svg class="icon" aria-hidden="true"><use href="#i-nurse"/></svg></span>
+              <div>
+                <h3 class="role__title">For health workers</h3>
+                <p class="role__sub">Manage · Update · Notify</p>
+              </div>
+            </div>
+            <ul class="role__list">
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Keep facility details, hours, and HMB status accurate</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Review donation and request information</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Update service and availability status</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Send SMS notifications when needed</li>
+            </ul>
+          </article>
+        </div>
+
+        <!-- Important notice -->
+        <aside class="notice reveal" aria-labelledby="noticeTitle">
+          <span class="notice__icon"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg></span>
+          <div>
+            <h3 class="notice__title" id="noticeTitle">Important: MOWMMAS does not function as a Human Milk Bank.</h3>
+            <p class="notice__text">
+              It only provides <strong>information</strong>, <strong>communication</strong>, <strong>referral support</strong>,
+              and <strong>notifications</strong>. The actual collection, processing, storage, and distribution of breast milk
+              are handled by authorized health facilities and Human Milk Banks.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ═════════════════════════ 4 · FAQ ═════════════════════════ -->
+    <section class="section" id="faq" aria-labelledby="faqTitle">
+      <div class="container faq-wrap">
+        <header class="section-head section-head--left reveal">
+          <p class="eyebrow">Questions</p>
+          <h2 class="section-title" id="faqTitle">Frequently asked questions</h2>
+          <p class="section-lede">Quick answers before you get started.</p>
+        </header>
+
+        <div class="faq">
+          <details class="faq__item reveal">
+            <summary class="faq__q">Does MOWMMAS give out or store breast milk?
+              <svg class="icon icon--sm faq__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+            </summary>
+            <div class="faq__a">
+              <p>No. MOWMMAS is an information and referral service. Breast milk is collected, processed, stored, and distributed only by authorized health facilities and Human Milk Banks.</p>
+            </div>
+          </details>
+
+          <details class="faq__item reveal">
+            <summary class="faq__q">Do I need to install an app?
+              <svg class="icon icon--sm faq__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+            </summary>
+            <div class="faq__a">
+              <p>No. MOWMMAS is a web application, so you can open it in any web browser. SMS notifications arrive on any mobile phone, even without mobile data.</p>
+            </div>
+          </details>
+
+          <details class="faq__item reveal">
+            <summary class="faq__q">Who reviews the information I submit?
+              <svg class="icon icon--sm faq__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+            </summary>
+            <div class="faq__a">
+              <p>Authorized health workers or administrators of the participating health facility. They manage your donation, request, or inquiry and update its status.</p>
+            </div>
+          </details>
+
+          <details class="faq__item reveal">
+            <summary class="faq__q">How will I know about updates?
+              <svg class="icon icon--sm faq__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+            </summary>
+            <div class="faq__a">
+              <p>When a health worker makes an important update, MOWMMAS sends an SMS to the mobile number you provided. You can also check your status or contact the facility directly.</p>
+            </div>
+          </details>
+
+          <details class="faq__item reveal">
+            <summary class="faq__q">Is MOWMMAS free to use?
+              <svg class="icon icon--sm faq__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+            </summary>
+            <div class="faq__a">
+              <p>Yes. Using MOWMMAS is free. Any fees for screening or processing are set by the health facility, so please ask them directly.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════════════════ 5 · CALL TO ACTION ═════════════════════════ -->
+    <section class="cta" aria-labelledby="ctaTitle">
+      <div class="container">
+        <div class="cta__box reveal">
+          <h2 class="cta__title" id="ctaTitle">Ready to get started?</h2>
+          <p class="cta__text">Choose a service and MOWMMAS will connect you with the right health facility.</p>
+          <div class="cta__actions">
+            <a class="btn btn--light btn--lg" href="home.html" data-start>
+              Let's Get Started
+              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </a>
+            <a class="btn btn--ghost-light btn--lg" href="hospitals.html">
+              <svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>
+              Hospitals Near Me
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═════════════════════════ FOOTER ═════════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__brand">
+        <a class="brand brand--footer" href="#top" aria-label="MOWMMAS home">
+          <img class="brand__mark" src="../img/mowmmas-mark.png" alt="" width="32" height="44" />
+          <span class="brand__name">MOWMMAS</span>
+        </a>
+        <p class="footer__text">
+          Mothers Online With Milk Management, Access, and Support. Information, communication,
+          referral support, and notifications for mothers.
+        </p>
+      </div>
+
+      <nav class="footer__nav" aria-label="Footer">
+        <p class="footer__head">Services</p>
+        <ul>
+          <li><a href="hospitals.html?service=donate">Donate Breast Milk</a></li>
+          <li><a href="hospitals.html?service=request">Request Breast Milk</a></li>
+          <li><a href="inquire.html">Inquire About Services</a></li>
+          <li><a href="hospitals.html">Hospitals Near Me</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer__nav" aria-label="Learn more">
+        <p class="footer__head">Learn</p>
+        <ul>
+          <li><a href="#offers">What We Offer</a></li>
+          <li><a href="#about">About MOWMMAS</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="container footer__bottom">
+      <p>&copy; <span id="year">2026</span> MOWMMAS. All rights reserved.</p>
+      <p class="footer__disclaimer">
+        <svg class="icon icon--xs" aria-hidden="true"><use href="#i-info"/></svg>
+        MOWMMAS is not a Human Milk Bank.
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

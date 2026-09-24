@@ -1,0 +1,98 @@
+<!--
+  Modals — native <dialog class="mw-modal">. Place them after <div class="mw-app">.
+  A button trigger ships hidden (the script reveals it):
+    <button type="button" data-modal-open="update_status_modal" data-modal-context="Facility name" hidden>
+  A link trigger stays visible and follows its link without JavaScript, e.g. the sidebar's Sign out:
+    <a href="login.html?signed_out" data-modal-open="signout_modal">
+  The trigger can fill the dialog in: data-modal-heading, data-modal-context, data-modal-value and
+  data-modal-field-<id> (see assets/js/mowmmas.js).
+  Close with any [data-modal-close], Esc or a click on the backdrop; the form resets.
+  The form uses action="#" and method="dialog", so submitting closes the dialog;
+  data-toast shows that message in the page's toast region. Nothing is saved.
+  States: remove hidden from the .mw-alert--error to show the error, and add
+  is-loading to the submit button for the loading state.
+  The sign-out dialog is on every page that has the sidebar.
+-->
+<dialog class="mw-modal" id="update_status_modal" aria-modal="true" aria-labelledby="update_status_modal_title" aria-describedby="update_status_modal_context">
+  <form action="#" method="dialog" data-toast="Facility status updated.">
+    <div class="mw-modal__header">
+      <div class="mw-modal__heading">
+        <h2 id="update_status_modal_title">Update status</h2>
+        <p class="mw-lead" id="update_status_modal_context" data-modal-context-target>Hamtic Community Health Center</p>
+      </div>
+      <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+        <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="mw-modal__body">
+      <div class="mw-alert mw-alert--error" role="alert" hidden>The status couldn't be saved. Check your connection, then try again.</div>
+      <div class="mw-field">
+        <label class="mw-field__label" for="hmb_status">HMB status</label>
+        <div class="mw-select">
+          <select class="mw-input" id="hmb_status" name="hmb_status">
+            <option value="">No change</option>
+            <option value="verified">Verified HMB</option>
+            <option value="not_verified">HMB, not verified</option>
+            <option value="no">Not an HMB</option>
+          </select>
+        </div>
+      </div>
+      <div class="mw-field">
+        <label class="mw-field__label" for="donor_milk">Donor milk</label>
+        <div class="mw-select">
+          <select class="mw-input" id="donor_milk" name="donor_milk">
+            <option value="">No change</option>
+            <option value="available">Available</option>
+            <option value="limited">Limited</option>
+            <option value="not_available">Not available</option>
+            <option value="unknown">Unknown</option>
+          </select>
+        </div>
+      </div>
+      <div class="mw-field">
+        <label class="mw-field__label" for="status_note">Note</label>
+        <textarea class="mw-input" id="status_note" name="status_note" rows="3" aria-describedby="status_note_hint" placeholder="e.g. Confirmed by phone with the lactation nurse"></textarea>
+        <p class="mw-field__hint" id="status_note_hint">Optional. The note appears in the facility's update history.</p>
+      </div>
+    </div>
+    <div class="mw-modal__footer">
+      <button class="mw-btn mw-btn--outline" type="button" data-modal-close>Cancel</button>
+      <button class="mw-btn mw-btn--primary" type="submit">
+        <span class="mw-btn__label">Save status</span>
+        <span class="mw-btn__loading">
+          <svg class="mw-icon mw-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          Saving…
+        </span>
+      </button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="mw-modal" id="signout_modal" aria-modal="true" aria-labelledby="signout_modal_title" aria-describedby="signout_modal_text">
+  <div class="mw-modal__header">
+    <div class="mw-modal__heading">
+      <h2 id="signout_modal_title">Sign out of MOWMMAS?</h2>
+    </div>
+    <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+      <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+  <div class="mw-modal__body">
+    <p id="signout_modal_text">You'll need to sign in again to manage facilities and notifications.</p>
+  </div>
+  <div class="mw-modal__footer">
+    <button class="mw-btn mw-btn--outline" type="button" data-modal-close>Cancel</button>
+    <a class="mw-btn mw-btn--primary" href="login.html?signed_out">
+      <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+      Sign out
+    </a>
+  </div>
+</dialog>
+
+<!-- Toast region — one per page, after the last dialog. -->
+<div class="mw-toast-region" data-toast-region aria-live="polite">
+  <div class="mw-toast" hidden>
+    <span class="mw-toast__icon"><svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span>
+    <p data-toast-text></p>
+  </div>
+</div>

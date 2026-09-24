@@ -1,0 +1,41 @@
+rules_version = '2';
+
+// MOWMMAS · Firestore security rules
+// Paste into the Firebase console: Firestore Database > Rules > Publish.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // A signed-in user who has a record in admins/<their uid>.
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Each admin can read their own record: admins/<their Firebase Auth uid>.
+    // Nobody can create or change admin records from a website or app, so no one
+    // can make themselves an admin. Add or remove admins in the Firebase console.
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // The map data (health facilities in Antique) is public, like the map itself.
+    // Only an admin can change it.
+    match /facilities/{facilityId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /map/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Mothers' donations, requests and inquiries: submissions/<reference number>.
+    // They hold names and mobile numbers, so only an admin can read or write them.
+    // (The mother backend saves them by signing in as the admin; see User/Admin/Backend.)
+    match /submissions/{ref} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

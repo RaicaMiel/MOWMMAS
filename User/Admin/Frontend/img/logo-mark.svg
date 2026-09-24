@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- MOWMMAS mark: a milk drop holding a mother and baby.
+       Drawn for a 64x64 tile in the plum-700 token. The mother is cut out of
+       the drop, so the tile colour shows through.
+       Colours: #FBF6F8 is the bg token, #E8A6C4 is the pink-300 token. -->
+  <path fill="#FBF6F8" fill-rule="evenodd" d="M30.87 9.9A1.5 1.5 0 0 1 33.13 9.9L46.32 25.01A19 19 0 1 1 17.68 25.01Z M27.69 27.79A12.5 12.5 0 1 0 45.27 38.34A10.7 10.7 0 1 1 27.69 27.79Z M22.9 23a3.6 3.6 0 1 0 7.2 0a3.6 3.6 0 1 0-7.2 0Z"/>
+  <path fill="#E8A6C4" d="M31.46 30.69A7.7 7.7 0 1 0 42.35 37.63A6.5 6.5 0 1 1 31.46 30.69Z"/>
+  <circle fill="#E8A6C4" cx="36.75" cy="33.9" r="3.25"/>
+  <path fill="none" stroke="#E8A6C4" stroke-width="1.2" stroke-linecap="round" d="M32 14v3M30.5 15.5h3"/>
+</svg>

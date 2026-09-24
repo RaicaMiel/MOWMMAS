@@ -1,0 +1,293 @@
+/* ══════════════════════════════════════════════════════════════════
+   MOWMMAS · Mother side · Facility Information page (facility.html)
+   Loaded after style.css, app.css and map.css. Only page-specific
+   layout lives here; shared pieces (panel, kv, service-facts,
+   yn, avail, badge, data-note, state, skeleton) come from app.css.
+   ──────────────────────────────────────────────────────────────────
+   01 Page frame      04 Panels
+   02 Header band     05 Donate / Request (section + sticky bar)
+   03 Body grid       06 Loading / states
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ──────────────── 01 · PAGE FRAME ──────────────── */
+/* The whole page sits on brand tints: white is only used for cards */
+.app-main.fac-main {
+  /* one column split for the band and the details grid (desktop), so the
+     next-step card sits exactly over the Location card */
+  --fac-cols: minmax(0, 1.08fr) minmax(0, .92fr);
+  --fac-gap: 24px;
+  padding: 0;
+  background: linear-gradient(180deg, var(--bg-tint) 0%, var(--violet-50) 100%);
+}
+
+.fac-sticky[hidden],
+.fac-head__address[hidden] { display: none !important; }
+
+/* ──────────────── 02 · HEADER BAND ──────────────── */
+.fac-band {
+  position: relative;
+  padding: 14px 0 26px;
+  background:
+    radial-gradient(70% 120% at 0% 0%, var(--rose-100) 0%, transparent 62%),
+    radial-gradient(55% 120% at 100% 0%, var(--violet-100) 0%, transparent 64%),
+    linear-gradient(180deg, var(--rose-50) 0%, var(--bg-tint) 100%);
+  border-bottom: 1px solid var(--line);
+}
+
+.fac-band__grid { display: grid; gap: 20px; }
+
+.fac-band .back-link { display: flex; width: fit-content; margin-bottom: 10px; }
+.fac-head__badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.fac-head__title {
+  font-size: clamp(26px, 5.2vw, 40px);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+.fac-head__address {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin-top: 10px;
+  font-size: 16px; line-height: 1.55; color: var(--ink-700);
+}
+.fac-head__address .icon { margin-top: 3px; color: var(--rose-600); }
+.fac-head__note { max-width: 680px; margin-top: 16px; }
+.fac-head__note:empty { display: none; }
+
+/* "You came here to donate / request" context line */
+.fac-context {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin-top: 12px; padding: 8px 12px; border-radius: var(--r-md);
+  font-size: 13.5px; line-height: 1.5; border: 1px solid transparent;
+}
+.fac-context .icon { margin-top: 1px; }
+.fac-context a { font-weight: 700; text-decoration: underline; }
+.fac-context--yes     { background: var(--mint-50);  border-color: var(--mint-100);  color: var(--mint-700); }
+.fac-context--no      { background: var(--surface-2); border-color: var(--line-strong); color: var(--ink-700); }
+.fac-context--unknown { background: var(--amber-50); border-color: var(--amber-100); color: var(--ink-700); }
+.fac-context--unknown .icon { color: var(--amber-600); }
+
+@media (min-width: 960px) {
+  .fac-band { padding: 18px 0 30px; }
+  .fac-band__grid { grid-template-columns: minmax(0, 1fr); }
+  .fac-head__note { max-width: 760px; }
+}
+
+/* ──────────────── 03 · BODY GRID ──────────────── */
+.fac-body { padding: 24px 0 32px; }
+.fac-grid { display: grid; gap: 18px; }
+.fac-col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
+@media (min-width: 640px) {
+  .fac-body { padding: 32px 0 48px; }
+}
+/* Two balanced columns: the map grows so both columns end together */
+@media (min-width: 960px) {
+  .fac-body { padding: 36px 0 56px; }
+  .fac-grid { grid-template-columns: var(--fac-cols); gap: var(--fac-gap); align-items: stretch; }
+  .fac-col { gap: var(--fac-gap); }
+  /* right column: the map absorbs any extra height; left column: the
+     services panel does, in the rare case the right column is taller */
+  .fac-location { flex: 1 1 auto; display: flex; flex-direction: column; }
+  .fac-location .fac-map { flex: 1 1 auto; min-height: 300px; }
+  .fac-col:first-child > .fac-panel:last-child { flex: 1 1 auto; }
+}
+
+/* ──────────────── 04 · PANELS ──────────────── */
+.fac-panel { box-shadow: var(--sh-2); }
+.fac-icon--violet { background: var(--violet-50); color: var(--violet-600); }
+
+/* Facility information (definition list of .kv rows) */
+.fac-kv { margin: 0; }
+.fac-kv dd { margin: 0; }
+.fac-kv .kv__v { font-weight: 500; }
+
+.fac-phone { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.fac-phone__num {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 44px;
+  font-family: var(--font-ui); font-size: 17px; font-weight: 800; color: var(--rose-700);
+}
+.fac-phone__num:hover { text-decoration: underline; }
+.fac-copy { min-height: 44px; }
+
+.fac-missing {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-ui); font-weight: 700; color: var(--ink-700);
+}
+.fac-missing .icon { color: var(--amber-600); }
+.fac-hint { display: block; margin-top: 2px; font-size: 14px; line-height: 1.5; color: var(--text-mute); }
+
+.fac-contact {
+  margin-top: 18px; padding: 16px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--rose-50), var(--violet-50));
+  border: 1px solid var(--rose-100);
+}
+.fac-contact__title { margin-bottom: 10px; font-family: var(--font-ui); font-size: 14.5px; font-weight: 800; color: var(--ink-800); }
+.fac-contact__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.fac-contact__btn { flex: 1 1 140px; }
+.fac-contact .fac-hint { margin-top: 10px; }
+
+/* Breast-milk services */
+.fac-unreported {
+  display: flex; align-items: flex-start; gap: 9px;
+  margin-bottom: 12px; padding: 11px 13px; border-radius: var(--r-md);
+  background: var(--amber-50); border: 1px solid var(--amber-100);
+  font-size: 14px; line-height: 1.55; color: var(--ink-700);
+}
+.fac-unreported .icon { margin-top: 2px; color: var(--amber-600); }
+.fac-panel .service-fact__name { font-size: 15.5px; }
+/* narrow phones: give the service names more room next to the chips */
+@media (max-width: 420px) {
+  .fac-panel { padding: 18px 16px; }
+  .fac-panel .service-fact { gap: 8px; padding: 11px 12px; }
+  .fac-panel .service-fact__name { gap: 8px; font-size: 15px; }
+  .fac-panel .service-fact .yn { padding: 4px 9px 4px 7px; }
+}
+
+.fac-avail {
+  margin-top: 14px; padding: 16px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--violet-50), var(--rose-50));
+  border: 1px solid var(--violet-100);
+}
+.fac-avail__label {
+  margin-bottom: 10px;
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 800;
+  letter-spacing: .05em; text-transform: uppercase; color: var(--violet-700);
+}
+.fac-avail__row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.fac-avail__stock {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-ui); font-size: 15.5px; font-weight: 800; color: var(--ink-800);
+}
+.fac-avail__stock .icon { color: var(--violet-600); }
+.fac-avail__updated {
+  display: flex; align-items: center; gap: 6px; margin-top: 10px;
+  font-size: 13.5px; color: var(--text-mute);
+}
+
+/* Location */
+.fac-map { min-height: 320px; }
+.fac-map--off { min-height: 220px; }
+.fac-map .map-fallback { z-index: 800; background: linear-gradient(135deg, var(--rose-50), var(--violet-50)); }
+.fac-map .map-fallback .icon { color: var(--violet-600); }
+.fac-location .map-credit { margin-top: 10px; }
+/* buttons share a row when they fit, otherwise each takes the full width */
+.fac-location__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.fac-location__btn { flex: 1 1 auto; padding: 0 18px; font-size: 15px; }
+
+/* What to bring + note */
+.fac-bring { display: flex; flex-direction: column; gap: 10px; }
+.fac-bring li { display: flex; align-items: flex-start; gap: 10px; font-size: 15.5px; line-height: 1.5; color: var(--ink-800); }
+.fac-bring .icon {
+  flex: none; width: 22px; height: 22px; margin-top: 1px; padding: 4px;
+  border-radius: 50%; background: var(--mint-50); color: var(--mint-700); stroke-width: 3;
+}
+.fac-notes {
+  margin-top: 14px; padding: 13px 14px;
+  border-radius: var(--r-md); background: var(--surface-2); border: 1px solid var(--line);
+}
+.fac-bring + .fac-notes { margin-top: 16px; }
+.fac-panel > .fac-notes:nth-child(2) { margin-top: 0; }
+.fac-notes__label { margin-bottom: 4px; font-family: var(--font-ui); font-size: 13px; font-weight: 800; color: var(--text-mute); }
+.fac-notes__text { font-size: 15px; line-height: 1.6; color: var(--ink-700); }
+
+/* ──────────────── 05 · DONATE / REQUEST ──────────────── */
+/* "What would you like to do here?" — the two main actions, straight to the form.
+   Rose → violet band (like the landing page) with white choice buttons. */
+.fac-choose {
+  position: relative; overflow: hidden;
+  display: grid; gap: 20px;
+  margin-top: 24px; padding: 24px 20px;
+  border-radius: var(--r-xl);
+  background: linear-gradient(135deg, var(--rose-500) 0%, var(--rose-600) 45%, var(--violet-600) 100%);
+  box-shadow: 0 26px 50px -30px rgba(124, 58, 237, .8);
+  scroll-margin-top: calc(var(--header-h) + 16px);
+}
+.fac-choose::before {
+  content: ""; position: absolute; right: -80px; top: -120px; width: 280px; height: 280px;
+  border-radius: 50%; background: rgba(255, 255, 255, .09); pointer-events: none;
+}
+.fac-choose__copy, .fac-choose__actions { position: relative; min-width: 0; }
+.fac-choose__title { color: var(--surface); font-size: clamp(21px, 4.6vw, 26px); font-weight: 800; letter-spacing: -.02em; }
+.fac-choose__text { max-width: 520px; margin-top: 6px; font-size: 15px; line-height: 1.6; color: rgba(255, 255, 255, .92); }
+.fac-choose .fac-context { max-width: 520px; margin-top: 14px; background: rgba(255, 255, 255, .95); }
+
+.fac-choose__actions { display: grid; gap: 10px; }
+.fac-choice {
+  display: flex; align-items: center; gap: 14px;
+  min-height: 72px; padding: 12px 16px 12px 12px;
+  border-radius: var(--r-lg);
+  background: var(--surface); border: 2px solid transparent; color: var(--ink-900);
+  box-shadow: 0 12px 24px -16px rgba(23, 32, 60, .55);
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t) var(--ease), border-color var(--t-fast) var(--ease);
+}
+a.fac-choice:hover { color: var(--ink-900); transform: translateY(-2px); box-shadow: 0 16px 30px -16px rgba(23, 32, 60, .6); }
+a.fac-choice:active { transform: translateY(0) scale(.99); }
+.fac-choice.is-suggested { border-color: var(--rose-300); box-shadow: 0 0 0 4px rgba(255, 255, 255, .35), 0 12px 24px -16px rgba(23, 32, 60, .55); }
+.fac-choice__icon {
+  flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px;
+  background: linear-gradient(140deg, var(--rose-100), var(--violet-100)); color: var(--rose-700);
+}
+.fac-choice__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.fac-choice__label { font-family: var(--font-ui); font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+.fac-choice__sub { font-size: 13.5px; line-height: 1.45; color: var(--text-mute); }
+.fac-choice__go { flex: none; color: var(--rose-600); transition: transform var(--t-fast) var(--ease); }
+a.fac-choice:hover .fac-choice__go { transform: translateX(3px); }
+/* a service this facility says it does not offer: visible, not clickable */
+.fac-choice.is-off { background: rgba(255, 255, 255, .78); box-shadow: none; }
+.fac-choice.is-off .fac-choice__icon { background: var(--surface-2); color: var(--ink-400); }
+.fac-choice.is-off .fac-choice__label { color: var(--ink-500); }
+.fac-choice.is-off a { color: var(--rose-700); font-weight: 700; text-decoration: underline; }
+
+.fac-choose__ask {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; margin-top: 2px; padding: 0 12px; border-radius: var(--r-pill);
+  font-family: var(--font-ui); font-size: 14.5px; font-weight: 700; color: var(--surface);
+}
+.fac-choose__ask:hover { color: var(--surface); background: rgba(255, 255, 255, .14); }
+
+@media (min-width: 760px) {
+  .fac-choose { padding: 28px 32px; }
+  .fac-choose__actions { grid-template-columns: 1fr 1fr; }
+  .fac-choose__ask { grid-column: 1 / -1; }
+}
+@media (min-width: 1100px) {
+  .fac-choose { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; gap: 32px; padding: 32px 36px; }
+}
+
+/* Phones / tablets: sticky action bar. It sits at the end of <main>, so
+   it keeps its own space and never covers the last content or the footer. */
+.fac-sticky {
+  position: sticky; bottom: 0; z-index: 40;
+  padding: 10px 0 calc(10px + env(safe-area-inset-bottom, 0px));
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -12px 28px -20px rgba(23, 32, 60, .45);
+}
+.fac-sticky__inner { display: flex; }
+.fac-sticky .btn { min-height: 52px; max-width: 560px; margin-inline: auto; }
+@media (min-width: 960px) { .fac-sticky { display: none; } }
+@media (max-width: 959px) {
+  /* keep toasts above the sticky bar */
+  .toast-host { bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* ──────────────── 06 · LOADING / STATES ──────────────── */
+.fac-skel { display: block; min-height: 0; }
+.fac-skel--chip { display: inline-block; width: 112px; height: 28px; border-radius: var(--r-pill); }
+.fac-skel--title { width: min(520px, 92%); height: 40px; margin-top: 4px; border-radius: 12px; }
+.fac-skel--line { width: min(360px, 72%); height: 20px; border-radius: 8px; }
+.fac-skel--panel { height: 330px; }
+.fac-skel--panel-lg { height: 430px; }
+.fac-skel--map { flex: 1 1 auto; min-height: 380px; }
+.fac-band .skeleton {
+  background-image: linear-gradient(90deg, var(--rose-100) 25%, var(--rose-50) 37%, var(--rose-100) 63%);
+}
+.fac-body .skeleton {
+  background-image: linear-gradient(90deg, var(--surface) 25%, var(--rose-50) 37%, var(--surface) 63%);
+  border: 1px solid var(--line);
+}
+
+.fac-state { max-width: 640px; margin: 0 auto; }
+.fac-state .state { border-style: solid; border-color: var(--rose-100); box-shadow: var(--sh-2); }
+.fac-state .state:not(.state--error) .state__icon { background: var(--rose-50); color: var(--rose-600); }

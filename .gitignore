@@ -1,0 +1,15 @@
+# Private: PhilSMS key and the admin password
+.env
+.env.*
+
+# Mothers' data and the server's own state (names, mobile numbers, SMS sent)
+User/Admin/Backend/data/
+User/Mother/Backend/data/submissions.json
+User/Mother/Backend/data/notifications.json
+User/Mother/Backend/data/sms-log.json
+User/Mother/Backend/data/sms-templates.json
+
+# A copy of the Facilities page; the server downloads it from Firestore again
+User/Mother/Backend/data/firestore-facilities.json
+
+node_modules/

@@ -1,0 +1,87 @@
+<!--
+  Sidebar — repeated on every admin page, byte-identical. Keep this copy in sync.
+  Place it as the first child of <div class="mw-app">, followed by the backdrop.
+  The current page is highlighted by CSS from <body data-page="…">, which must
+  match the link's data-nav (dashboard, facilities, donation-inquiries,
+  milk-requests, records-reports, sms-notifications, settings), so nothing in
+  this markup changes from page to page.
+-->
+<aside class="mw-sidebar" id="sidebar" aria-label="Sidebar">
+  <div class="mw-sidebar__header">
+    <div class="mw-brand mw-brand--sm">
+      <div class="mw-brand__mark">
+        <img class="mw-logo-mark" src="../img/mowmmas-mark.png" alt="" width="128" height="176">
+      </div>
+      <p class="mw-brand__name">MOWMMAS</p>
+    </div>
+    <button class="mw-icon-btn mw-icon-btn--inverse mw-sidebar__close" type="button" data-drawer-close aria-label="Close menu" hidden>
+      <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+
+  <nav class="mw-nav" aria-label="Main">
+    <ul class="mw-nav__list">
+      <li>
+        <a class="mw-nav__link" href="dashboard.html" data-nav="dashboard">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a class="mw-nav__link" href="facilities.html" data-nav="facilities">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+          Facilities
+        </a>
+      </li>
+      <li>
+        <a class="mw-nav__link" href="donation-inquiries.html" data-nav="donation-inquiries">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/><path d="m18 15-2-2"/><path d="m15 18-2-2"/></svg>
+          Donation inquiries
+        </a>
+      </li>
+      <li>
+        <a class="mw-nav__link" href="milk-requests.html" data-nav="milk-requests">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+          Milk requests
+        </a>
+      </li>
+      <li>
+        <a class="mw-nav__link" href="records-reports.html" data-nav="records-reports">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          Records &amp; reports
+        </a>
+      </li>
+      <li>
+        <a class="mw-nav__link" href="sms-notifications.html" data-nav="sms-notifications">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          SMS notifications
+        </a>
+      </li>
+      <li>
+        <a class="mw-nav__link" href="settings.html" data-nav="settings">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Settings
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="mw-sidebar__account">
+    <p class="mw-sidebar__account-label">Signed in as</p>
+    <div class="mw-user">
+      <span class="mw-user__avatar">
+        <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </span>
+      <div>
+        <p class="mw-user__name"></p>
+        <p class="mw-user__role"></p>
+      </div>
+    </div>
+    <a class="mw-sidebar__signout" href="login.html?signed_out" data-modal-open="signout_modal">
+      <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+      Sign out
+    </a>
+  </div>
+</aside>
+
+<div class="mw-drawer-backdrop" data-drawer-close hidden></div>

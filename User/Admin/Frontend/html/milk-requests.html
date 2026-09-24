@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Milk requests · MOWMMAS Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../img/mowmmas-favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="../img/mowmmas-favicon-64.png">
+  <link rel="apple-touch-icon" href="../img/mowmmas-favicon-180.png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="../CSS/mowmmas.css">
+  <script src="../JS/mowmmas.js"></script>
+  <script type="module" src="../JS/milk-requests.js"></script>
+</head>
+<body data-page="milk-requests">
+  <a class="mw-skip-link" href="#main">Skip to main content</a>
+
+  <div class="mw-app">
+    <aside class="mw-sidebar" id="sidebar" aria-label="Sidebar">
+      <div class="mw-sidebar__header">
+        <div class="mw-brand mw-brand--sm">
+          <div class="mw-brand__mark">
+            <img class="mw-logo-mark" src="../img/mowmmas-mark.png" alt="" width="128" height="176">
+          </div>
+          <p class="mw-brand__name">MOWMMAS</p>
+        </div>
+        <button class="mw-icon-btn mw-icon-btn--inverse mw-sidebar__close" type="button" data-drawer-close aria-label="Close menu" hidden>
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <nav class="mw-nav" aria-label="Main">
+        <ul class="mw-nav__list">
+          <li>
+            <a class="mw-nav__link" href="dashboard.html" data-nav="dashboard">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="facilities.html" data-nav="facilities">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+              Facilities
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="donation-inquiries.html" data-nav="donation-inquiries">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/><path d="m18 15-2-2"/><path d="m15 18-2-2"/></svg>
+              Donation inquiries
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="milk-requests.html" data-nav="milk-requests">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+              Milk requests
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="records-reports.html" data-nav="records-reports">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+              Records &amp; reports
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="sms-notifications.html" data-nav="sms-notifications">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              SMS notifications
+            </a>
+          </li>
+          <li>
+            <a class="mw-nav__link" href="settings.html" data-nav="settings">
+              <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+              Settings
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="mw-sidebar__account">
+        <p class="mw-sidebar__account-label">Signed in as</p>
+        <div class="mw-user">
+          <span class="mw-user__avatar">
+            <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <div>
+            <p class="mw-user__name"></p>
+            <p class="mw-user__role"></p>
+          </div>
+        </div>
+        <a class="mw-sidebar__signout" href="login.html?signed_out" data-modal-open="signout_modal">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          Sign out
+        </a>
+      </div>
+    </aside>
+
+    <div class="mw-drawer-backdrop" data-drawer-close hidden></div>
+
+    <div class="mw-app__body">
+      <header class="mw-topbar">
+        <button class="mw-icon-btn mw-topbar__menu" type="button" data-drawer-toggle aria-controls="sidebar" aria-expanded="false" aria-label="Open menu" hidden>
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>
+        </button>
+        <nav class="mw-breadcrumb" aria-label="Breadcrumb">
+          <ol class="mw-breadcrumb__list">
+            <li><a class="mw-breadcrumb__link" href="dashboard.html">Admin workspace</a></li>
+            <li class="mw-breadcrumb__current" aria-current="page">Milk requests</li>
+          </ol>
+        </nav>
+        <div class="mw-topbar__actions">
+          <a class="mw-icon-btn mw-icon-btn--outline" href="sms-notifications.html" aria-label="Notifications">
+            <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          </a>
+        </div>
+      </header>
+
+      <main class="mw-page" id="main">
+        <header class="mw-page-header">
+          <h1>Milk requests</h1>
+          <p class="mw-lead">Refer mothers requesting donor milk or breastfeeding support to facilities.</p>
+        </header>
+
+        <div class="mw-alert mw-alert--error" role="alert" hidden>Milk requests couldn't be loaded. Refresh the page to try again.</div>
+
+        <section class="mw-card mw-card--flush" aria-labelledby="request_list_title">
+          <h2 class="mw-visually-hidden" id="request_list_title">Request list</h2>
+          <form class="mw-filters mw-filters--search" action="#" role="search" aria-label="Search requests">
+            <div class="mw-field">
+              <label class="mw-visually-hidden" for="request_search">Search requests</label>
+              <div class="mw-input-group">
+                <span class="mw-input-group__icon"><svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+                <input class="mw-input" id="request_search" name="search" type="search" placeholder="Search requests…" autocomplete="off">
+              </div>
+            </div>
+          </form>
+
+          <div class="mw-table-wrap">
+            <table class="mw-table mw-table--wide">
+              <caption class="mw-visually-hidden">Milk requests</caption>
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Mother</th>
+                  <th scope="col">Barangay</th>
+                  <th scope="col">Need</th>
+                  <th class="mw-table__main" scope="col">Facility referred to</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Status</th>
+                  <th class="mw-table__js" scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mw-empty" hidden>
+            <p class="mw-empty__title">No requests match your search</p>
+            <p class="mw-empty__text">Check the spelling of the name, or clear the search to see every request.</p>
+            <a class="mw-btn mw-btn--secondary mw-btn--sm" href="milk-requests.html">Clear search</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="mw-modal" id="signout_modal" aria-modal="true" aria-labelledby="signout_modal_title" aria-describedby="signout_modal_text">
+    <div class="mw-modal__header">
+      <div class="mw-modal__heading">
+        <h2 id="signout_modal_title">Sign out of MOWMMAS?</h2>
+      </div>
+      <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+        <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="mw-modal__body">
+      <p id="signout_modal_text">You'll need to sign in again to manage facilities and notifications.</p>
+    </div>
+    <div class="mw-modal__footer">
+      <button class="mw-btn mw-btn--outline" type="button" data-modal-close>Cancel</button>
+      <a class="mw-btn mw-btn--primary" href="login.html?signed_out">
+        <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+        Sign out
+      </a>
+    </div>
+  </dialog>
+
+  <dialog class="mw-modal" id="refer_modal" aria-modal="true" aria-labelledby="refer_modal_title" aria-describedby="refer_modal_context">
+    <form action="#" method="dialog" data-validate>
+      <div class="mw-modal__header">
+        <div class="mw-modal__heading">
+          <h2 id="refer_modal_title">Refer to a facility</h2>
+          <p class="mw-lead" id="refer_modal_context" data-modal-context-target></p>
+        </div>
+        <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="mw-modal__body">
+        <div class="mw-alert mw-alert--error" role="alert" hidden>The referral couldn't be saved. Check your connection, then try again.</div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="refer_facility">Facility</label>
+          <div class="mw-select">
+            <select class="mw-input" id="refer_facility" name="refer_facility" required aria-describedby="refer_facility_hint refer_facility_error">
+              <option value="" disabled selected>Choose a facility</option>
+            </select>
+          </div>
+          <p class="mw-field__hint" id="refer_facility_hint">Donor milk shows what each facility last reported. The facility confirms it with the mother.</p>
+          <p class="mw-field__error" id="refer_facility_error" hidden>Choose a facility.</p>
+        </div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="refer_note">Note</label>
+          <textarea class="mw-input" id="refer_note" name="refer_note" rows="3" aria-describedby="refer_note_hint" placeholder="e.g. Can visit on weekday mornings"></textarea>
+          <p class="mw-field__hint" id="refer_note_hint">Optional. Don't include medical details.</p>
+        </div>
+      </div>
+      <div class="mw-modal__footer">
+        <button class="mw-btn mw-btn--outline" type="button" data-modal-close>Cancel</button>
+        <button class="mw-btn mw-btn--primary" type="submit">
+          <span class="mw-btn__label">Save referral</span>
+          <span class="mw-btn__loading">
+            <svg class="mw-icon mw-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Saving…
+          </span>
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="mw-modal" id="send_modal" aria-modal="true" aria-labelledby="send_modal_title">
+    <form action="#" method="dialog">
+      <div class="mw-modal__header">
+        <div class="mw-modal__heading">
+          <h2 id="send_modal_title">Send notification</h2>
+        </div>
+        <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="mw-modal__body">
+        <div class="mw-alert mw-alert--error" role="alert" hidden>The SMS couldn't be sent. Check the mobile number, then try again.</div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="send_type">Notification type</label>
+          <div class="mw-select">
+            <select class="mw-input" id="send_type" name="send_type">
+              <option value="update">Update</option>
+              <option value="referral">Referral</option>
+              <option value="reminder">Reminder</option>
+            </select>
+          </div>
+        </div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="send_recipient">Recipients</label>
+          <div class="mw-select">
+            <select class="mw-input" id="send_recipient" name="send_recipient">
+            </select>
+          </div>
+        </div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="send_message">Message</label>
+          <textarea class="mw-input" id="send_message" name="send_message" rows="5" maxlength="160" aria-describedby="send_message_count"></textarea>
+          <p class="mw-field__count" id="send_message_count" data-count-for="send_message">0 / 160</p>
+        </div>
+        <div class="mw-preview">
+          <p class="mw-preview__title">SMS preview</p>
+          <p class="mw-preview__text" data-preview-for="send_message"></p>
+        </div>
+      </div>
+      <div class="mw-modal__footer">
+        <button class="mw-btn mw-btn--primary mw-btn--block" type="submit">
+          <span class="mw-btn__label">
+            <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>
+            Send SMS
+          </span>
+          <span class="mw-btn__loading">
+            <svg class="mw-icon mw-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Sending…
+          </span>
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="mw-modal" id="submission_modal" aria-modal="true" aria-labelledby="submission_modal_title" aria-describedby="submission_modal_context">
+    <form action="#" method="dialog">
+      <div class="mw-modal__header">
+        <div class="mw-modal__heading">
+          <h2 id="submission_modal_title">Submission</h2>
+          <p class="mw-lead" id="submission_modal_context" data-modal-context-target></p>
+        </div>
+        <button class="mw-icon-btn mw-modal__close" type="button" data-modal-close aria-label="Close">
+          <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="mw-modal__body">
+        <div class="mw-alert mw-alert--error" role="alert" hidden>The status couldn't be saved. Check your connection, then try again.</div>
+        <div class="mw-preview" data-submission-text hidden>
+          <p class="mw-preview__title"></p>
+          <p class="mw-preview__text"></p>
+        </div>
+        <ul class="mw-list" data-submission-facts></ul>
+        <div class="mw-field" data-submission-history hidden>
+          <h3 class="mw-field__label">Status history</h3>
+          <ul class="mw-list"></ul>
+        </div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="submission_status">Status</label>
+          <div class="mw-select">
+            <select class="mw-input" id="submission_status" name="submission_status" aria-describedby="submission_status_hint">
+            </select>
+          </div>
+          <p class="mw-field__hint" id="submission_status_hint"></p>
+        </div>
+        <div class="mw-field">
+          <label class="mw-field__label" for="submission_message">Message for the mother</label>
+          <textarea class="mw-input" id="submission_message" name="submission_message" rows="3" maxlength="500" aria-describedby="submission_message_hint" placeholder="e.g. Please call Antique Medical Center on Monday morning."></textarea>
+          <p class="mw-field__hint" id="submission_message_hint">Optional. She sees it on Track Submission and in the SMS she gets about this update. Don't include medical details.</p>
+        </div>
+      </div>
+      <div class="mw-modal__footer">
+        <button class="mw-btn mw-btn--outline" type="button" data-modal-close>Cancel</button>
+        <button class="mw-btn mw-btn--primary" type="submit">
+          <span class="mw-btn__label">Save status</span>
+          <span class="mw-btn__loading">
+            <svg class="mw-icon mw-spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Saving…
+          </span>
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="mw-toast-region" data-toast-region aria-live="polite">
+    <div class="mw-toast" hidden>
+      <span class="mw-toast__icon"><svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <p data-toast-text></p>
+    </div>
+  </div>
+</body>
+</html>

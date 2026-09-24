@@ -1,0 +1,707 @@
+{
+  "fetchedAt": "2026-09-23T23:51:02.958Z",
+  "source": {
+    "name": "OpenStreetMap",
+    "attribution": "© OpenStreetMap contributors",
+    "license": "ODbL 1.0",
+    "licenseUrl": "https://www.openstreetmap.org/copyright",
+    "api": "Overpass API"
+  },
+  "province": "Antique",
+  "stats": {
+    "elements": 21,
+    "unnamedSkipped": 2,
+    "duplicatesMerged": 1
+  },
+  "municipalities": [
+    {
+      "name": "Anini-y",
+      "center": {
+        "lat": 10.431129,
+        "lon": 121.926053
+      }
+    },
+    {
+      "name": "Barbaza",
+      "center": {
+        "lat": 11.195319,
+        "lon": 122.037732
+      }
+    },
+    {
+      "name": "Belison",
+      "center": {
+        "lat": 10.837462,
+        "lon": 121.962146
+      }
+    },
+    {
+      "name": "Bugasong",
+      "center": {
+        "lat": 11.044147,
+        "lon": 122.06469
+      }
+    },
+    {
+      "name": "Caluya",
+      "center": {
+        "lat": 11.931067,
+        "lon": 121.547669
+      }
+    },
+    {
+      "name": "Culasi",
+      "center": {
+        "lat": 11.425799,
+        "lon": 122.056102
+      }
+    },
+    {
+      "name": "Hamtic",
+      "center": {
+        "lat": 10.700359,
+        "lon": 121.980815
+      }
+    },
+    {
+      "name": "Laua-an",
+      "center": {
+        "lat": 11.142951,
+        "lon": 122.041603
+      }
+    },
+    {
+      "name": "Libertad",
+      "center": {
+        "lat": 11.769388,
+        "lon": 121.918824
+      }
+    },
+    {
+      "name": "Pandan",
+      "center": {
+        "lat": 11.719899,
+        "lon": 122.094577
+      }
+    },
+    {
+      "name": "Patnongon",
+      "center": {
+        "lat": 10.914371,
+        "lon": 121.99534
+      }
+    },
+    {
+      "name": "San Jose de Buenavista",
+      "center": {
+        "lat": 10.744099,
+        "lon": 121.941027
+      }
+    },
+    {
+      "name": "San Remigio",
+      "center": {
+        "lat": 10.831508,
+        "lon": 122.088703
+      }
+    },
+    {
+      "name": "Sebaste",
+      "center": {
+        "lat": 11.58969,
+        "lon": 122.095859
+      }
+    },
+    {
+      "name": "Sibalom",
+      "center": {
+        "lat": 10.788905,
+        "lon": 122.017534
+      }
+    },
+    {
+      "name": "Tibiao",
+      "center": {
+        "lat": 11.288628,
+        "lon": 122.034261
+      }
+    },
+    {
+      "name": "Tobias Fornier",
+      "center": {
+        "lat": 10.516262,
+        "lon": 121.945127
+      }
+    },
+    {
+      "name": "Valderrama",
+      "center": {
+        "lat": 11.001852,
+        "lon": 122.129408
+      }
+    }
+  ],
+  "facilities": [
+    {
+      "id": "osm-w290801272",
+      "osm": {
+        "type": "way",
+        "id": 290801272,
+        "url": "https://www.openstreetmap.org/way/290801272"
+      },
+      "name": "Angel Salazar Memorial General Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 10.75374,
+      "lon": 121.942424,
+      "municipality": "San Jose de Buenavista",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": "Tobias Fornier St.",
+        "barangay": null,
+        "municipality": "San Jose de Buenavista",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Tobias Fornier St., San Jose de Buenavista, Antique",
+      "phone": "+6336 5407133",
+      "email": "amsgh.email@gmail.com",
+      "website": null,
+      "openingHours": null,
+      "operator": "Province of Antique",
+      "operatorType": "government",
+      "emergency": "yes",
+      "alsoMappedAs": [
+        "https://www.openstreetmap.org/node/13142018020"
+      ]
+    },
+    {
+      "id": "osm-w679946834",
+      "osm": {
+        "type": "way",
+        "id": 679946834,
+        "url": "https://www.openstreetmap.org/way/679946834"
+      },
+      "name": "Anini-y Polyclinic and Primary Health Care Facility",
+      "kind": "health_center",
+      "kindLabel": "Rural health unit / primary care",
+      "lat": 10.433642,
+      "lon": 121.927525,
+      "municipality": "Anini-y",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": null,
+        "barangay": null,
+        "municipality": "Anini-y",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Anini-y, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": "Anini-y Municipal Health Office",
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-w246912651",
+      "osm": {
+        "type": "way",
+        "id": 246912651,
+        "url": "https://www.openstreetmap.org/way/246912651"
+      },
+      "name": "Antique Medical Center",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 10.737064,
+      "lon": 121.951455,
+      "municipality": "San Jose de Buenavista",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": null,
+        "barangay": null,
+        "municipality": "San Jose de Buenavista",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "San Jose de Buenavista, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": "yes"
+    },
+    {
+      "id": "osm-w301783260",
+      "osm": {
+        "type": "way",
+        "id": 301783260,
+        "url": "https://www.openstreetmap.org/way/301783260"
+      },
+      "name": "Bugasong Medicare Community Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 11.02278,
+      "lon": 122.054409,
+      "municipality": "Bugasong",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": "Antique-Aklan Road",
+        "barangay": "Ilaures",
+        "municipality": "Bugasong",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Antique-Aklan Road, Brgy. Ilaures, Bugasong, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": "yes"
+    },
+    {
+      "id": "osm-w314458340",
+      "osm": {
+        "type": "way",
+        "id": 314458340,
+        "url": "https://www.openstreetmap.org/way/314458340"
+      },
+      "name": "Culasi District Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 11.424195,
+      "lon": 122.061527,
+      "municipality": "Culasi",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": "Mariano Dioso Street",
+        "barangay": null,
+        "municipality": "Culasi",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Mariano Dioso Street, Culasi, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": "yes"
+    },
+    {
+      "id": "osm-w1469345144",
+      "osm": {
+        "type": "way",
+        "id": 1469345144,
+        "url": "https://www.openstreetmap.org/way/1469345144"
+      },
+      "name": "Hamtic Primary Care Facility",
+      "kind": "health_center",
+      "kindLabel": "Rural health unit / primary care",
+      "lat": 10.706164,
+      "lon": 121.975684,
+      "municipality": "Hamtic",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": null,
+        "barangay": null,
+        "municipality": "Hamtic",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Hamtic, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": "Hamtic Municipal Health Office",
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-w659451108",
+      "osm": {
+        "type": "way",
+        "id": 659451108,
+        "url": "https://www.openstreetmap.org/way/659451108"
+      },
+      "name": "Justice Calixto O. Zaldivar Memorial Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 11.730238,
+      "lon": 122.09048,
+      "municipality": "Pandan",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": "Antique – Aklan Road",
+        "barangay": null,
+        "municipality": "Pandan",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Antique – Aklan Road, Pandan, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-w904635924",
+      "osm": {
+        "type": "way",
+        "id": 904635924,
+        "url": "https://www.openstreetmap.org/way/904635924"
+      },
+      "name": "Libertad Municipal Mini Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 11.769028,
+      "lon": 121.917947,
+      "municipality": "Libertad",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": null,
+        "barangay": null,
+        "municipality": "Libertad",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Libertad, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-n6038191291",
+      "osm": {
+        "type": "node",
+        "id": 6038191291,
+        "url": "https://www.openstreetmap.org/node/6038191291"
+      },
+      "name": "MedicPro",
+      "kind": "clinic",
+      "kindLabel": "Clinic",
+      "lat": 10.744561,
+      "lon": 121.94109,
+      "municipality": "San Jose de Buenavista",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": null,
+        "barangay": null,
+        "municipality": "San Jose de Buenavista",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "San Jose de Buenavista, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-w168981811",
+      "osm": {
+        "type": "way",
+        "id": 168981811,
+        "url": "https://www.openstreetmap.org/way/168981811"
+      },
+      "name": "Medicus Medical Clinic",
+      "kind": "clinic",
+      "kindLabel": "Clinic",
+      "lat": 10.755665,
+      "lon": 121.941827,
+      "municipality": "San Jose de Buenavista",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": null,
+        "barangay": null,
+        "municipality": "San Jose de Buenavista",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "San Jose de Buenavista, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-w683296805",
+      "osm": {
+        "type": "way",
+        "id": 683296805,
+        "url": "https://www.openstreetmap.org/way/683296805"
+      },
+      "name": "Pedro Gindap Municipal Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 11.202252,
+      "lon": 122.042571,
+      "municipality": "Barbaza",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": "Iloilo – Antique Road",
+        "barangay": "Lisub Norte",
+        "municipality": "Barbaza",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Iloilo – Antique Road, Brgy. Lisub Norte, Barbaza, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-w877749421",
+      "osm": {
+        "type": "way",
+        "id": 877749421,
+        "url": "https://www.openstreetmap.org/way/877749421"
+      },
+      "name": "Ramon Maza, Sr. Memorial District Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 10.777544,
+      "lon": 122.019817,
+      "municipality": "Sibalom",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": "Hamtic - Bia-an - Egaña - Sibalom Road",
+        "barangay": null,
+        "municipality": "Sibalom",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Hamtic - Bia-an - Egaña - Sibalom Road, Sibalom, Antique",
+      "phone": null,
+      "email": "rmsmdh@gmail.com",
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-w1298491542",
+      "osm": {
+        "type": "way",
+        "id": 1298491542,
+        "url": "https://www.openstreetmap.org/way/1298491542"
+      },
+      "name": "San Remigio Rural Health Unit",
+      "kind": "health_center",
+      "kindLabel": "Rural health unit / primary care",
+      "lat": 10.830067,
+      "lon": 122.090245,
+      "municipality": "San Remigio",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": null,
+        "barangay": null,
+        "municipality": "San Remigio",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "San Remigio, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": "San Remigio Municipal Health Office",
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-w810345433",
+      "osm": {
+        "type": "way",
+        "id": 810345433,
+        "url": "https://www.openstreetmap.org/way/810345433"
+      },
+      "name": "Santa Romana-Yson Memorial Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 11.049019,
+      "lon": 122.067499,
+      "municipality": "Bugasong",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": "Antique - Aklan Road",
+        "barangay": null,
+        "municipality": "Bugasong",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Antique - Aklan Road, Bugasong, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-w1453236096",
+      "osm": {
+        "type": "way",
+        "id": 1453236096,
+        "url": "https://www.openstreetmap.org/way/1453236096"
+      },
+      "name": "Sebaste Community Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 11.588048,
+      "lon": 122.094678,
+      "municipality": "Sebaste",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": "Antique-Aklan Road",
+        "barangay": null,
+        "municipality": "Sebaste",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Antique-Aklan Road, Sebaste, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": "yes"
+    },
+    {
+      "id": "osm-w276867743",
+      "osm": {
+        "type": "way",
+        "id": 276867743,
+        "url": "https://www.openstreetmap.org/way/276867743"
+      },
+      "name": "Tobias Fornier Memorial Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 10.500582,
+      "lon": 121.948043,
+      "municipality": "Tobias Fornier",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": null,
+        "barangay": null,
+        "municipality": "Tobias Fornier",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Tobias Fornier, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-n914812172",
+      "osm": {
+        "type": "node",
+        "id": 914812172,
+        "url": "https://www.openstreetmap.org/node/914812172"
+      },
+      "name": "Tugon Medical Clinic and Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 11.718593,
+      "lon": 122.093407,
+      "municipality": "Pandan",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": null,
+        "barangay": null,
+        "municipality": "Pandan",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Pandan, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": null
+    },
+    {
+      "id": "osm-w308779680",
+      "osm": {
+        "type": "way",
+        "id": 308779680,
+        "url": "https://www.openstreetmap.org/way/308779680"
+      },
+      "name": "Valderrama Municipal Hospital",
+      "kind": "hospital",
+      "kindLabel": "Hospital",
+      "lat": 11.002171,
+      "lon": 122.126785,
+      "municipality": "Valderrama",
+      "municipalityMatch": "boundary",
+      "province": "Antique",
+      "address": {
+        "street": null,
+        "barangay": null,
+        "municipality": "Valderrama",
+        "province": "Antique",
+        "postcode": null
+      },
+      "addressText": "Valderrama, Antique",
+      "phone": null,
+      "email": null,
+      "website": null,
+      "openingHours": null,
+      "operator": null,
+      "operatorType": null,
+      "emergency": null
+    }
+  ]
+}

@@ -1,0 +1,399 @@
+/* ══════════════════════════════════════════════════════════════════
+   MOWMMAS · Mother side · Track your submission (status.html)
+   Loaded after style.css and app.css (panel, field, input,
+   status-pill, badge, state, skeleton, btn come from those files).
+   ──────────────────────────────────────────────────────────────────
+   01 Page frame & header band   04 Result: summary
+   02 Look-up form               05 Result: history & messages
+   03 This device / hints        06 Status guide & states
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ──────────────── 01 · PAGE FRAME & HEADER BAND ──────────────── */
+/* The page sits on brand tints; white is only used for cards */
+.app-main.trk-main {
+  padding: 0 0 40px;
+  background: linear-gradient(180deg, var(--bg-tint) 0%, var(--violet-50) 100%);
+}
+@media (min-width: 640px) { .app-main.trk-main { padding-bottom: 64px; } }
+
+.trk-band {
+  padding: 22px 0 28px;
+  background:
+    radial-gradient(60% 120% at 0% 0%, var(--rose-100) 0%, transparent 62%),
+    radial-gradient(55% 120% at 100% 0%, var(--violet-100) 0%, transparent 64%),
+    linear-gradient(180deg, var(--rose-50) 0%, var(--bg-tint) 100%);
+  border-bottom: 1px solid var(--line);
+}
+
+.trk-hero {
+  display: grid; gap: 18px;
+  grid-template-columns: minmax(0, 1fr); /* lets long names truncate instead of widening the page */
+  grid-template-areas: "intro" "form" "aside";
+}
+.trk-intro { grid-area: intro; }
+.trk-form  { grid-area: form; }
+.trk-aside { grid-area: aside; }
+.trk-intro .page-lede { max-width: 540px; }
+
+@media (min-width: 1024px) {
+  .trk-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
+    grid-template-areas: "intro form" "aside form";
+    grid-template-rows: auto 1fr;
+    column-gap: 40px; row-gap: 20px;
+    align-items: start;
+  }
+  /* The left column ends exactly where the look-up card ends: the aside never makes the band taller
+     (size containment), it fills whatever the card leaves, and its one card stretches to the bottom. */
+  .trk-aside { align-self: stretch; contain: size; display: flex; flex-direction: column; }
+  .trk-aside > * { flex: 1 1 auto; min-height: 0; }
+}
+
+.trk-body { padding-top: 24px; }
+@media (min-width: 640px) { .trk-body { padding-top: 32px; } }
+
+/* ──────────────── 02 · LOOK-UP FORM ──────────────── */
+.trk-form {
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-3);
+}
+@media (min-width: 640px) { .trk-form { padding: 26px 28px; } }
+
+.trk-form__title {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 18px;
+  font-size: 19px; font-weight: 800;
+}
+.trk-form__icon {
+  flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(140deg, var(--rose-100), var(--violet-100)); color: var(--rose-700);
+}
+.trk-form .field + .field { margin-top: 16px; }
+.trk-form .field__help { margin-top: -2px; }
+.trk-ref-input { text-transform: uppercase; letter-spacing: .06em; font-family: var(--font-ui); font-weight: 700; }
+.trk-ref-input::placeholder { text-transform: none; letter-spacing: .04em; font-weight: 500; }
+.trk-form__btn { margin-top: 20px; }
+
+/* ──────────────── 03 · THIS DEVICE / HINTS ──────────────── */
+.trk-hint {
+  padding: 18px 20px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--rose-50) 100%);
+  border: 1px solid var(--rose-100);
+}
+.trk-hint__title {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-ui); font-size: 15px; font-weight: 800; color: var(--ink-900);
+}
+.trk-hint__title .icon { color: var(--violet-600); }
+.trk-hint__list { display: grid; gap: 8px; margin-top: 10px; }
+.trk-hint__list li { display: flex; align-items: flex-start; gap: 8px; font-size: 14.5px; line-height: 1.5; color: var(--ink-700); }
+.trk-hint__list .icon {
+  flex: none; width: 18px; height: 18px; margin-top: 1px; padding: 3px;
+  border-radius: 50%; background: var(--mint-50); color: var(--mint-700); stroke-width: 3;
+}
+
+.trk-recent {
+  padding: 16px;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
+}
+.trk-recent__label {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 10px;
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--violet-600);
+}
+.trk-recent__list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.trk-recent__more {
+  margin-top: 10px; min-height: 40px; padding: 0 12px; border-radius: var(--r-pill);
+  font-family: var(--font-ui); font-size: 14px; font-weight: 700; color: var(--rose-600);
+}
+.trk-recent__more:hover { background: var(--rose-50); color: var(--rose-700); }
+
+/* the reference-number tip, joined to the bottom of the device card */
+.trk-recent__tip {
+  display: flex; flex-direction: column; justify-content: center;
+  margin-top: 12px; padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--rose-50) 0%, var(--violet-50) 100%);
+  border: 1px solid var(--rose-100);
+}
+.trk-recent__tip .trk-hint__list { margin-top: 8px; gap: 6px; }
+.trk-recent__tip .trk-hint__list li { font-size: 14px; }
+
+.pick {
+  min-width: 0;
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  min-height: 56px; padding: 10px 12px; text-align: left;
+  border-radius: var(--r-md);
+  background: var(--surface-2); border: 1px solid var(--line);
+  transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
+}
+.pick:hover { border-color: var(--rose-200); background: var(--rose-50); }
+.pick:active { transform: scale(.99); }
+.pick.is-active { border-color: var(--rose-400); background: var(--rose-50); box-shadow: 0 0 0 3px rgba(236, 74, 123, .12); }
+.pick__icon {
+  flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px;
+  background: var(--surface); color: var(--rose-600); border: 1px solid var(--rose-100);
+}
+.pick__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pick__title { font-family: var(--font-ui); font-size: 14.5px; font-weight: 800; letter-spacing: .03em; color: var(--ink-900); }
+.pick__meta { font-size: 13px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pick__when { flex: none; font-size: 12.5px; color: var(--text-mute); }
+.pick__chev { flex: none; color: var(--ink-400); }
+
+/* Desktop: the card fills the space left of the look-up card, top to bottom */
+@media (min-width: 1024px) {
+  .trk-hint { display: flex; flex-direction: column; justify-content: center; }
+  .trk-recent { display: flex; flex-direction: column; overflow: hidden; padding: 14px 16px; }
+  .trk-recent__label { margin-bottom: 8px; }
+  /* the list fills the card: rows share the height; past what fits, it scrolls */
+  .trk-recent__scroll {
+    flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+    margin: -3px -6px; padding: 3px 6px;   /* room for the focus ring */
+    scrollbar-width: thin; scrollbar-color: var(--rose-200) transparent;
+  }
+  .trk-recent__list { min-height: 100%; grid-auto-rows: minmax(min-content, 1fr); }
+  .trk-recent__list .pick { height: 100%; min-height: 52px; padding: 8px 12px; }
+  /* one saved submission: the list keeps its size, the tip takes the rest */
+  .trk-recent--tip .trk-recent__scroll { flex: 0 1 auto; }
+  .trk-recent--tip .trk-recent__list { min-height: 0; }
+  .trk-recent__tip { flex: 1 1 auto; min-height: 0; margin-top: 8px; padding: 9px 14px; }
+  .trk-recent__tip .trk-hint__list { margin-top: 6px; gap: 4px; }
+}
+@media (max-width: 479px) { .pick__when { display: none; } }
+
+/* ──────────────── 04 · RESULT: SUMMARY ──────────────── */
+.trk-result { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; scroll-margin-top: calc(var(--header-h) + 16px); }
+.trk-result:focus { outline: none; }
+
+.trk-summary {
+  position: relative; overflow: hidden;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-2);
+}
+.trk-summary::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px;
+  background: linear-gradient(90deg, var(--rose-500), var(--violet-600));
+}
+@media (min-width: 640px) { .trk-summary { padding: 24px 26px; } }
+
+.trk-summary__top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.trk-summary__icon {
+  flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 15px;
+  background: linear-gradient(140deg, var(--rose-100), var(--violet-100)); color: var(--rose-700);
+}
+.trk-summary__id { flex: 1; min-width: 180px; }
+.trk-summary__type { font-size: 14px; font-weight: 600; color: var(--text-mute); }
+.trk-summary__ref { font-size: clamp(22px, 5vw, 28px); font-weight: 800; letter-spacing: .02em; }
+.trk-refresh { flex: none; }
+
+.trk-summary__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 18px; }
+@media (min-width: 860px) { .trk-summary__grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: stretch; } }
+
+.trk-now {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  padding: 18px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, var(--rose-50), var(--violet-50));
+  border: 1px solid var(--rose-100);
+}
+.trk-now__label {
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--violet-600);
+}
+.trk-now__text { font-size: 15px; line-height: 1.6; color: var(--ink-700); }
+
+.trk-facts {
+  display: grid; gap: 1px; margin: 0;
+  border-radius: var(--r-lg); overflow: hidden;
+  background: var(--line); border: 1px solid var(--line);
+}
+@media (min-width: 560px) { .trk-facts { grid-template-columns: 1fr 1fr; } }
+.trk-fact { padding: 12px 14px; background: var(--surface-2); }
+.trk-fact--wide { grid-column: 1 / -1; background: var(--surface); }
+.trk-fact dt { font-family: var(--font-ui); font-size: 12.5px; font-weight: 700; color: var(--text-mute); }
+.trk-fact dd { margin: 2px 0 0; font-size: 15px; color: var(--ink-800); overflow-wrap: anywhere; }
+.trk-fact__sub { display: block; font-size: 13.5px; color: var(--text-mute); }
+
+.trk-call {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px;
+  font-family: var(--font-ui); font-weight: 700; color: var(--rose-600);
+}
+.trk-call:hover { color: var(--rose-700); text-decoration: underline; }
+
+/* ──────────────── 05 · RESULT: HISTORY & MESSAGES ──────────────── */
+.trk-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+@media (min-width: 900px) { .trk-grid { grid-template-columns: 1fr 1fr; align-items: stretch; } }
+.trk-panel { display: flex; flex-direction: column; }
+.panel__icon--mint { background: var(--mint-50); color: var(--mint-700); }
+.trk-count { margin-left: 6px; vertical-align: middle; }
+.trk-panel__sub { margin: -6px 0 12px; font-size: 13.5px; color: var(--text-mute); }
+
+/* status timeline — newest first */
+.tl { display: grid; }
+.tl__item { position: relative; display: flex; gap: 12px; padding-bottom: 16px; }
+.tl__item:last-child { padding-bottom: 0; }
+.tl__item:not(:last-child)::before {
+  content: ""; position: absolute; left: 15px; top: 34px; bottom: 2px; width: 2px;
+  border-radius: 2px; background: var(--line-strong);
+}
+.tl__dot {
+  position: relative; z-index: 1; flex: none;
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid transparent;
+}
+.tl__dot .icon { width: 15px; height: 15px; stroke-width: 2.4; }
+.tl__dot--new    { background: var(--violet-50); color: var(--violet-700); border-color: var(--violet-200); }
+.tl__dot--review { background: var(--amber-50);  color: var(--amber-600);  border-color: var(--amber-100); }
+.tl__dot--action { background: var(--rose-50);   color: var(--rose-700);   border-color: var(--rose-200); }
+.tl__dot--good   { background: var(--mint-50);   color: var(--mint-700);   border-color: var(--mint-100); }
+.tl__dot--closed { background: var(--surface-2); color: var(--ink-600);    border-color: var(--line-strong); }
+.tl__item.is-latest .tl__dot { box-shadow: 0 0 0 4px rgba(236, 74, 123, .14); }
+
+.tl__body { flex: 1; min-width: 0; padding-top: 4px; }
+.tl__head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.tl__label { font-family: var(--font-ui); font-size: 15.5px; font-weight: 800; color: var(--ink-900); }
+.tl__item:not(.is-latest) .tl__label { font-weight: 700; color: var(--ink-700); }
+.tl__time { margin-top: 2px; font-size: 13px; color: var(--text-mute); }
+.trk-ago { color: var(--ink-400); }
+.tl__note {
+  display: flex; align-items: flex-start; gap: 7px;
+  margin-top: 8px; padding: 10px 12px; border-radius: var(--r-md);
+  background: var(--surface-2); border: 1px solid var(--line);
+  font-size: 14.5px; line-height: 1.55; color: var(--ink-800);
+}
+.tl__note .icon { flex: none; margin-top: 3px; color: var(--violet-600); }
+.tl__note > span { min-width: 0; overflow-wrap: anywhere; }
+.tl__plain { margin-top: 4px; font-size: 14px; color: var(--text-soft); }
+
+/* SMS copies */
+.msgs { display: grid; gap: 10px; }
+.msg {
+  display: flex; gap: 12px; padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--mint-50), var(--surface));
+  border: 1px solid var(--mint-100);
+}
+.msg__icon {
+  flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px;
+  background: var(--surface); color: var(--mint-700); border: 1px solid var(--mint-100);
+}
+.msg__body { flex: 1; min-width: 0; }
+.msg__text { font-size: 15px; line-height: 1.55; color: var(--ink-800); overflow-wrap: anywhere; }
+.msg__time { margin-top: 4px; font-size: 12.5px; color: var(--text-mute); }
+
+/* compact, branded empty box (fills the panel so nothing looks blank) */
+.trk-empty {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  padding: 22px 16px; text-align: center;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--mint-50), var(--violet-50));
+  border: 1px dashed var(--mint-100);
+}
+.trk-empty__icon {
+  display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface); color: var(--mint-700); box-shadow: var(--sh-1);
+}
+.trk-empty__title { font-family: var(--font-ui); font-size: 15.5px; font-weight: 800; color: var(--ink-900); }
+.trk-empty__text { max-width: 320px; font-size: 14px; line-height: 1.55; color: var(--text-soft); }
+
+/* ──────────────── 06 · STATUS GUIDE & STATES ──────────────── */
+.trk-guide {
+  padding: 22px;
+  border-radius: var(--r-xl);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--rose-50) 100%);
+  border: 1px solid var(--line);
+  box-shadow: var(--sh-1);
+}
+.trk-guide[hidden] { display: none; }
+@media (min-width: 640px) { .trk-guide { padding: 26px 28px; } }
+.trk-guide__head { margin-bottom: 18px; }
+.trk-guide__title { font-size: clamp(20px, 4.4vw, 24px); font-weight: 800; }
+.trk-guide__lede { margin-top: 6px; max-width: 640px; font-size: 15px; line-height: 1.6; color: var(--text-soft); }
+
+/* One row per type. Each row is a connected path of statuses:
+   dot ── dot ── dot (left to right on wide screens, top to bottom on phones),
+   with "Declined" on its own line at the end because it is not a normal step. */
+.trk-guide__list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+
+.guide-row {
+  --tone-bg: var(--rose-50); --tone-fg: var(--rose-700); --tone-dot: var(--rose-500); --tone-line: var(--rose-200);
+  padding: 18px 20px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.guide-row--violet { --tone-bg: var(--violet-50); --tone-fg: var(--violet-700); --tone-dot: var(--violet-500); --tone-line: var(--violet-200); }
+.guide-row--mint   { --tone-bg: var(--mint-50);   --tone-fg: var(--mint-700);   --tone-dot: var(--mint-500);   --tone-line: var(--mint-100); }
+
+.guide-row__title { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 17px; font-weight: 800; }
+.guide-row__icon {
+  flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px;
+  background: var(--tone-bg); color: var(--tone-fg);
+}
+
+/* the path — phones: a vertical line on the left */
+.guide-path { display: grid; gap: 14px; }
+.guide-path__step { position: relative; display: grid; gap: 6px; justify-items: start; padding-left: 24px; }
+.guide-path__step::before {
+  content: ""; position: absolute; left: 0; top: 9px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--surface); border: 3px solid var(--tone-dot);
+}
+.guide-path__step:not(:last-child)::after {
+  content: ""; position: absolute; left: 5px; top: 24px; bottom: -12px; width: 2px;
+  border-radius: 2px; background: var(--tone-line);
+}
+.guide-path__step p { font-size: 14px; line-height: 1.5; color: var(--ink-700); }
+
+/* wide screens: left to right, every step the same width */
+@media (min-width: 900px) {
+  .guide-row { padding: 20px 24px 18px; }
+  .guide-path { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 16px; }
+  .guide-path__step { padding: 22px 0 0; }
+  .guide-path__step::before { top: 0; }
+  .guide-path__step:not(:last-child)::after { left: 18px; right: -12px; top: 5px; bottom: auto; width: auto; height: 2px; }
+}
+
+/* "Or: Declined …" and the quick-help line close each row */
+.guide-row__alt {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+  margin-top: 16px; padding-top: 14px;
+  border-top: 1px dashed var(--line-strong);
+  font-size: 14px; line-height: 1.5; color: var(--ink-700);
+}
+.guide-row__or {
+  font-family: var(--font-ui); font-size: 12px; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--text-mute);
+}
+.guide-row__alt--tip { flex-wrap: nowrap; align-items: flex-start; }
+.guide-row__alt--tip .icon { flex: none; margin-top: 2px; color: var(--tone-fg); }
+.guide-row__alt a { color: var(--rose-600); font-weight: 600; text-decoration: underline; }
+
+/* loading, not found, errors */
+.trk-skel { display: grid; gap: 14px; }
+.trk-skel__head { min-height: 170px; }
+.trk-skel__grid { display: grid; gap: 14px; }
+.trk-skel__grid .skeleton { min-height: 200px; }
+@media (min-width: 900px) { .trk-skel__grid { grid-template-columns: 1fr 1fr; } }
+
+.trk-state {
+  border-style: solid; border-color: var(--rose-100);
+  background: linear-gradient(135deg, var(--surface), var(--rose-50));
+  scroll-margin-top: calc(var(--header-h) + 16px);
+}
+.trk-state:focus { outline: none; }
+.trk-tips { display: grid; gap: 6px; margin-top: 4px; text-align: left; }
+.trk-tips li { display: flex; align-items: flex-start; gap: 8px; font-size: 14.5px; color: var(--ink-700); }
+.trk-tips .icon { flex: none; margin-top: 3px; color: var(--mint-700); }
+.trk-error .state { background: linear-gradient(135deg, var(--surface), var(--rose-50)); }

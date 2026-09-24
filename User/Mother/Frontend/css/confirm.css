@@ -1,0 +1,192 @@
+/* ══════════════════════════════════════════════════════════════════
+   MOWMMAS · Mother side · Submission confirmation (confirm.html)
+   Loaded after style.css and app.css. Shared pieces (panel,
+   kv, status-pill, state, skeleton, btn) come from those files.
+   ──────────────────────────────────────────────────────────────────
+   01 Page frame     03 Status & next steps
+   02 Header band    04 Actions & states
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ──────────────── 01 · PAGE FRAME ──────────────── */
+/* The whole page sits on brand tints; white is only used for cards */
+.app-main.cf-main {
+  padding: 0 0 40px;
+  background: linear-gradient(180deg, var(--bg-tint) 0%, var(--violet-50) 100%);
+}
+@media (min-width: 640px) { .app-main.cf-main { padding-bottom: 64px; } }
+
+.cf-body { padding-top: 22px; }
+.cf-body[hidden] { display: none; }
+@media (min-width: 640px) { .cf-body { padding-top: 30px; } }
+
+/* ──────────────── 02 · HEADER BAND ──────────────── */
+.cf-band {
+  position: relative;
+  padding: 14px 0 26px;
+  background:
+    radial-gradient(70% 120% at 0% 0%, var(--mint-50) 0%, transparent 60%),
+    radial-gradient(60% 120% at 30% 0%, var(--rose-100) 0%, transparent 64%),
+    radial-gradient(55% 120% at 100% 0%, var(--violet-100) 0%, transparent 64%),
+    linear-gradient(180deg, var(--rose-50) 0%, var(--bg-tint) 100%);
+  border-bottom: 1px solid var(--line);
+}
+
+.cf-hero { display: grid; gap: 20px; }
+.cf-hero__main { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+
+/* success mark: mint circle with soft rings */
+.cf-mark {
+  flex: none; display: grid; place-items: center;
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(140deg, var(--mint-300), var(--mint-500));
+  color: var(--surface);
+  box-shadow: 0 0 0 8px var(--mint-50), 0 0 0 9px var(--mint-100), var(--sh-2);
+}
+.cf-mark .icon { width: 32px; height: 32px; stroke-width: 2.6; }
+.cf-mark--muted {
+  background: linear-gradient(140deg, var(--violet-500), var(--violet-700));
+  box-shadow: 0 0 0 8px var(--violet-50), 0 0 0 9px var(--violet-100), var(--sh-2);
+}
+
+.cf-eyebrow { margin-bottom: 8px; color: var(--mint-700); }
+.cf-mark--muted + .cf-hero__text .cf-eyebrow { color: var(--violet-600); }
+.cf-title { font-size: clamp(26px, 5.6vw, 38px); }
+.cf-lede { margin-top: 10px; }
+
+/* reference number "ticket" */
+.cf-ref {
+  position: relative;
+  padding: 18px 18px 16px;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  border: 2px dashed var(--rose-200);
+  box-shadow: var(--sh-2);
+}
+.cf-ref[hidden] { display: none; }
+.cf-ref__label {
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--violet-600);
+}
+.cf-ref__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: -4px -6px 0 0; }
+.cf-ref__num {
+  margin-top: 4px;
+  font-family: var(--font-ui); font-size: clamp(26px, 7vw, 32px); font-weight: 800;
+  letter-spacing: .02em; line-height: 1.2; color: var(--ink-900);
+  font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
+  user-select: all;
+}
+.cf-ref__copy { flex: none; min-height: 44px; }
+.cf-ref__copy.is-copied { color: var(--mint-700); border-color: var(--mint-300); background: var(--mint-50); }
+.cf-ref__help {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);
+  font-size: 14px; line-height: 1.55; color: var(--ink-700);
+}
+.cf-ref__help .icon { margin-top: 2px; color: var(--rose-600); }
+
+@media (min-width: 640px) {
+  .cf-hero__main { flex-direction: row; gap: 26px; }
+  .cf-mark { width: 72px; height: 72px; margin-top: 6px; }
+  .cf-mark .icon { width: 36px; height: 36px; }
+  .cf-ref { padding: 22px 24px 18px; }
+}
+@media (min-width: 900px) {
+  .cf-band { padding: 18px 0 34px; }
+  .cf-hero { grid-template-columns: minmax(0, 1fr) minmax(340px, 420px); gap: 40px; align-items: center; }
+  .cf-hero.is-single { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ──────────────── 03 · STATUS & NEXT STEPS ──────────────── */
+.cf-grid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .cf-grid { grid-template-columns: 1fr 1fr; gap: 22px; } }
+
+.cf-panel { display: flex; flex-direction: column; }
+.cf-panel .panel__head { margin-bottom: 18px; }
+.panel__icon--violet { background: var(--violet-50); color: var(--violet-600); }
+
+.cf-skel { min-height: 250px; }
+
+.cf-now {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+  padding: 14px 16px; margin-bottom: 16px;
+  border-radius: var(--r-md);
+  background: var(--surface-2); border: 1px solid var(--line);
+}
+.cf-now__text { font-size: 14.5px; line-height: 1.5; color: var(--ink-700); }
+
+.cf-kv .kv__v strong { font-family: var(--font-ui); font-weight: 700; }
+.cf-sub { display: block; font-size: 14px; color: var(--text-mute); }
+.cf-mono { letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.cf-phone { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; font-family: var(--font-ui); font-weight: 700; }
+@media (min-width: 640px) { .cf-kv .kv { grid-template-columns: 150px 1fr; } }
+
+.cf-prompt {
+  display: flex; align-items: flex-start; gap: 12px;
+  margin-top: auto; padding: 16px; border-radius: var(--r-md);
+  background: var(--violet-50); border: 1px solid var(--violet-100);
+}
+.cf-kv + .cf-prompt { margin-top: 18px; }
+.cf-prompt > .icon { margin-top: 2px; color: var(--violet-600); }
+.cf-prompt__title { font-family: var(--font-ui); font-size: 16px; font-weight: 800; color: var(--ink-900); }
+.cf-prompt__text { margin-top: 4px; font-size: 14.5px; line-height: 1.55; color: var(--ink-700); }
+.cf-prompt__link {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px;
+  font-family: var(--font-ui); font-size: 15px; font-weight: 700; color: var(--violet-700);
+}
+.cf-prompt__link:hover { color: var(--violet-700); text-decoration: underline; }
+
+/* numbered next steps */
+.cf-steps { display: grid; gap: 4px; }
+.cf-step { position: relative; display: flex; gap: 14px; padding-bottom: 14px; }
+.cf-step:not(:last-child)::before {
+  content: ""; position: absolute; left: 17px; top: 38px; bottom: 2px;
+  width: 2px; border-radius: 2px; background: var(--rose-100);
+}
+.cf-step__num {
+  flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px;
+  background: linear-gradient(140deg, var(--rose-400), var(--rose-600) 55%, var(--violet-600));
+  color: var(--surface); font-family: var(--font-ui); font-size: 15px; font-weight: 800;
+  box-shadow: var(--sh-2);
+}
+.cf-step__title { font-family: var(--font-ui); font-size: 16px; font-weight: 800; color: var(--ink-900); line-height: 1.35; margin-top: 6px; }
+.cf-step__text { margin-top: 3px; font-size: 14.5px; line-height: 1.6; color: var(--text-soft); }
+.cf-step__text a { font-weight: 700; text-decoration: underline; }
+
+.cf-note {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-top: auto; padding: 14px 16px; border-radius: var(--r-md);
+  background: var(--violet-50); border: 1px solid var(--violet-100);
+  font-size: 14px; line-height: 1.55; color: var(--ink-700);
+}
+.cf-note .icon { margin-top: 2px; color: var(--violet-600); }
+
+/* ──────────────── 04 · ACTIONS & STATES ──────────────── */
+.cf-actions {
+  display: flex; flex-direction: column; gap: 16px;
+  margin-top: 18px; padding: 20px;
+  border-radius: var(--r-xl);
+  background: linear-gradient(120deg, var(--rose-50) 0%, var(--surface) 45%, var(--violet-50) 100%);
+  border: 1px solid var(--rose-100);
+  box-shadow: var(--sh-1);
+}
+.cf-actions__title { font-family: var(--font-ui); font-size: 18px; font-weight: 800; color: var(--ink-900); }
+.cf-actions__sub { margin-top: 2px; font-size: 15px; color: var(--text-soft); }
+.cf-actions__btns { display: flex; flex-direction: column; gap: 10px; }
+.cf-actions__btns .btn { width: 100%; }
+@media (min-width: 640px) {
+  .cf-actions { padding: 22px 26px; }
+  .cf-actions__btns { flex-direction: row; flex-wrap: wrap; }
+  .cf-actions__btns .btn { width: auto; }
+}
+@media (min-width: 1024px) {
+  .cf-actions { flex-direction: row; align-items: center; justify-content: space-between; gap: 24px; }
+  .cf-actions__btns { flex-wrap: nowrap; }
+}
+
+.cf-state {
+  padding: 36px 22px;
+  border-style: solid; border-color: var(--line);
+  box-shadow: var(--sh-1);
+  background: radial-gradient(60% 80% at 50% 0%, var(--violet-50) 0%, transparent 70%), var(--surface);
+}
+.cf-state .state__icon { width: 60px; height: 60px; background: var(--violet-50); color: var(--violet-600); }

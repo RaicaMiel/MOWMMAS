@@ -1,0 +1,4 @@
+{
+  "about": "Real photos of the facilities, shown on the map popup. Only a photo of the facility itself, never a stand-in. Each needs its credit. Use 'url' for an openly licensed online photo (Wikimedia Commons), or put the image in data/photos/ and use 'file' (for a photo the facility gave permission to use).",
+  "photos": {}
+}

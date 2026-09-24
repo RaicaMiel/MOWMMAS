@@ -1,0 +1,284 @@
+/* ══════════════════════════════════════════════════════════════════
+   MOWMMAS · Mother side · Home (flow step 2)
+   Loaded after style.css, app.css and map.css. Only what is specific
+   to home.html lives here; shared parts come from those files.
+   ──────────────────────────────────────────────────────────────────
+   01 Page frame & heading band    04 Service cards
+   02 Live numbers                 05 Track a submission
+   03 Find card & map card         06 Notice
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ──────────────── 01 · PAGE FRAME & HEADING BAND ──────────────── */
+/* The whole page sits on brand tints; white is kept for cards only. */
+.home-main {
+  padding: 0 0 36px;
+  background: linear-gradient(180deg, var(--bg-tint) 0%, var(--violet-50) 100%);
+}
+@media (min-width: 640px) { .home-main { padding-bottom: 48px; } }
+
+.home-band {
+  position: relative;
+  padding: 16px 0 26px;
+  background:
+    radial-gradient(55% 150% at 0% 0%, var(--rose-100) 0%, transparent 70%),
+    radial-gradient(45% 150% at 100% 0%, var(--violet-100) 0%, transparent 70%),
+    linear-gradient(180deg, var(--rose-50) 0%, var(--bg-tint) 100%);
+  border-bottom: 1px solid var(--rose-100);
+}
+@media (min-width: 900px) { .home-band { padding: 22px 0 34px; } }
+
+/* reserves the progress bar's height so nothing jumps when JS draws it */
+
+.home-head { display: grid; gap: 18px; }
+.home-head .eyebrow { margin-bottom: 8px; }
+.home-head .page-lede { margin-top: 8px; text-wrap: pretty; }
+@media (min-width: 900px) {
+  .home-head { grid-template-columns: minmax(0, 1fr) minmax(0, 470px); align-items: center; gap: 40px; }
+}
+
+/* ──────────────── 02 · LIVE NUMBERS ──────────────── */
+.home-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.stat {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--rose-100);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-2);
+}
+.stat__icon {
+  flex: none; display: grid; place-items: center;
+  width: 42px; height: 42px; border-radius: 14px;
+  background: var(--rose-50); color: var(--rose-600);
+}
+.stat--mint { border-color: var(--mint-100); }
+.stat--mint .stat__icon { background: var(--mint-50); color: var(--mint-700); }
+.stat__body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.stat__num {
+  font-family: var(--font-ui); font-size: 30px; font-weight: 800; line-height: 1.05;
+  letter-spacing: -.02em; color: var(--ink-900);
+}
+.stat__label { font-size: 14px; line-height: 1.4; color: var(--text-soft); }
+.stat__num.is-loading {
+  display: block; width: 52px; height: 32px; border-radius: 8px;
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--rose-100) 37%, var(--surface-2) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.3s ease infinite;
+}
+@media (min-width: 560px) {
+  .stat { flex-direction: row; align-items: center; gap: 14px; padding: 16px 18px; }
+  .stat__icon { width: 48px; height: 48px; }
+}
+
+/* ──────────────── 03 · FIND CARD & MAP CARD ──────────────── */
+.home-body { display: flex; flex-direction: column; gap: 22px; padding-top: 22px; }
+@media (min-width: 900px) { .home-body { gap: 30px; padding-top: 30px; } }
+
+.home-top { display: grid; gap: 18px; }
+@media (min-width: 900px) {
+  .home-top { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: 22px; align-items: stretch; }
+}
+
+/* "Find Hospital Near Me" — the biggest card on the page */
+.find-card {
+  position: relative; overflow: hidden; isolation: isolate;
+  display: flex; flex-direction: column;
+  padding: 26px 20px 22px;
+  border-radius: var(--r-xl);
+  color: #fff;
+  background: linear-gradient(135deg, var(--rose-500) 0%, var(--rose-600) 42%, var(--violet-600) 100%);
+  box-shadow: 0 26px 50px -30px rgba(124, 58, 237, .8);
+}
+.find-card::before, .find-card::after {
+  content: ""; position: absolute; z-index: -1; border-radius: 50%; pointer-events: none;
+  background: rgba(255, 255, 255, .09);
+}
+.find-card::before { width: 340px; height: 340px; right: -130px; top: -150px; }
+.find-card::after  { width: 240px; height: 240px; left: -90px; bottom: -130px; }
+@media (min-width: 640px) { .find-card { padding: 34px 34px 30px; } }
+
+.find-card__head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.find-card__icon {
+  flex: none; display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 15px;
+  background: rgba(255, 255, 255, .18); border: 1px solid rgba(255, 255, 255, .32);
+}
+.find-card__icon .icon { width: 24px; height: 24px; }
+.find-card .eyebrow { margin-bottom: 0; }
+@media (min-width: 640px) {
+  .find-card__head { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 8px; }
+  .find-card__icon { width: 56px; height: 56px; border-radius: 18px; }
+  .find-card__icon .icon { width: 28px; height: 28px; }
+}
+.find-card__title { color: #fff; font-size: clamp(27px, 6vw, 36px); font-weight: 800; letter-spacing: -.03em; }
+.find-card__text { max-width: 500px; margin-top: 10px; font-size: 16.5px; line-height: 1.6; color: rgba(255, 255, 255, .93); }
+
+.find-card__listTitle {
+  margin: 18px 0 10px;
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; color: rgba(255, 255, 255, .82);
+}
+/* phones: pills sized to their words; wider screens: an even grid */
+.find-card__list { display: flex; flex-wrap: wrap; gap: 8px; }
+.find-card__list li {
+  display: flex; align-items: center; gap: 8px; min-width: 0;
+  padding: 8px 12px; border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .24);
+  font-family: var(--font-ui); font-size: 14px; font-weight: 600; line-height: 1.3;
+}
+@media (min-width: 560px) {
+  .find-card__list { display: grid; grid-template-columns: 1fr 1fr; }
+  .find-card__list li { padding: 10px 12px; border-radius: var(--r-md); font-size: 14.5px; }
+}
+@media (min-width: 1100px) { .find-card__list { grid-template-columns: repeat(3, 1fr); } }
+
+.find-card__actions {
+  display: flex; flex-direction: column; align-items: stretch; gap: 12px;
+  margin-top: auto; padding-top: 24px;
+}
+.find-card__hint {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  font-size: 14px; font-weight: 500; color: rgba(255, 255, 255, .92);
+}
+@media (min-width: 560px) {
+  .find-card__actions { flex-direction: row; align-items: center; gap: 12px 20px; }
+}
+
+/* Interactive map card */
+.map-card {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-2);
+}
+@media (min-width: 640px) { .map-card { padding: 20px; } }
+.map-card__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 14px; }
+.map-card__title { display: flex; align-items: center; gap: 8px; font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+.map-card__title .icon { color: var(--rose-600); }
+.map-card__sub { margin-top: 2px; font-size: 14px; color: var(--text-mute); }
+.map-card__open { min-height: 44px; }
+
+/* the map grows so its card is as tall as the find card beside it */
+.home-map { flex: 1 1 auto; min-height: 360px; }
+@media (min-width: 900px) { .home-map { min-height: 340px; } }
+
+.map-card__foot { display: flex; flex-direction: column; gap: 6px; }
+.map-card__foot .map-credit { margin-top: 0; }
+#mapStatus:empty { display: none; }
+.map-card .state { padding: 22px 18px; background: var(--surface-2); }
+
+/* ──────────────── 04 · SERVICE CARDS ──────────────── */
+.home-services__head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+@media (min-width: 900px) {
+  .home-services__head { flex-direction: row; align-items: center; justify-content: space-between; gap: 20px; }
+}
+.home-section-title { font-size: clamp(21px, 4.8vw, 26px); font-weight: 800; letter-spacing: -.022em; }
+.home-section-lede { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 6px; }
+.home-steps {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 4px 12px 4px 4px; border-radius: var(--r-pill);
+  background: var(--surface); border: 1px solid var(--line);
+  font-family: var(--font-ui); font-size: 13.5px; font-weight: 700; color: var(--ink-700);
+}
+.home-steps__num {
+  display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--rose-100); color: var(--rose-700); font-size: 12px; font-weight: 800;
+}
+.home-steps__arrow { color: var(--ink-400); }
+
+.home-service-grid .service { padding: 24px 22px 16px; }
+.home-service-grid .service__icon { width: 52px; height: 52px; margin-bottom: 16px; border-radius: 16px; }
+.home-service-grid .service__title { font-size: 19.5px; }
+.home-service-grid .service__text { margin: 8px 0 12px; font-size: 15px; line-height: 1.6; }
+
+/* phones & tablets: icon beside the text keeps the three cards short */
+@media (max-width: 859px) {
+  .home-service-grid { gap: 12px; }
+  .home-service-grid .service {
+    display: grid; grid-template-columns: 52px minmax(0, 1fr); column-gap: 14px;
+    padding: 18px 16px 8px;
+  }
+  .home-service-grid .service__icon { grid-row: 1 / span 3; margin: 0; }
+  .home-service-grid .service__text { margin: 4px 0 2px; }
+}
+
+/* ──────────────── 05 · TRACK A SUBMISSION ──────────────── */
+.track-card {
+  display: grid; gap: 18px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-1);
+}
+@media (min-width: 860px) {
+  .track-card { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 32px; padding: 24px 28px; }
+}
+.track-card__main { display: flex; align-items: flex-start; gap: 16px; }
+.track-card__icon {
+  flex: none; display: grid; place-items: center;
+  width: 52px; height: 52px; border-radius: 16px;
+  background: var(--violet-100); color: var(--violet-700);
+}
+.track-card__copy { min-width: 0; }
+.track-card__title { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+.track-card__text { margin-top: 6px; font-size: 15.5px; line-height: 1.6; color: var(--text-soft); }
+.track-card__btn { margin-top: 14px; }
+@media (max-width: 559px) {
+  .track-card__main { display: grid; grid-template-columns: 48px minmax(0, 1fr); align-items: center; gap: 0 14px; }
+  .track-card__icon { width: 48px; height: 48px; }
+  .track-card__copy { display: contents; }
+  .track-card__text, .track-card__btn { grid-column: 1 / -1; }
+  .track-card__text { margin-top: 10px; }
+  .track-card__btn { width: 100%; }
+}
+
+.track-card__side {
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, var(--violet-50), var(--rose-50));
+  border: 1px solid var(--violet-100);
+}
+.track-card__label {
+  margin-bottom: 8px;
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--violet-700);
+}
+.track-steps { display: grid; gap: 4px; }
+.track-steps li { display: flex; align-items: flex-start; gap: 10px; padding: 5px 0; font-size: 15px; line-height: 1.5; color: var(--ink-700); }
+.track-steps strong { overflow-wrap: anywhere; }
+.track-steps__num {
+  flex: none; display: grid; place-items: center; width: 24px; height: 24px; margin-top: 1px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--violet-200);
+  font-family: var(--font-ui); font-size: 12px; font-weight: 800; color: var(--violet-700);
+}
+
+.recent-list li + li { border-top: 1px solid var(--violet-100); }
+.recent-link {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 56px; padding: 8px 6px; border-radius: var(--r-sm);
+  color: inherit;
+  transition: background-color var(--t-fast) var(--ease);
+}
+.recent-link:hover { color: inherit; background: rgba(255, 255, 255, .7); }
+.recent__icon {
+  flex: none; display: grid; place-items: center;
+  width: 38px; height: 38px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--rose-100); color: var(--rose-600);
+}
+.recent__body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.recent__title { font-family: var(--font-ui); font-size: 15px; font-weight: 800; letter-spacing: .01em; color: var(--ink-900); }
+.recent__meta { font-size: 13.5px; color: var(--text-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.recent__chev { color: var(--ink-400); }
+.recent-link:hover .recent__chev { color: var(--rose-600); }
+
+/* ──────────────── 06 · NOTICE ──────────────── */
+.home-notice { margin-top: 0; }
+@media (max-width: 639px) {
+  .home-notice { flex-direction: row; align-items: flex-start; gap: 14px; padding: 20px 18px; }
+  .home-notice .notice__icon { width: 40px; height: 40px; }
+  .home-notice .notice__title { font-size: 17px; }
+}

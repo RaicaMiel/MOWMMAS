@@ -1,0 +1,2610 @@
+/* ==========================================================================
+   MOWMMAS Admin — shared stylesheet
+
+   1. Tokens
+   2. Base          type, focus ring, selection, [hidden], .mw-page-header, .mw-lead, skip link
+   3. Buttons       .mw-btn, .mw-icon-btn
+   4. Forms         .mw-form, .mw-form-row, .mw-field, .mw-input, .mw-input-group, .mw-checkbox, .mw-fieldset, .mw-select, .mw-toggle, .mw-preview
+   5. Alerts        .mw-alert
+   6. Chips         .mw-chip
+   7. Callout       .mw-callout
+   8. Cards         .mw-card, .mw-card-grid
+   9. Stats         .mw-stat, .mw-stat-grid
+   10. Lists        .mw-list
+   11. Empty state  .mw-empty
+   12. Tables       .mw-filters, .mw-table-wrap, .mw-table
+   13. Tabs         .mw-tabs
+   14. Charts       .mw-chart
+   15. Links        .mw-link, .mw-breadcrumb
+   16. Brand        .mw-brand, .mw-logo-mark, .mw-user
+   17. Modal        .mw-modal
+   18. Toast        .mw-toast-region, .mw-toast
+   19. App shell    .mw-app, .mw-sidebar, .mw-nav, .mw-topbar, .mw-page, drawer
+   20. Auth layout  .mw-auth
+   21. Motion
+   22. Utilities    .mw-text-warning, .mw-text-muted, .mw-visually-hidden
+   23. Notifications .mw-notify (the bell panel)
+   ========================================================================== */
+
+
+/* 1. Tokens
+   ========================================================================== */
+
+:root {
+  /* brand */
+  --mw-plum-900: #4A1631;   /* sidebar */
+  --mw-plum-700: #7A2350;   /* primary buttons, links, active states */
+  --mw-plum-800: #641C42;   /* primary hover */
+  --mw-pink-300: #E8A6C4;   /* active nav pill, accents */
+  --mw-pink-100: #FBEAF1;   /* icon tiles, subtle fills */
+
+  /* surfaces */
+  --mw-bg:       #FBF6F8;   /* page background */
+  --mw-surface:  #FFFFFF;   /* cards, tables, modals */
+  --mw-border:   #F1E4EA;
+  --mw-text:     #2B1420;
+  --mw-text-muted: #7A6570;
+
+  /* status: background / foreground pairs */
+  --mw-success-bg: #E7F6EC;  --mw-success-fg: #1E7A45;
+  --mw-warning-bg: #FFF3D6;  --mw-warning-fg: #8A5A00;
+  --mw-danger-bg:  #FDE7EA;  --mw-danger-fg:  #B42335;
+  --mw-info-bg:    #E8F0FD;  --mw-info-fg:    #2456A6;
+  --mw-neutral-bg: #F2EDF0;  --mw-neutral-fg: #5E4A55;
+  --mw-lang-bg:    #EFE8FB;  --mw-lang-fg:    #5B3FA0;
+
+  /* shape and depth */
+  --mw-r-sm: 8px;  --mw-r-md: 12px;  --mw-r-lg: 14px;  --mw-r-pill: 999px;
+  --mw-shadow-card: 0 1px 2px rgba(43,20,32,.04), 0 8px 24px rgba(43,20,32,.04);
+  --mw-shadow-modal: 0 24px 60px rgba(43,20,32,.18);
+
+  /* spacing scale: use only these */
+  --mw-s1: 4px; --mw-s2: 8px; --mw-s3: 12px; --mw-s4: 16px;
+  --mw-s5: 20px; --mw-s6: 24px; --mw-s7: 32px; --mw-s8: 40px;
+
+  /* layout */
+  --mw-sidebar-w: 248px;
+  --mw-page-pad: var(--mw-s7);
+  --mw-content-max: 1280px;
+}
+
+
+/* 2. Base
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Keeps a focused control clear of the sticky top bar when the page scrolls to it. */
+  scroll-padding-top: calc(var(--mw-s8) * 2);
+}
+
+body {
+  margin: 0;
+  background: var(--mw-bg);
+  color: var(--mw-text);
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+a {
+  color: var(--mw-plum-700);
+}
+
+a:hover {
+  color: var(--mw-plum-800);
+}
+
+:focus-visible {
+  outline: 2px solid var(--mw-plum-700);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--mw-pink-300);
+  color: var(--mw-plum-900);
+}
+
+/* Keep [hidden] working on components that set their own display. */
+[class][hidden] {
+  display: none;
+}
+
+.mw-icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+/* Page title with its supporting line, and an optional action on the right. */
+.mw-page-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  row-gap: var(--mw-s2);
+}
+
+.mw-page-header > * {
+  grid-column: 1;
+}
+
+.mw-page-header > .mw-page-header__action {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  margin-left: var(--mw-s4);
+}
+
+@media (max-width: 599px) {
+  .mw-page-header > .mw-page-header__action {
+    grid-column: 1;
+    grid-row: auto;
+    margin: var(--mw-s2) 0 0;
+  }
+}
+
+.mw-lead {
+  color: var(--mw-text-muted);
+}
+
+.mw-skip-link {
+  position: absolute;
+  top: var(--mw-s4);
+  left: var(--mw-s4);
+  z-index: 100;
+  padding: var(--mw-s2) var(--mw-s4);
+  border-radius: var(--mw-r-sm);
+  background: var(--mw-surface);
+  box-shadow: var(--mw-shadow-card);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+
+.mw-skip-link:focus {
+  transform: none;
+}
+
+
+/* 3. Buttons
+   ========================================================================== */
+
+.mw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mw-s2);
+  padding: var(--mw-s3) var(--mw-s5);
+  border: 1px solid transparent;
+  border-radius: var(--mw-r-sm);
+  background: var(--mw-surface);
+  color: var(--mw-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mw-btn--primary {
+  background: var(--mw-plum-700);
+  color: var(--mw-surface);
+}
+
+.mw-btn--primary:hover {
+  background: var(--mw-plum-800);
+  color: var(--mw-surface);
+}
+
+.mw-btn--secondary {
+  background: var(--mw-pink-100);
+  color: var(--mw-plum-700);
+}
+
+.mw-btn--secondary:hover {
+  background: var(--mw-pink-300);
+  color: var(--mw-plum-800);
+}
+
+.mw-btn--ghost {
+  background: transparent;
+  color: var(--mw-plum-700);
+}
+
+.mw-btn--outline {
+  border-color: var(--mw-text-muted);
+  background: var(--mw-surface);
+  color: var(--mw-plum-700);
+}
+
+.mw-btn--outline:hover {
+  border-color: var(--mw-plum-700);
+  background: var(--mw-pink-100);
+  color: var(--mw-plum-800);
+}
+
+.mw-btn--ghost:hover {
+  background: var(--mw-pink-100);
+  color: var(--mw-plum-800);
+}
+
+.mw-btn--danger {
+  background: var(--mw-danger-fg);
+  color: var(--mw-surface);
+}
+
+.mw-btn--danger:hover {
+  background: color-mix(in srgb, var(--mw-danger-fg) 85%, var(--mw-text));
+  color: var(--mw-surface);
+}
+
+/* Destructive action that shouldn't shout, e.g. "Reset demo data". */
+.mw-btn--danger-soft {
+  border-color: color-mix(in srgb, var(--mw-danger-fg) 30%, transparent);
+  background: var(--mw-danger-bg);
+  color: var(--mw-danger-fg);
+}
+
+.mw-btn--danger-soft:hover {
+  border-color: var(--mw-danger-fg);
+  background: color-mix(in srgb, var(--mw-danger-fg) 10%, var(--mw-danger-bg));
+  color: var(--mw-danger-fg);
+}
+
+.mw-btn--sm {
+  padding: var(--mw-s2) var(--mw-s3);
+  font-size: 13px;
+}
+
+.mw-btn--block {
+  width: 100%;
+}
+
+.mw-btn:disabled,
+.mw-btn[aria-disabled="true"] {
+  border-color: transparent;
+  background: var(--mw-neutral-bg);
+  color: var(--mw-text-muted);
+  cursor: not-allowed;
+}
+
+.mw-btn--ghost:disabled,
+.mw-btn--ghost[aria-disabled="true"] {
+  background: transparent;
+}
+
+.mw-btn__label,
+.mw-btn__loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mw-s2);
+}
+
+.mw-btn__loading,
+.mw-btn.is-loading .mw-btn__label {
+  display: none;
+}
+
+.mw-btn.is-loading {
+  cursor: progress;
+  pointer-events: none;
+}
+
+.mw-btn.is-loading .mw-btn__loading {
+  display: inline-flex;
+}
+
+/* Round button holding a single icon; give it an aria-label. */
+.mw-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--mw-r-pill);
+  background: transparent;
+  color: var(--mw-text);
+  cursor: pointer;
+}
+
+.mw-icon-btn:hover {
+  background: var(--mw-neutral-bg);
+  color: var(--mw-plum-700);
+}
+
+.mw-icon-btn--outline {
+  border-color: var(--mw-text-muted);
+  background: var(--mw-surface);
+}
+
+.mw-icon-btn--outline:hover {
+  border-color: var(--mw-plum-700);
+  background: var(--mw-pink-100);
+}
+
+/* For plum surfaces such as the sidebar. */
+.mw-icon-btn--inverse {
+  color: var(--mw-pink-100);
+}
+
+.mw-icon-btn--inverse:hover {
+  background: color-mix(in srgb, var(--mw-surface) 10%, transparent);
+  color: var(--mw-surface);
+}
+
+.mw-icon-btn:disabled {
+  border-color: transparent;
+  background: transparent;
+  color: var(--mw-text-muted);
+  cursor: not-allowed;
+}
+
+
+/* 4. Forms
+   ========================================================================== */
+
+.mw-form {
+  display: grid;
+  gap: var(--mw-s5);
+}
+
+/* A button in a form keeps its own width unless it's a --block button. */
+.mw-form > .mw-btn:not(.mw-btn--block) {
+  justify-self: start;
+}
+
+.mw-field {
+  display: grid;
+  gap: var(--mw-s2);
+}
+
+.mw-field__label {
+  color: var(--mw-neutral-fg);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mw-field__hint {
+  color: var(--mw-text-muted);
+  font-size: 13px;
+}
+
+.mw-field__error {
+  color: var(--mw-danger-fg);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.mw-input {
+  display: block;
+  width: 100%;
+  padding: var(--mw-s3);
+  border: 1px solid var(--mw-text-muted);
+  border-radius: var(--mw-r-sm);
+  background: var(--mw-surface);
+  color: var(--mw-text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.mw-input::placeholder {
+  color: var(--mw-text-muted);
+  opacity: 1;
+}
+
+/* Keep browser autofill on the white field instead of the default tint. */
+.mw-input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 100px var(--mw-surface) inset;
+  -webkit-text-fill-color: var(--mw-text);
+}
+
+/* Edge adds its own reveal button; the password toggle replaces it. */
+.mw-input::-ms-reveal {
+  display: none;
+}
+
+/* Search fields: drop the browser's own clear button and styling. */
+.mw-input[type="search"] {
+  appearance: none;
+}
+
+.mw-input::-webkit-search-decoration,
+.mw-input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+textarea.mw-input {
+  min-height: calc(var(--mw-s8) * 2);
+  resize: vertical;
+}
+
+textarea.mw-input:disabled {
+  resize: none;
+}
+
+.mw-input:hover {
+  border-color: var(--mw-text);
+}
+
+.mw-input:disabled {
+  border-color: var(--mw-border);
+  background: var(--mw-neutral-bg);
+  color: var(--mw-text-muted);
+  cursor: not-allowed;
+}
+
+.has-error .mw-input {
+  border-color: var(--mw-danger-fg);
+}
+
+/* 16px text stops iOS from zooming in when a field gets focus. */
+@media (max-width: 719px) {
+  .mw-input {
+    font-size: 16px;
+  }
+}
+
+/* Input with an icon before it or a button inside it, e.g. search or the password toggle. */
+.mw-input-group {
+  position: relative;
+}
+
+.mw-input-group:has(.mw-input-group__button) .mw-input {
+  padding-right: calc(var(--mw-s8) + var(--mw-s3));
+}
+
+.mw-input-group__button {
+  position: absolute;
+  top: var(--mw-s2);
+  right: var(--mw-s2);
+  bottom: var(--mw-s2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: var(--mw-r-sm);
+  background: transparent;
+  color: var(--mw-text-muted);
+  cursor: pointer;
+}
+
+.mw-input-group__button:hover {
+  background: var(--mw-neutral-bg);
+  color: var(--mw-text);
+}
+
+.mw-input-group__button:disabled {
+  background: transparent;
+  color: color-mix(in srgb, var(--mw-text-muted) 50%, transparent);
+  cursor: not-allowed;
+}
+
+/* Password toggle: swap the eye icons with the pressed state. */
+.mw-input-group__button .mw-icon-hide,
+.mw-input-group__button[aria-pressed="true"] .mw-icon-show {
+  display: none;
+}
+
+.mw-input-group__button[aria-pressed="true"] .mw-icon-hide {
+  display: block;
+}
+
+.mw-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--mw-s2);
+}
+
+.mw-checkbox__input {
+  appearance: none;
+  display: grid;
+  place-content: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 1px solid var(--mw-text-muted);
+  border-radius: calc(var(--mw-r-sm) / 2);
+  background: var(--mw-surface);
+  cursor: pointer;
+}
+
+/* Check mark, drawn with a clip-path so it takes a token colour. */
+.mw-checkbox__input::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: var(--mw-surface);
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0, 43% 62%);
+  transform: scale(0);
+}
+
+.mw-checkbox__input:checked {
+  border-color: var(--mw-plum-700);
+  background: var(--mw-plum-700);
+}
+
+.mw-checkbox__input:checked::before {
+  transform: scale(1);
+}
+
+.mw-checkbox__input:hover {
+  border-color: var(--mw-plum-700);
+}
+
+.mw-checkbox__input:hover + .mw-checkbox__label,
+.mw-checkbox__label:hover {
+  color: var(--mw-plum-700);
+}
+
+.mw-checkbox__label {
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.mw-checkbox__input:disabled {
+  border-color: var(--mw-border);
+  background: var(--mw-neutral-bg);
+  cursor: not-allowed;
+}
+
+.mw-checkbox__input:disabled:checked {
+  border-color: var(--mw-text-muted);
+  background: var(--mw-text-muted);
+}
+
+.mw-checkbox__input:disabled + .mw-checkbox__label {
+  color: var(--mw-text-muted);
+  cursor: not-allowed;
+}
+
+/* Forced colours drop background colours, so draw the tick in a system colour. */
+@media (forced-colors: active) {
+  .mw-checkbox__input::before {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
+  .mw-checkbox__input:disabled::before {
+    background: GrayText;
+  }
+}
+
+/* Decorative icon at the start of an input, e.g. the search magnifier. */
+.mw-input-group__icon {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  left: var(--mw-s3);
+  color: var(--mw-text-muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.mw-input-group__icon + .mw-input {
+  padding-left: var(--mw-s8);
+}
+
+/* Select: wrap a <select class="mw-input"> in .mw-select for the chevron. */
+.mw-select {
+  position: relative;
+}
+
+.mw-select > .mw-input {
+  appearance: none;
+  padding-right: var(--mw-s8);
+  cursor: pointer;
+}
+
+.mw-select > .mw-input:disabled {
+  cursor: not-allowed;
+}
+
+/* A select only as wide as its options, e.g. next to a label in a row. */
+.mw-select--inline {
+  flex: none;
+}
+
+.mw-select--inline > .mw-input {
+  width: auto;
+}
+
+.mw-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: var(--mw-s4);
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid var(--mw-text-muted);
+  border-bottom: 1.5px solid var(--mw-text-muted);
+  transform: translateY(-75%) rotate(45deg);
+  pointer-events: none;
+}
+
+/* Toggle switch: <input type="checkbox" role="switch" class="mw-toggle__input">. */
+.mw-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mw-s2);
+  cursor: pointer;
+}
+
+.mw-toggle__input {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 24px;
+  margin: 0;
+  border: 1px solid transparent;
+  border-radius: var(--mw-r-pill);
+  background: var(--mw-text-muted);
+  cursor: pointer;
+}
+
+.mw-toggle__input::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--mw-surface);
+}
+
+.mw-toggle__input:hover {
+  background: var(--mw-text);
+}
+
+.mw-toggle__input:checked {
+  background: var(--mw-plum-700);
+}
+
+.mw-toggle__input:checked:hover {
+  background: var(--mw-plum-800);
+}
+
+.mw-toggle__input:checked::before {
+  transform: translateX(16px);
+}
+
+.mw-toggle__input:disabled {
+  background: var(--mw-border);
+  cursor: not-allowed;
+}
+
+.mw-toggle__input:disabled:checked {
+  background: var(--mw-pink-300);
+}
+
+@media (forced-colors: active) {
+  .mw-toggle__input::before {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+}
+
+
+/* Two fields side by side, e.g. latitude and longitude. One column on a phone. */
+.mw-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: var(--mw-s5) var(--mw-s4);
+}
+
+@media (max-width: 479px) {
+  .mw-form-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* A checkbox beside a field, e.g. "Open 24 hours". It takes a text field's
+   height (20px line, padding and border), so the two line up. On a phone it
+   sits under the field instead. */
+.mw-form-row > .mw-checkbox {
+  min-height: calc(20px + var(--mw-s3) * 2 + 2px);
+}
+
+@media (max-width: 479px) {
+  .mw-form-row > .mw-checkbox {
+    min-height: 0;
+  }
+}
+
+/* A field that keeps its natural width, e.g. a date. Works in a grid
+   (justify-self) and in a column flex layout like .mw-page (align-self). */
+.mw-field--inline {
+  justify-self: start;
+  align-self: flex-start;
+}
+
+.mw-input--auto {
+  width: auto;
+}
+
+.mw-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+/* A group of checkboxes under one label: <fieldset class="mw-fieldset"> with
+   <legend class="mw-field__label">. */
+.mw-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.mw-fieldset > legend {
+  padding: 0;
+}
+
+.mw-fieldset > legend + * {
+  margin-top: var(--mw-s2);
+}
+
+.mw-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mw-s3) var(--mw-s5);
+}
+
+/* Visible text beside a toggle. */
+.mw-toggle__label {
+  font-size: 14px;
+}
+
+/* Live character count under a message field, e.g. "118 / 160". */
+.mw-field__count {
+  color: var(--mw-text-muted);
+  font-size: 13px;
+  text-align: right;
+}
+
+/* What an SMS will look like on the phone. */
+.mw-preview {
+  display: grid;
+  gap: var(--mw-s2);
+  padding: var(--mw-s4);
+  border-radius: var(--mw-r-md);
+  background: var(--mw-neutral-bg);
+}
+
+.mw-preview__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mw-preview__text {
+  color: var(--mw-neutral-fg);
+  overflow-wrap: anywhere;
+}
+
+/* 5. Alerts
+   ========================================================================== */
+
+.mw-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mw-s3);
+  padding: var(--mw-s3) var(--mw-s4);
+  border: 1px solid transparent;
+  border-radius: var(--mw-r-sm);
+  background: var(--mw-neutral-bg);
+  color: var(--mw-neutral-fg);
+  font-weight: 600;
+}
+
+/* A flash message (data-flash) fades out first, then its row and the gap under it close up. */
+.mw-alert[data-flash] {
+  overflow: hidden;
+  transition:
+    opacity 250ms ease,
+    transform 250ms ease,
+    height 300ms ease 200ms,
+    padding 300ms ease 200ms,
+    margin 300ms ease 200ms,
+    border-width 300ms ease 200ms;
+}
+
+.mw-alert[data-flash].is-leaving {
+  margin-bottom: calc(-1 * var(--mw-s6));
+  padding-block: 0;
+  border-width: 0;
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.mw-alert__icon {
+  display: flex;
+  flex: none;
+}
+
+/* Second sentence of an alert, in regular weight after the bold lead. */
+.mw-alert__detail {
+  font-weight: 400;
+}
+
+/* Something that sits at the far end of the alert, e.g. a status chip. */
+.mw-alert__action {
+  flex: none;
+  margin-left: auto;
+}
+
+/* Chips inside an alert sit on white so they stand out from its tint. */
+.mw-alert .mw-chip {
+  background: var(--mw-surface);
+}
+
+/* Alert that walks through the steps of a process. */
+.mw-alert--steps {
+  flex-wrap: wrap;
+  align-items: center;
+  padding: var(--mw-s4) var(--mw-s5);
+}
+
+/* Steps in a process, separated by a chevron icon inside each later step. */
+.mw-steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mw-s2) var(--mw-s4);
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  list-style: none;
+}
+
+.mw-steps > li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mw-s4);
+}
+
+.mw-alert--success {
+  background: var(--mw-success-bg);
+  color: var(--mw-success-fg);
+}
+
+.mw-alert--error {
+  background: var(--mw-danger-bg);
+  color: var(--mw-danger-fg);
+}
+
+.mw-alert--warning {
+  background: var(--mw-warning-bg);
+  color: var(--mw-warning-fg);
+}
+
+.mw-alert--info {
+  background: var(--mw-info-bg);
+  color: var(--mw-info-fg);
+}
+
+/* A one-line status with an icon, e.g. "Connected in demo mode". */
+.mw-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mw-s2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.mw-status--success {
+  color: var(--mw-success-fg);
+}
+
+
+/* 6. Chips — status labels; the text always says the status
+   ========================================================================== */
+
+.mw-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  /* Invisible normally; drawn as an edge in forced colours without changing the size. */
+  outline: 1px solid transparent;
+  outline-offset: -1px;
+  border-radius: var(--mw-r-pill);
+  background: var(--mw-neutral-bg);
+  color: var(--mw-neutral-fg);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mw-chip--brand {
+  background: var(--mw-pink-100);
+  color: var(--mw-plum-700);
+}
+
+.mw-chip--success {
+  background: var(--mw-success-bg);
+  color: var(--mw-success-fg);
+}
+
+.mw-chip--warning {
+  background: var(--mw-warning-bg);
+  color: var(--mw-warning-fg);
+}
+
+.mw-chip--danger {
+  background: var(--mw-danger-bg);
+  color: var(--mw-danger-fg);
+}
+
+.mw-chip--info {
+  background: var(--mw-info-bg);
+  color: var(--mw-info-fg);
+}
+
+.mw-chip--lang {
+  background: var(--mw-lang-bg);
+  color: var(--mw-lang-fg);
+}
+
+
+/* 7. Callout — dashed box for tips and notes
+   ========================================================================== */
+
+.mw-callout {
+  display: grid;
+  gap: var(--mw-s1);
+  padding: var(--mw-s3) var(--mw-s4);
+  border: 1px dashed var(--mw-pink-300);
+  border-radius: var(--mw-r-md);
+  background: var(--mw-bg);
+  color: var(--mw-neutral-fg);
+}
+
+.mw-callout__title {
+  color: var(--mw-plum-700);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+
+/* 8. Cards
+   ========================================================================== */
+
+.mw-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mw-s4);
+  padding: var(--mw-s6);
+  border: 1px solid var(--mw-border);
+  border-radius: var(--mw-r-lg);
+  background: var(--mw-surface);
+  box-shadow: var(--mw-shadow-card);
+}
+
+.mw-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mw-s4);
+}
+
+.mw-card__title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.mw-card__action {
+  flex: none;
+  font-weight: 500;
+}
+
+.mw-card__body {
+  flex: 1;
+}
+
+/* Card whose content runs edge to edge, e.g. a filter bar above a table. */
+.mw-card--flush {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.mw-card--flush > .mw-card__header {
+  padding: var(--mw-s6) var(--mw-s6) 0;
+}
+
+.mw-card--flush .mw-empty {
+  margin: var(--mw-s6);
+}
+
+.mw-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--mw-s6);
+}
+
+.mw-card-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 1279px) {
+  .mw-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* An odd card out takes the full row. */
+  .mw-card-grid > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .mw-card-grid--2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .mw-card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* 9. Stats — KPI cards with a pink icon tile
+   ========================================================================== */
+
+.mw-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--mw-s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each card spans three rows of the grid (label, value, caption), so those
+   rows line up across cards even when one label wraps. */
+.mw-stat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+  column-gap: var(--mw-s3);
+  row-gap: var(--mw-s3);
+  padding: var(--mw-s4);
+  border: 1px solid var(--mw-border);
+  border-radius: var(--mw-r-lg);
+  background: var(--mw-surface);
+  box-shadow: var(--mw-shadow-card);
+}
+
+.mw-stat__label {
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--mw-neutral-fg);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mw-stat__icon {
+  display: grid;
+  place-items: center;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: start;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--mw-r-md);
+  background: var(--mw-pink-100);
+  color: var(--mw-plum-700);
+}
+
+.mw-stat__value {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.mw-stat__caption {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  padding-top: var(--mw-s2);
+  color: var(--mw-text-muted);
+  font-size: 13px;
+}
+
+@media (max-width: 1279px) {
+  .mw-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 599px) {
+  .mw-stat-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* 10. Lists — rows inside a card, split by hairlines
+   ========================================================================== */
+
+.mw-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Title and meta on the left, an optional chip on the right. */
+.mw-list__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--mw-s4);
+  row-gap: var(--mw-s1);
+  padding-block: var(--mw-s4);
+}
+
+.mw-list__item:first-child {
+  padding-top: 0;
+}
+
+.mw-list__item:last-child {
+  padding-bottom: 0;
+}
+
+.mw-list__item + .mw-list__item {
+  border-top: 1px solid var(--mw-border);
+}
+
+.mw-list__title {
+  grid-column: 1;
+  font-weight: 600;
+}
+
+.mw-list__meta {
+  grid-column: 1;
+  color: var(--mw-text-muted);
+  font-size: 13px;
+}
+
+.mw-list__item > .mw-chip {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+/* Message rows: the chip sits beside the name and the text runs full width,
+   cut to two lines. */
+.mw-list__item--message > .mw-chip {
+  grid-row: 1;
+}
+
+/* Inset rows on a tinted panel, e.g. an admin account or a setting with its control. */
+.mw-inset-list {
+  display: grid;
+  gap: var(--mw-s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mw-inset {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mw-s4);
+  padding: var(--mw-s4) var(--mw-s5);
+  border-radius: var(--mw-r-md);
+  background: var(--mw-bg);
+}
+
+.mw-inset__title {
+  font-weight: 600;
+}
+
+.mw-inset__meta {
+  color: var(--mw-text-muted);
+  font-size: 13px;
+}
+
+.mw-list__item--message > .mw-list__meta {
+  display: -webkit-box;
+  grid-column: 1 / -1;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+
+/* 11. Empty state
+   ========================================================================== */
+
+.mw-empty {
+  display: grid;
+  justify-items: start;
+  gap: var(--mw-s2);
+  padding: var(--mw-s5);
+  border-radius: var(--mw-r-md);
+  background: var(--mw-bg);
+}
+
+.mw-empty__title {
+  font-weight: 600;
+}
+
+.mw-empty__text {
+  color: var(--mw-text-muted);
+  font-size: 13px;
+}
+
+
+/* 12. Tables — always inside .mw-table-wrap so wide tables scroll sideways
+   ========================================================================== */
+
+/* Filter bar: a wider search field, then up to three filters. */
+.mw-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+  gap: var(--mw-s3);
+  padding: var(--mw-s5) var(--mw-s6);
+  border-bottom: 1px solid var(--mw-border);
+}
+
+/* A search field on its own. */
+.mw-filters--search {
+  grid-template-columns: minmax(0, 440px);
+}
+
+/* position: relative keeps screen-reader-only text in the cells inside the
+   scroll area, so it can't widen the page. */
+.mw-table-wrap {
+  position: relative;
+  overflow-x: auto;
+  /* A focused control scrolls fully into view, not just to the edge. */
+  scroll-padding-inline: var(--mw-s6);
+}
+
+/* A wrap made focusable (tabindex="0") so a keyboard can scroll it; the ring sits inside the card. */
+.mw-table-wrap:focus-visible {
+  outline-offset: -2px;
+}
+
+.mw-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+/* Many columns: keep them readable and scroll sideways instead. */
+.mw-table--wide {
+  min-width: 1120px;
+}
+
+/* A short table, e.g. four columns: fits narrower screens before it scrolls. */
+.mw-table--compact {
+  min-width: 560px;
+}
+
+/* Columns keep the same widths from one table to the next, e.g. across tabs.
+   Size them with __col-sm, __col-md and __col-lg on the header cells. */
+.mw-table--fixed {
+  table-layout: fixed;
+}
+
+.mw-table__col-sm {
+  width: 15%;
+}
+
+.mw-table__col-md {
+  width: 25%;
+}
+
+.mw-table__col-lg {
+  width: 38%;
+}
+
+.mw-table th,
+.mw-table td {
+  padding: var(--mw-s4) var(--mw-s3);
+  text-align: left;
+  vertical-align: middle;
+}
+
+/* The column that names the record gets room for a two-line name. */
+.mw-table__main {
+  width: 20%;
+}
+
+/* A column of running text, e.g. an SMS message, takes most of the width. */
+.mw-table__long {
+  width: 45%;
+}
+
+.mw-table th:first-child,
+.mw-table td:first-child {
+  padding-left: var(--mw-s6);
+}
+
+.mw-table th:last-child,
+.mw-table td:last-child {
+  padding-right: var(--mw-s6);
+}
+
+.mw-table thead th {
+  padding-block: var(--mw-s3);
+  border-bottom: 1px solid var(--mw-border);
+  color: var(--mw-neutral-fg);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mw-table tbody tr + tr {
+  border-top: 1px solid var(--mw-border);
+}
+
+.mw-table tbody tr:hover {
+  background: var(--mw-bg);
+}
+
+.mw-table__name {
+  display: block;
+  font-weight: 600;
+}
+
+.mw-table__sub {
+  display: block;
+  margin-top: var(--mw-s1);
+  color: var(--mw-text-muted);
+  font-size: 13px;
+}
+
+.mw-table__nowrap {
+  white-space: nowrap;
+}
+
+/* A record ID, e.g. IN-1001. */
+.mw-table__id {
+  color: var(--mw-plum-700);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* A column whose controls all need JavaScript: hidden until the script runs. */
+html:not(.has-js) .mw-table__js {
+  display: none;
+}
+
+.mw-table__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mw-s1) var(--mw-s3);
+  white-space: nowrap;
+}
+
+/* A status chip with an action under it, e.g. Failed and Resend. */
+.mw-table__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--mw-s1);
+}
+
+/* Below 1280px the content area is too narrow for four filters in a row. */
+@media (max-width: 1279px) {
+  .mw-filters:not(.mw-filters--search) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 599px) {
+  .mw-filters,
+  .mw-filters--search {
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline: var(--mw-s4);
+  }
+}
+
+
+/* 13. Tabs — pill tabs; without JavaScript every panel shows with its own heading
+   ========================================================================== */
+
+.mw-tabs__list {
+  display: none;
+  flex-wrap: wrap;
+  gap: var(--mw-s2);
+  padding: var(--mw-s4) var(--mw-s6);
+  border-bottom: 1px solid var(--mw-border);
+}
+
+.has-js .mw-tabs__list {
+  display: flex;
+}
+
+/* Section links on one page, styled like tabs. They work without JavaScript. */
+.mw-tabs__list--nav {
+  display: flex;
+  margin: 0;
+  list-style: none;
+}
+
+a.mw-tabs__tab {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.mw-tabs__tab {
+  padding: var(--mw-s2) var(--mw-s4);
+  border: 1px solid transparent;
+  border-radius: var(--mw-r-sm);
+  background: transparent;
+  color: var(--mw-text-muted);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.mw-tabs__tab:hover {
+  background: var(--mw-pink-100);
+  color: var(--mw-plum-800);
+}
+
+.mw-tabs__tab[aria-selected="true"],
+.mw-tabs__tab[aria-current="true"] {
+  background: var(--mw-plum-700);
+  color: var(--mw-surface);
+}
+
+.mw-tabs__tab:disabled {
+  background: transparent;
+  color: var(--mw-text-muted);
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+@media (forced-colors: active) {
+  .mw-tabs__tab[aria-selected="true"],
+  .mw-tabs__tab[aria-current="true"] {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+.mw-tabs__panel-title {
+  padding: var(--mw-s5) var(--mw-s6) var(--mw-s3);
+  font-size: 16px;
+}
+
+/* Underline tabs on the page background, with each panel's card below. */
+.mw-tabs--line > .mw-tabs__list {
+  gap: var(--mw-s2);
+  padding: 0;
+}
+
+.mw-tabs--line .mw-tabs__tab {
+  padding: var(--mw-s3) var(--mw-s5);
+  border-width: 0 0 2px;
+  border-radius: 0;
+}
+
+.mw-tabs--line .mw-tabs__tab:hover {
+  border-bottom-color: var(--mw-border);
+  background: transparent;
+}
+
+.mw-tabs--line .mw-tabs__tab[aria-selected="true"],
+.mw-tabs--line .mw-tabs__tab[aria-current="true"] {
+  border-bottom-color: var(--mw-plum-700);
+  background: transparent;
+  color: var(--mw-plum-700);
+}
+
+.mw-tabs--line > .mw-tabs__panel {
+  margin-top: var(--mw-s5);
+}
+
+.mw-tabs--line .mw-tabs__panel-title {
+  padding: var(--mw-s5) 0 var(--mw-s3);
+}
+
+
+/* 14. Charts — static inline SVG; the numbers are also in a table for screen readers
+   ========================================================================== */
+
+/* The SVG is drawn at 440 units wide and never grows past 480px, so its text stays
+   near its set size. Narrow charts scale down, so the text is set larger there. */
+.mw-chart {
+  margin: 0;
+  overflow-x: auto;
+  container-type: inline-size;
+}
+
+.mw-chart__svg {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  margin-inline: auto;
+}
+
+.mw-chart__grid {
+  stroke: color-mix(in srgb, var(--mw-text-muted) 30%, transparent);
+  stroke-dasharray: 4 4;
+}
+
+.mw-chart__axis {
+  stroke: var(--mw-neutral-fg);
+}
+
+.mw-chart__tick {
+  fill: var(--mw-neutral-fg);
+  font-size: 14px;
+}
+
+.mw-chart__label {
+  fill: var(--mw-text-muted);
+  font-size: 12px;
+}
+
+@container (max-width: 400px) {
+  .mw-chart__tick {
+    font-size: 18px;
+  }
+
+  .mw-chart__label {
+    font-size: 16px;
+  }
+}
+
+.mw-chart__bar {
+  fill: currentColor;
+}
+
+.mw-chart__line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mw-chart__dot {
+  fill: var(--mw-surface);
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+/* Series colours. Lines and legend use the token itself so the legend text stays readable;
+   the bars use lighter tints mixed from the tokens, as in the design. */
+.mw-chart__series--1 {
+  color: var(--mw-plum-700);
+}
+
+.mw-chart__series--2 {
+  color: var(--mw-warning-fg);
+}
+
+.mw-chart__series--3 {
+  color: var(--mw-danger-fg);
+}
+
+.mw-chart__bar.mw-chart__series--2 {
+  color: color-mix(in oklch, var(--mw-warning-fg) 55%, var(--mw-warning-bg));
+}
+
+.mw-chart__bar.mw-chart__series--muted {
+  color: color-mix(in srgb, var(--mw-text-muted) 55%, var(--mw-surface));
+}
+
+/* Each line series also has its own weight or dash, in the plot and in the legend,
+   so the lines can be told apart without colour. */
+:is(.mw-chart__line, .mw-chart__dot):is(.mw-chart__series--1, .mw-chart__series--1 *) {
+  stroke-width: 3;
+}
+
+.mw-chart__line:is(.mw-chart__series--2, .mw-chart__series--2 *) {
+  stroke-dasharray: 8 5;
+}
+
+.mw-chart__line:is(.mw-chart__series--3, .mw-chart__series--3 *) {
+  stroke-dasharray: 2 5;
+}
+
+.mw-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--mw-s2) var(--mw-s5);
+  margin: var(--mw-s3) 0 0;
+  padding: 0;
+  font-weight: 500;
+  list-style: none;
+}
+
+.mw-chart__legend > li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mw-s2);
+}
+
+@media (forced-colors: active) {
+  .mw-chart__tick,
+  .mw-chart__label,
+  .mw-chart__bar {
+    fill: CanvasText;
+  }
+
+  .mw-chart__axis,
+  .mw-chart__line,
+  .mw-chart__dot {
+    stroke: CanvasText;
+  }
+
+  .mw-chart__grid {
+    stroke: GrayText;
+  }
+}
+
+
+/* 15. Links
+   ========================================================================== */
+
+.mw-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mw-s2);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mw-plum-700);
+  font: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mw-link:hover {
+  color: var(--mw-plum-800);
+  text-decoration: underline;
+}
+
+.mw-link:disabled {
+  color: var(--mw-text-muted);
+  text-decoration: none;
+  cursor: not-allowed;
+}
+
+@media (forced-colors: active) {
+  button.mw-link {
+    color: LinkText;
+  }
+}
+
+.mw-breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mw-s2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mw-breadcrumb__list > li + li::before {
+  content: "/";
+  content: "/" / "";
+  margin-right: var(--mw-s2);
+  color: var(--mw-text-muted);
+}
+
+.mw-breadcrumb__link {
+  color: var(--mw-text-muted);
+  text-decoration: none;
+}
+
+.mw-breadcrumb__link:hover {
+  color: var(--mw-plum-700);
+  text-decoration: underline;
+}
+
+.mw-breadcrumb__current {
+  font-weight: 600;
+}
+
+
+/* 16. Brand — logo tile, wordmark and signed-in user
+   ========================================================================== */
+
+.mw-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--mw-s4);
+  color: var(--mw-surface);
+}
+
+/* The MOWMMAS logo (the same emblem as the mother side) on a light tile, so its colours read on plum. */
+.mw-brand__mark {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  padding: 7px;
+  border-radius: var(--mw-r-lg);
+  background: var(--mw-surface);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mw-surface) 14%, transparent);
+}
+
+/* The emblem is taller than wide: fit it to the tile's height. */
+.mw-logo-mark {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mw-logo-mark__drop {
+  fill: var(--mw-bg);
+}
+
+.mw-logo-mark__baby {
+  fill: var(--mw-pink-300);
+}
+
+.mw-logo-mark__plus {
+  fill: none;
+  stroke: var(--mw-pink-300);
+  stroke-linecap: round;
+  stroke-width: 1.2;
+}
+
+.mw-brand__name {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.mw-brand__full {
+  color: var(--mw-pink-300);
+  font-size: 13px;
+}
+
+.mw-brand--sm {
+  gap: var(--mw-s3);
+}
+
+.mw-brand--sm .mw-brand__mark {
+  width: 40px;
+  height: 40px;
+  padding: 4px;
+  border-radius: var(--mw-r-md);
+}
+
+.mw-brand--sm .mw-brand__name {
+  font-size: 18px;
+}
+
+.mw-user {
+  display: flex;
+  align-items: center;
+  gap: var(--mw-s3);
+}
+
+.mw-user__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--mw-r-pill);
+  background: var(--mw-pink-300);
+  color: var(--mw-plum-900);
+}
+
+/* The text beside the avatar may shrink, so a long name or email never runs out of the card. */
+.mw-user > :not(.mw-user__avatar) {
+  flex: 1;
+  min-width: 0;
+}
+
+.mw-user__name {
+  overflow: hidden;
+  color: var(--mw-surface);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mw-user__role {
+  overflow: hidden;
+  color: var(--mw-pink-100);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* 17. Modal — a native <dialog class="mw-modal"> opened with showModal()
+   ========================================================================== */
+
+.mw-modal {
+  width: min(576px, calc(100vw - var(--mw-s8)));
+  max-height: calc(100vh - var(--mw-s8));
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid transparent;
+  border-radius: var(--mw-r-lg);
+  background: var(--mw-surface);
+  color: var(--mw-text);
+  box-shadow: var(--mw-shadow-modal);
+}
+
+/* The page behind a dialog is dimmed and blurred. */
+.mw-modal::backdrop {
+  background: color-mix(in srgb, var(--mw-text) 45%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+:root:has(.mw-modal[open]) {
+  overflow: hidden;
+}
+
+.mw-modal__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mw-s3);
+  padding: var(--mw-s5) var(--mw-s6);
+  border-bottom: 1px solid var(--mw-border);
+  background: var(--mw-surface);
+}
+
+.mw-modal__heading {
+  display: grid;
+  flex: 1;
+  gap: var(--mw-s1);
+}
+
+.mw-modal__close {
+  margin: calc(var(--mw-s2) * -1) calc(var(--mw-s2) * -1) calc(var(--mw-s2) * -1) 0;
+  color: var(--mw-text);
+}
+
+.mw-modal__body {
+  display: grid;
+  gap: var(--mw-s5);
+  padding: var(--mw-s6);
+}
+
+/* Buttons at the end of the dialog. In a long form they scroll with the fields. */
+.mw-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--mw-s3);
+  padding: 0 var(--mw-s6) var(--mw-s6);
+}
+
+
+/* 18. Toast — one aria-live region per page, bottom right
+   ========================================================================== */
+
+.mw-toast-region {
+  position: fixed;
+  right: var(--mw-s6);
+  bottom: var(--mw-s6);
+  z-index: 60;
+  display: grid;
+  gap: var(--mw-s2);
+  pointer-events: none;
+}
+
+.mw-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--mw-s3);
+  max-width: 360px;
+  padding: var(--mw-s3) var(--mw-s4);
+  border: 1px solid transparent;
+  border-radius: var(--mw-r-md);
+  background: var(--mw-text);
+  color: var(--mw-surface);
+  box-shadow: var(--mw-shadow-modal);
+  font-weight: 500;
+  pointer-events: auto;
+}
+
+.mw-toast__icon {
+  color: var(--mw-success-bg);
+}
+
+@media (max-width: 599px) {
+  .mw-toast-region {
+    right: var(--mw-s4);
+    bottom: var(--mw-s4);
+    left: var(--mw-s4);
+  }
+}
+
+
+/* 19. App shell — sidebar, topbar and page
+   ========================================================================== */
+
+.mw-app {
+  display: grid;
+  grid-template-columns: var(--mw-sidebar-w) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.mw-app__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mw-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mw-s6);
+  height: 100vh;
+  padding: var(--mw-s5) var(--mw-s4);
+  overflow-y: auto;
+  background: var(--mw-plum-900);
+  color: var(--mw-pink-100);
+}
+
+/* The plum focus ring would vanish on the plum sidebar. */
+.mw-sidebar :focus-visible {
+  outline-color: var(--mw-pink-300);
+}
+
+.mw-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mw-s3);
+  padding-inline: var(--mw-s1);
+}
+
+.mw-nav {
+  flex: 1;
+}
+
+.mw-nav__list {
+  display: grid;
+  gap: var(--mw-s1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mw-nav__link {
+  display: flex;
+  align-items: center;
+  gap: var(--mw-s3);
+  padding: var(--mw-s3) var(--mw-s4);
+  border-radius: var(--mw-r-md);
+  color: var(--mw-pink-100);
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.mw-nav__link:hover {
+  background: color-mix(in srgb, var(--mw-surface) 8%, transparent);
+  color: var(--mw-surface);
+}
+
+/* Current page: <body data-page="…"> matches the link's data-nav, so the
+   sidebar markup stays byte-identical on every page. */
+:is(
+  [data-page="dashboard"] [data-nav="dashboard"],
+  [data-page="facilities"] [data-nav="facilities"],
+  [data-page="donation-inquiries"] [data-nav="donation-inquiries"],
+  [data-page="milk-requests"] [data-nav="milk-requests"],
+  [data-page="records-reports"] [data-nav="records-reports"],
+  [data-page="sms-notifications"] [data-nav="sms-notifications"],
+  [data-page="settings"] [data-nav="settings"]
+) {
+  background: var(--mw-surface);
+  color: var(--mw-plum-900);
+  font-weight: 600;
+
+  @media (forced-colors: active) {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+.mw-sidebar__account {
+  display: grid;
+  gap: var(--mw-s3);
+  padding: var(--mw-s3);
+  border-radius: var(--mw-r-md);
+  background: color-mix(in srgb, var(--mw-surface) 6%, transparent);
+}
+
+.mw-sidebar__account-label {
+  color: var(--mw-pink-300);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mw-sidebar__signout {
+  display: flex;
+  align-items: center;
+  gap: var(--mw-s3);
+  padding-top: var(--mw-s3);
+  border-top: 1px solid color-mix(in srgb, var(--mw-surface) 12%, transparent);
+  color: var(--mw-pink-300);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.mw-sidebar__signout:hover {
+  color: var(--mw-surface);
+}
+
+.mw-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--mw-s3);
+  padding: var(--mw-s3) var(--mw-page-pad);
+  border-bottom: 1px solid var(--mw-border);
+  background: var(--mw-surface);
+}
+
+.mw-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--mw-s3);
+  margin-left: auto;
+}
+
+.mw-topbar__env {
+  color: var(--mw-text-muted);
+  font-size: 13px;
+}
+
+.mw-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mw-s5);
+  width: 100%;
+  max-width: var(--mw-content-max);
+  padding: var(--mw-page-pad);
+}
+
+.mw-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--mw-text) 45%, transparent);
+}
+
+.has-drawer-open {
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .mw-topbar__menu,
+  .mw-sidebar__close,
+  .mw-drawer-backdrop {
+    display: none;
+  }
+}
+
+/* Below 1024px the sidebar becomes an off-canvas drawer. Without JavaScript
+   it sits above the page instead, so the navigation is never out of reach. */
+@media (max-width: 1023px) {
+  .mw-app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mw-sidebar {
+    position: static;
+    height: auto;
+  }
+
+  .has-js .mw-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 30;
+    width: min(var(--mw-sidebar-w), calc(100vw - var(--mw-s8)));
+    border-right: 1px solid transparent;
+    box-shadow: var(--mw-shadow-modal);
+    transform: translateX(-100%);
+    visibility: hidden;
+  }
+
+  .has-js .mw-sidebar.is-open {
+    transform: none;
+    visibility: visible;
+  }
+}
+
+@media (max-width: 719px) {
+  .mw-topbar,
+  .mw-page {
+    padding-inline: var(--mw-s4);
+  }
+
+  .mw-page {
+    padding-block: var(--mw-s6);
+    gap: var(--mw-s6);
+  }
+
+  /* Only the current page fits in the breadcrumb on a phone. */
+  .mw-breadcrumb__list > li:not(:last-child),
+  .mw-breadcrumb__list > li:last-child::before {
+    display: none;
+  }
+}
+
+
+/* 20. Auth layout — full-screen split for sign-in pages:
+   the plum panel on the left, the sign-in form on the right, edge to edge.
+   ========================================================================== */
+
+.mw-auth {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.mw-auth__card {
+  display: grid;
+  grid-template-columns: 45fr 55fr;
+  flex: 1;
+  width: 100%;
+  background: var(--mw-surface);
+}
+
+.mw-auth__brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mw-s8);
+  padding: clamp(var(--mw-s8), 5vw, 72px);
+  overflow: hidden;
+  background: var(--mw-plum-900);
+  color: var(--mw-surface);
+}
+
+/* Decorative circle in the lower corner, sized to the screen. */
+.mw-auth__brand::after {
+  content: "";
+  position: absolute;
+  right: -80px;
+  bottom: -96px;
+  width: clamp(288px, 30vw, 520px);
+  height: clamp(288px, 30vw, 520px);
+  border-radius: 50%;
+  background: var(--mw-plum-700);
+}
+
+/* The tagline sits in the middle of the panel and grows on large screens. */
+.mw-auth__tagline {
+  margin-top: auto;
+  font-size: clamp(18px, 2.2vw, 34px);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+/* The note sits at the bottom of the panel. */
+.mw-auth__note {
+  max-width: 440px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+  padding: var(--mw-s4);
+  border: 1px solid color-mix(in srgb, var(--mw-surface) 12%, transparent);
+  border-radius: var(--mw-r-md);
+  background: color-mix(in srgb, var(--mw-surface) 6%, transparent);
+  color: var(--mw-pink-100);
+  font-size: 13px;
+}
+
+/* The form column is centred in the white side and keeps a readable width. */
+.mw-auth__main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--mw-s6);
+  width: 100%;
+  max-width: calc(520px + 2 * clamp(var(--mw-s8), 5vw, 72px));
+  margin-inline: auto;
+  padding: clamp(var(--mw-s8), 5vw, 72px);
+}
+
+/* Narrow two-column range: give the wordmark room next to the logo tile. */
+@media (min-width: 720px) and (max-width: 839px) {
+  .mw-auth__brand {
+    padding-inline: var(--mw-s6);
+  }
+}
+
+@media (max-width: 719px) {
+  .mw-auth__card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  /* The plum panel shrinks to a compact header with the logo and wordmark. */
+  .mw-auth__brand {
+    padding: var(--mw-s5) var(--mw-s6);
+  }
+
+  .mw-auth__brand::after,
+  .mw-auth__tagline,
+  .mw-auth__note {
+    display: none;
+  }
+
+  .mw-auth__brand .mw-brand__mark {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--mw-r-md);
+  }
+
+  .mw-auth__brand .mw-brand__name {
+    font-size: 18px;
+  }
+
+  .mw-auth__main {
+    justify-content: flex-start;
+    max-width: none;
+    padding: var(--mw-s6);
+  }
+}
+
+
+/* 21. Motion — only when the user hasn't asked to reduce it
+   ========================================================================== */
+
+@keyframes mw-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  .mw-btn,
+  .mw-icon-btn,
+  .mw-input,
+  .mw-input-group__button,
+  .mw-link,
+  .mw-breadcrumb__link,
+  .mw-nav__link,
+  .mw-sidebar__signout {
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+
+  .mw-skip-link {
+    transition: transform 150ms ease;
+  }
+
+  .mw-toggle__input,
+  .mw-toggle__input::before {
+    transition: background-color 150ms ease, transform 150ms ease;
+  }
+
+  .mw-spinner {
+    animation: mw-spin 800ms linear infinite;
+  }
+
+  /* Visibility waits for the slide-out to finish before hiding the drawer. */
+  .has-js .mw-sidebar {
+    transition: transform 180ms ease, visibility 0s linear 180ms;
+  }
+
+  .has-js .mw-sidebar.is-open {
+    transition: transform 180ms ease;
+  }
+}
+
+
+/* 22. Utilities — last, so they win over component rules of equal weight
+   ========================================================================== */
+
+/* Text that needs attention, e.g. a record that is overdue for an update. */
+.mw-text-warning {
+  color: var(--mw-warning-fg);
+  font-weight: 600;
+}
+
+/* Secondary text, e.g. "Not yet referred". */
+.mw-text-muted {
+  color: var(--mw-text-muted);
+}
+
+/* Hidden on screen, still read by screen readers. */
+.mw-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* 23. Notifications — the bell in the top bar and its panel
+   ========================================================================== */
+
+.mw-notify {
+  position: relative;
+}
+
+.mw-notify .mw-icon-btn {
+  position: relative;
+}
+
+.mw-notify .mw-icon-btn[aria-expanded="true"] {
+  border-color: var(--mw-plum-700);
+  background: var(--mw-pink-100);
+}
+
+/* Count on the bell */
+.mw-notify__badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 2px solid var(--mw-surface);
+  border-radius: var(--mw-r-pill);
+  background: var(--mw-plum-700);
+  color: var(--mw-surface);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+.mw-notify__panel {
+  position: absolute;
+  top: calc(100% + var(--mw-s2));
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  width: min(380px, calc(100vw - 2 * var(--mw-s4)));
+  max-height: min(560px, calc(100vh - 96px));
+  overflow: hidden;
+  border: 1px solid var(--mw-border);
+  border-radius: var(--mw-r-lg);
+  background: var(--mw-surface);
+  box-shadow: var(--mw-shadow-modal);
+}
+
+.mw-notify__panel[hidden] {
+  display: none;
+}
+
+.mw-notify__header {
+  flex: none;
+  padding: var(--mw-s4) var(--mw-s5) var(--mw-s3);
+  border-bottom: 1px solid var(--mw-border);
+}
+
+.mw-notify__title {
+  color: var(--mw-text);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.mw-notify__summary {
+  margin-top: 2px;
+  color: var(--mw-text-muted);
+  font-size: 13px;
+}
+
+.mw-notify__list {
+  display: grid;
+  gap: var(--mw-s1);
+  margin: 0;
+  padding: var(--mw-s2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.mw-notify__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mw-s3);
+  padding: var(--mw-s3);
+  border: 1px solid transparent;
+  border-radius: var(--mw-r-md);
+  color: inherit;
+  text-decoration: none;
+}
+
+.mw-notify__item:hover {
+  background: var(--mw-bg);
+}
+
+.mw-notify__item:focus-visible {
+  border-color: var(--mw-plum-700);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--mw-pink-100);
+}
+
+/* Round icon tile, tinted by kind */
+.mw-notify__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--mw-r-pill);
+  background: var(--mw-pink-100);
+  color: var(--mw-plum-700);
+}
+
+.mw-notify__icon--request {
+  background: var(--mw-lang-bg);
+  color: var(--mw-lang-fg);
+}
+
+.mw-notify__icon--inquire {
+  background: var(--mw-info-bg);
+  color: var(--mw-info-fg);
+}
+
+.mw-notify__icon--facility {
+  background: var(--mw-warning-bg);
+  color: var(--mw-warning-fg);
+}
+
+.mw-notify__text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mw-notify__item-title {
+  color: var(--mw-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mw-notify__meta {
+  color: var(--mw-text-muted);
+  font-size: 13px;
+}
+
+.mw-notify__when {
+  white-space: nowrap;
+}
+
+.mw-notify__empty {
+  padding: var(--mw-s6) var(--mw-s5);
+  color: var(--mw-text-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+
+/* 24. A mother's submission: the View dialog and the names that open it
+   ========================================================================== */
+
+/* A name that opens a submission (Records & reports) lines up with the text under it when it wraps. */
+.mw-table .mw-link {
+  text-align: left;
+}
+
+/* View, Refer and Send SMS one under the other, so every row lines up the same. */
+.mw-table__actions--stack {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--mw-s2);
+}
+
+/* A long word, like a link in a message, wraps instead of widening the dialog. */
+.mw-modal .mw-list__title,
+.mw-modal .mw-list__meta {
+  overflow-wrap: anywhere;
+}
+
+
+/* 25. Pages under a long table (Facilities, Records & reports History): 10 rows a page
+   ========================================================================== */
+
+.mw-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mw-s3);
+  padding: var(--mw-s4) var(--mw-s6);
+  border-top: 1px solid var(--mw-border);
+}
+
+.mw-pager__summary {
+  color: var(--mw-text-muted);
+  font-size: 13px;
+}
+
+.mw-pager__pages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mw-s2);
+}
+
+.mw-pager__pages .mw-btn {
+  min-width: 36px;
+}
+
+.mw-pager__gap {
+  padding-inline: var(--mw-s1);
+  color: var(--mw-text-muted);
+}
