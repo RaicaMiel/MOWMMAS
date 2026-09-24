@@ -8,7 +8,7 @@
   "functions": {
     "api/index.js": {
       "includeFiles": "User/Mother/Backend/data/**",
-      "maxDuration": 30
+      "maxDuration": 60
     }
   }
 }

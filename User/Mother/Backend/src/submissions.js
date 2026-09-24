@@ -6,8 +6,11 @@
                                       { value, fields } — `fields` is null when
                                       everything is fine, otherwise
                                       { fieldName: "friendly message" }
-   create(payload)                    validates and saves a new submission,
-                                      giving it a reference like MOW-D-2026-00001
+   prepare(payload), save(form)       checks a form, then saves it in Firestore
+                                      (submissions/<ref>), giving it a reference
+                                      like MOW-D-2026-00001; resolves with
+                                      { summary, submission, again }
+   create(payload)                    the two in one
    lookup(ref, mobile)                the mother's own view of one submission
                                       (null unless BOTH ref and mobile match)
    publicView(submission, notifications, facility?)
@@ -16,8 +19,9 @@
 
    Field names in `fields` are the plain input names (name, mobile, age,
    preferredDate, willingToScreen, …). They never clash across the three forms. */
-const store = require('./store');
+const cloud = require('./cloud');
 const facilities = require('./facilities');
+const adminSubmissions = require('../../../Admin/Backend/src/submissions');
 const { TYPES, FINAL, statusLabel } = require('./statuses');
 const { httpError } = require('./http');
 
@@ -50,7 +54,7 @@ const INQUIRE = {
 };
 
 const MOBILE_HINT = 'Please enter a mobile number like 0917 123 4567';
-const REF_PATTERN = /^MOW-([DRI])-(\d{4})-(\d{5,})$/;
+const REF_PATTERN = /^MOW-([DRI])-(\d{4})-(\d{5,9})$/;
 
 /* ───────────────────────── small helpers ───────────────────────── */
 
@@ -302,22 +306,6 @@ function validate(payload, facility, municipalities) {
 
 /* ───────────────────────── create ───────────────────────── */
 
-/* References that must not be handed out again even if they are no longer in
-   data/submissions.json (e.g. the file was cleared). The server plugs in the
-   Firestore sync's list of references it has already sent. */
-let usedRefsSource = () => [];
-function reserveRefs(source) {
-  if (typeof source === 'function') usedRefsSource = source;
-}
-function usedRefs() {
-  try {
-    const refs = usedRefsSource();
-    return Array.isArray(refs) ? refs : [];
-  } catch (err) {
-    return [];
-  }
-}
-
 function summary(sub) {
   return {
     ref: sub.ref,
@@ -331,49 +319,63 @@ function summary(sub) {
   };
 }
 
-function create(payload) {
+const SAVE_KEY = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/* Checks a form (400/422 when something needs fixing) and resolves with what save() needs.
+   saveKey: the key the form page makes for each fill, sent again with every try */
+async function prepare(payload) {
   if (!isObject(payload)) throw httpError(400, 'Please send the form details as a JSON object.');
 
-  const data = facilities.list();
+  const data = await facilities.list();
   const wantedId = text(payload.facilityId);
   const facility = data.facilities.find((f) => f.id === wantedId) || null;
   const { value, fields } = validate(payload, facility, (data.municipalities || []).map((m) => m.name));
   if (fields) {
     throw httpError(422, 'Some details need a quick fix. Please check the highlighted fields.', fields);
   }
+  // The page's key plus the answers themselves: the same form sent again is one save, but
+  // answers she changed before sending again (e.g. a fixed mobile number) are a new form
+  const key = typeof payload.saveId === 'string' && SAVE_KEY.test(payload.saveId) ? payload.saveId.toLowerCase() : null;
+  const saveKey = key ? key + '.' + cloud.hash(JSON.stringify([value.type, value.facilityId, value.contact, value.details])).slice(0, 32) : null;
+  return { value, facility, saveKey };
+}
 
-  const saved = store.update('submissions', [], (list) => {
-    if (!Array.isArray(list)) {
-      throw new Error(`${store.file('submissions')} should contain a list ([ … ]).`);
-    }
-    // Reference numbers are made inside the lock, so two mothers sending a
-    // form at the same moment (even through different backends) never share one.
-    const now = new Date();
-    const at = now.toISOString();
-    const year = manilaDate(now).slice(0, 4);
-    let max = 0;
-    for (const ref of list.map((s) => s && s.ref).concat(usedRefs())) {
-      const m = typeof ref === 'string' && REF_PATTERN.exec(ref);
-      if (m && m[2] === year) max = Math.max(max, Number(m[3]));
-    }
-    const submission = {
-      ref: `MOW-${TYPES[value.type].refLetter}-${year}-${String(max + 1).padStart(5, '0')}`,
-      type: value.type,
-      facilityId: facility.id,
-      facilityName: facility.name,
-      status: 'submitted',
-      statusHistory: [{ status: 'submitted', at, by: 'mother', note: null }],
-      contact: value.contact,
-      details: value.details,
-      consent: true,
-      createdAt: at,
-      updatedAt: at
-    };
-    list.push(submission);
-    return submission;
-  });
+/* Saves a checked form. Resolves with { summary, submission, again }: again is true when
+   the same form was saved before (its answer was lost, and she pressed Send again), and
+   that first submission is what comes back, so she never ends up with two. */
+async function save(form) {
+  const { value, facility, saveKey } = form;
 
-  return summary(saved);
+  // The reference number and the submission are saved together (cloud.js), so two
+  // mothers sending a form at the same moment never share one.
+  const at = new Date().toISOString();
+  let submission = null;
+  const saved = await cloud.createSubmission({
+    refFor: (number, year) => `MOW-${TYPES[value.type].refLetter}-${year}-${String(number).padStart(5, '0')}`,
+    record: (ref) => {
+      submission = {
+        ref,
+        type: value.type,
+        facilityId: facility.id,
+        facilityName: facility.name,
+        status: 'submitted',
+        statusHistory: [{ status: 'submitted', at, by: 'mother', note: null }],
+        contact: value.contact,
+        details: value.details,
+        consent: true,
+        createdAt: at,
+        updatedAt: at
+      };
+      // The same document the admin pages have always read (see Admin/Backend/src/submissions.js)
+      return adminSubmissions.toRecord(submission);
+    }
+  }, saveKey);
+  if (saved.again) return { summary: summary(saved.record), submission: saved.record, again: true };
+  return { summary: summary(submission), submission, again: false };
+}
+
+async function create(payload) {
+  return save(await prepare(payload));
 }
 
 /* ───────────────────────── the mother's view ───────────────────────── */
@@ -427,20 +429,19 @@ function publicView(submission, notifications, facility) {
 
 /* Returns the public view only when the reference AND the mobile number match.
    Anything else returns null, so nobody can tell whether a reference exists. */
-function lookup(ref, mobile) {
+async function lookup(ref, mobile) {
   const wantedRef = normalizeRef(ref);
   const wantedMobile = normalizeMobile(mobile);
   if (!wantedRef || !wantedMobile) return null;
 
-  const list = store.read('submissions', []);
-  const sub = Array.isArray(list) ? list.find((s) => s && s.ref === wantedRef) : null;
+  const sub = await cloud.getSubmission(wantedRef);
   if (!sub || !sub.contact || normalizeMobile(sub.contact.mobile) !== wantedMobile) return null;
 
-  const notifications = store.read('notifications', []);
+  const notifications = await cloud.notesFor(sub.ref);
   let facility = null;
   try {
     // The facility she was referred to, if the admin referred her; else the one she chose
-    facility = facilities.get((sub.referral && sub.referral.facilityId) || sub.facilityId).facility;
+    facility = (await facilities.get((sub.referral && sub.referral.facilityId) || sub.facilityId)).facility;
   } catch (err) {
     // No facility data right now — show the name saved with the submission instead
   }
@@ -457,8 +458,9 @@ module.exports = {
   normalizeRef,
   firstName,
   validate,
+  prepare,
+  save,
   create,
-  reserveRefs,
   publicView,
   lookup
 };

@@ -158,8 +158,9 @@
     facilities: function () { return request('/facilities'); },
     facility: function (id) { return request('/facilities/' + encodeURIComponent(id)); },
     submit: function (payload) { return request('/submissions', { method: 'POST', body: payload }); },
+    // Sent in the body, so her mobile number never shows in an address (hosts log addresses)
     status: function (ref, mobile) {
-      return request('/submissions/' + encodeURIComponent(ref) + '?mobile=' + encodeURIComponent(util.normalizeMobile(mobile)));
+      return request('/submissions/track', { method: 'POST', body: { ref: ref, mobile: util.normalizeMobile(mobile) } });
     },
 
     /* The submissions saved on this device that MOWMMAS no longer has (e.g. removed by
@@ -172,12 +173,18 @@
         sessionStorage.setItem(KEY, String(Date.now()));
       } catch (e) { /* storage unavailable: check anyway */ }
       var saved = util.recentSubmissions().filter(function (s) { return s && s.ref && s.mobile; });
-      return Promise.all(saved.map(function (s) {
-        return api.status(s.ref, s.mobile).then(function () { return 0; }, function (err) {
-          if (err && err.status === 404) { util.forgetSubmission(s.ref); return 1; }
-          return 0;
+      // One after another (not all at once), stopping if MOWMMAS says "too many tries"
+      var stop = false;
+      return saved.reduce(function (done, s) {
+        return done.then(function (removed) {
+          if (stop) return removed;
+          return api.status(s.ref, s.mobile).then(function () { return removed; }, function (err) {
+            if (err && err.status === 404) { util.forgetSubmission(s.ref); return removed + 1; }
+            if (err && err.status === 429) stop = true;
+            return removed;
+          });
         });
-      })).then(function (removed) { return removed.reduce(function (a, b) { return a + b; }, 0); });
+      }, Promise.resolve(0));
     }
   };
 

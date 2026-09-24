@@ -27,7 +27,7 @@ import {
   isoDay
 } from "./admin-data.js";
 import { mobileKey, isMobile, formatMobile, firstName, createPager, hideFormError, holdDialog } from "./admin-ui.js";
-import { sendSms, getGateway, getSmsLog, cachedSmsLog, setUpSendDialog, SMS_TEMPLATES, getSmsTemplates, saveSmsTemplate, fillTemplateToFit } from "./admin-sms.js";
+import { sendSms, getGateway, getSmsLog, cachedSmsLog, smsLogNote, setUpSendDialog, SMS_TEMPLATES, getSmsTemplates, saveSmsTemplate, fillTemplateToFit } from "./admin-sms.js";
 
 var sendModal = document.getElementById("send_modal");
 var sendForm = sendModal && sendModal.querySelector("form");
@@ -271,7 +271,10 @@ function contactRow(contact, last) {
       ? '<span class="mw-text-muted">Couldn\'t be checked</span>'
       : last
       ? '<div class="mw-table__stack">' + smsStatusChip(last) + '<span class="mw-table__sub mw-table__nowrap">' + esc(smsTime(last.sentAt)) + "</span></div>"
-      : '<span class="mw-chip">None sent yet</span>';
+      : smsLogNote()
+        // Only the newest SMS were loaded: an older one may be there
+        ? '<span class="mw-chip">None among the newest</span>'
+        : '<span class="mw-chip">None sent yet</span>';
 
   return "<tr>" +
     "<td>" +
@@ -432,6 +435,19 @@ function renderLog() {
   if (logCaption) logCaption.textContent = "Message log, " + list.length + (list.length === 1 ? " message" : " messages") + (logPager ? logPager.caption() : "");
   if (logWrap) logWrap.hidden = list.length === 0;
   if (logEmpty) logEmpty.hidden = list.length > 0;
+  // When the server sent only the newest SMS, say so under the log
+  var note = logPanel && logPanel.querySelector("[data-sms-note]");
+  var text = list.length ? smsLogNote() : "";
+  if (!note && text && logPanel) {
+    note = document.createElement("p");
+    note.className = "mw-table__sub";
+    note.setAttribute("data-sms-note", "");
+    logPanel.appendChild(note);
+  }
+  if (note) {
+    note.textContent = text;
+    note.hidden = !text;
+  }
 }
 
 // Resend: the same message to the same number, as a new SMS

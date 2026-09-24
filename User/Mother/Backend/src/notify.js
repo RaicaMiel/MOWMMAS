@@ -2,42 +2,55 @@
 /* ══════════════════════════════════════════════════════════════════
    Automatic SMS to mothers, sent with the Admin backend's sms.js (PhilSMS)
 
-   use(sms)                  the SMS sender (null: texting is off)
-   received(ref)             right after she sends a form: her reference number
-   updated(sub, before)      the admin moved her submission on (the sync pulled
-                             it; before = her status history until then): the
-                             new status, where she was referred, the admin's message
+   use(sms, limits)          the SMS sender (null: texting is off) and the caps
+   received(sub)             right after she sends a form: her reference number
+   updated(sub, deadline)    the admin moved her submission on: the new status,
+                             where she was referred, the admin's message. The
+                             admin pages ask for this right after saving
+                             (POST /api/admin/notify), and sweep() catches any
+                             update that wasn't asked for
+   sweep(deadline)           texts every admin update of the last day not texted yet
    copy(sub, record)         a copy of an SMS an admin sent her from the admin pages
-   submission(ref)           her submission as this backend has it (or null)
+   submission(ref)           her submission (Firestore), or null
+   recover()                 texts left "sending" (the server stopped before PhilSMS
+                             answered) become "unknown" and are added to the SMS log
+   Texting is off (use(null)) on a server without the PhilSMS key: it then claims
+   nothing, so a server that has the key sends them.
 
-   recover(write)            at start: texts the server stopped before PhilSMS answered
-                             are marked "unknown" and added to the SMS log (write)
-
-   Each text is noted in data/notifications.json:
-     { id, ref, key, kind: "received" | "status" | "manual", to, message, status, createdAt }
-   so the same update is never texted twice (key), and Track Submission shows
-   the admin's own texts ("manual") under Messages from health workers.
-   The note is written (status "sending") before PhilSMS is asked, so texts
-   running at the same moment count against the caps too:
+   Each automatic text is claimed first: notifications/auto-<key> is created with
+   status "sending", which only one server can do, so the same update is never
+   texted twice, even with the server on a computer and the one online running.
+   The caps (User/Admin/Backend/.env; 0 turns that kind off) are counted in
+   limits/<id>, in Manila time:
      "form received"   SMS_RECEIVED_PER_NUMBER_DAILY per number a day, and
                        SMS_AUTO_DAILY_LIMIT a day in all
      every automatic   SMS_AUTO_PER_NUMBER_HOURLY per number an hour
-   (User/Admin/Backend/.env; 0 turns that kind off). An update more than a day
-   old isn't texted (e.g. on the first sync of a new copy).
+   A text that isn't sent (over a cap, or it failed) gives its place back.
+   An update more than a day old isn't texted.
+   deadline (optional): a time (ms) after which no new text is started; the rest
+   is left for the next sweep.
    ══════════════════════════════════════════════════════════════════ */
-const store = require('./store');
+const cloud = require('./cloud');
+const firestore = require('../../../Admin/Backend/src/firestore');
 const facilities = require('./facilities');
 const { statusLabel } = require('./statuses');
 
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
 const SMS_ONE = 160;
+// A text still "sending" after this was cut off: far longer than any send can take (PhilSMS: 20 s,
+// a request online: 60 s), with room for the clocks of two servers to differ
+const STUCK_AFTER_MS = 10 * 60 * 1000;
 
-let sms = null;
+let sms = null;     // the sender: null when texting is off (no PhilSMS key)
+let tools = null;   // the SMS helpers (segments, …), there even when texting is off
 let limits = { perNumberHourly: 5, daily: 100, receivedPerNumberDaily: 3 };
 
-function use(sender, options) {
+/* sender: sms.js when texting is on, else null; helpers: sms.js either way (recovery
+   sends nothing, so it runs on every server) */
+function use(sender, options, helpers) {
   sms = sender || null;
+  tools = helpers || sender || null;
   if (options) limits = Object.assign({}, limits, options);
 }
 
@@ -57,13 +70,12 @@ const MEANING = {
 };
 
 function submission(ref) {
-  const list = store.read('submissions', []);
-  return Array.isArray(list) ? list.find((s) => s && s.ref === ref) || null : null;
+  return cloud.getSubmission(ref);
 }
 
-function facilityPhone(id) {
+async function facilityPhone(id) {
   try {
-    const f = facilities.get(id).facility;
+    const f = (await facilities.get(id)).facility;
     return (f && (f.contactNumber || f.smsNumber)) || null;
   } catch (err) {
     return null;
@@ -82,115 +94,110 @@ function isReferral(h) {
   return h.by === 'admin' && /^Referred to [^\n]+$/.test(String(h.note || '').trim());
 }
 
-// A history line, the same however the sync copied it
+// A history line, the same however it was read
 function signature(h) {
   return [h && h.at, h && h.status, (h && h.note) || ''].join('|');
 }
 
-function notes() {
-  const list = store.read('notifications', []);
-  return Array.isArray(list) ? list : [];
-}
+/* ───────────── the caps ───────────── */
 
-// Counts toward the caps: sent, being sent, or maybe sent
-const COUNTED = new Set(['sent', 'sending', 'unknown']);
-
-// Why an automatic text of this kind to this number can't go now (null when it can)
-function overLimit(list, key, kind) {
-  const now = Date.now();
-  const lastDay = list.filter((n) => n && (n.kind === 'received' || n.kind === 'status') && COUNTED.has(n.status) && now - (Date.parse(n.createdAt) || 0) < DAY);
+// Counts this text against its caps. Resolves with { skip: why it can't go (or null), release }
+async function takeQuota(kind, to) {
+  const hour = cloud.manilaHour();
+  const day = hour.slice(0, 10);
+  const caps = [];
   if (kind === 'received') {
-    const received = lastDay.filter((n) => n.kind === 'received');
-    if (received.length >= limits.daily) return 'Not sent: the daily limit for "form received" texts (' + limits.daily + ') was reached.';
-    if (received.filter((n) => n.to === key).length >= limits.receivedPerNumberDaily) {
-      return 'Not sent: this number already got ' + limits.receivedPerNumberDaily + ' "form received" texts today.';
-    }
+    caps.push(['sms-received-all-' + day, limits.daily, 'Not sent: the daily limit for "form received" texts (' + limits.daily + ') was reached.']);
+    caps.push(['sms-received-' + to + '-' + day, limits.receivedPerNumberDaily, 'Not sent: this number already got ' + limits.receivedPerNumberDaily + ' "form received" texts today.']);
   }
-  if (lastDay.filter((n) => n.to === key && now - (Date.parse(n.createdAt) || 0) < HOUR).length >= limits.perNumberHourly) {
-    return 'Not sent: this number already got ' + limits.perNumberHourly + ' automatic texts in the last hour.';
+  caps.push(['sms-auto-' + to + '-' + hour, limits.perNumberHourly, 'Not sent: this number already got ' + limits.perNumberHourly + ' automatic texts this hour.']);
+  const ids = caps.map((c) => c[0]);
+  const values = await cloud.add(ids, 1);
+  let released = false;
+  const release = async () => {
+    if (released) return;
+    released = true;
+    await cloud.add(ids, -1).catch((err) => console.warn('[sms] Could not give back a place under the caps: ' + err.message));
+  };
+  const over = caps.findIndex((c, i) => !(values[i] <= c[1]));
+  if (over !== -1) {
+    await release();
+    return { skip: caps[over][2], release: null };
   }
-  return null;
+  return { skip: null, release };
 }
 
-// Checks the caps and notes the text as "sending", in one step under the store's lock, so two
-// texts at the same moment can't both slip under a cap. Returns the note's id and why it can't go.
-function reserve(sub, kind, key, to, message) {
-  const id = 'pending-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-  let skip = null;
-  store.update('notifications', [], (list) => {
-    skip = to ? overLimit(list, to, kind) : null;
-    list.push({ id, ref: sub.ref, key, kind, to: to || null, message, status: skip ? 'skipped' : 'sending', createdAt: new Date().toISOString() });
-  });
-  return { id, skip };
-}
+/* ───────────── sending one ───────────── */
 
-function settle(id, record) {
-  store.update('notifications', [], (list) => {
-    const n = list.find((x) => x && x.id === id);
-    if (n) Object.assign(n, { id: record.id, to: record.to, message: record.message, status: record.status, createdAt: record.sentAt });
-  });
+// Claims a text; a Firestore hiccup gets one more try (if the first claim landed after all,
+// the second finds it: the note is then "sending", and recovery logs it as not confirmed)
+async function claim(note) {
+  try {
+    return await cloud.claimNote(note);
+  } catch (err) {
+    if (err.code !== 'unavailable' && err.code !== 'firestore-error') throw err;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return cloud.claimNote(note);
+  }
 }
 
 async function text(sub, kind, key, fields) {
   const to = sms.mobileKey(sub.contact && sub.contact.mobile);
-  const slot = reserve(sub, kind, key, to, fields.message);
+  // If it can't be claimed at all, nothing is sent now: the next sweep finds it unclaimed and sends it
+  const noteId = await claim({ ref: sub.ref, key, kind, to: to || null, message: fields.message });
+  if (!noteId) return null;   // sent already, or being sent right now
+  let quota = { skip: null, release: null };
+  if (to) {
+    try {
+      quota = await takeQuota(kind, to);
+    } catch (err) {
+      // Without the counts a flood of forms could use up the SMS credit, so it waits for the admin
+      quota = { skip: 'Not sent: the limits on automatic texts could not be checked (' + err.message + ') Send it again from the Message log.', release: null };
+    }
+  }
   const record = await sms.send(Object.assign({
+    id: cloud.smsIdFor(noteId),   // logged under an id fixed by the note, so it is in the log once
     to: to || (sub.contact && sub.contact.mobile),
     ref: sub.ref,
     name: (sub.contact && sub.contact.name) || null,
     auto: true,
-    skip: slot.skip
+    skip: quota.skip
   }, fields));
-  settle(slot.id, record);
-  return record;
-}
-
-/* ───────────── after a restart ───────────── */
-
-function recover(write) {
-  const stopped = [];
-  store.update('notifications', [], (list) => {
-    list.forEach((n) => {
-      if (n && n.status === 'sending') { n.status = 'unknown'; stopped.push(Object.assign({}, n)); }
-    });
-  });
-  for (const n of stopped) {
-    const sub = submission(n.ref);
-    try {
-      write({
-        id: n.id.replace(/^pending-/, 'sms-'), to: n.to, name: (sub && sub.contact && sub.contact.name) || null, ref: n.ref,
-        facility: (sub && sub.facilityName) || null, type: n.kind === 'received' ? 'received' : 'status', event: 'Automatic text',
-        message: n.message, segments: sms.segments(n.message || ''), status: 'unknown',
-        error: 'The MOWMMAS server stopped before PhilSMS answered, so it may or may not have been sent. Check Reports in the PhilSMS dashboard before sending it again.',
-        gatewayUid: null, auto: true, sentAt: n.createdAt, sentBy: null, resendOf: null
-      });
-    } catch (err) {
-      console.warn('[sms] Could not add an unfinished text to the SMS log: ' + err.message);
+  if (quota.release && (record.status === 'failed' || record.status === 'skipped')) await quota.release();
+  if (record.logged === false) {
+    // Not in the SMS log (Firestore hiccup): one more try; else the note keeps the record and
+    // stays "sending", and recovery adds it to the log with its real status
+    const clean = Object.assign({}, record);
+    delete clean.logged;
+    delete clean.logError;
+    const saved = await cloud.addSms(clean).then(() => true, () => false);
+    if (!saved) {
+      await cloud.keepUnlogged(noteId, clean).catch((err) => console.warn('[sms] Not in the SMS log, and its note could not keep it: ' + err.message));
+      return record;
     }
+    record.logged = true;
+    delete record.logError;
   }
-  return stopped.length;
+  await cloud.settleNote(noteId, record).catch((err) => console.warn('[sms] Sent, but its note could not be updated: ' + err.message));
+  return record;
 }
 
 /* ───────────── her form arrived ───────────── */
 
-async function received(ref) {
-  if (!sms) return null;
-  const sub = submission(ref);
-  if (!sub) return null;
-  const key = 'received|' + sub.ref;
-  if (notes().some((n) => n && n.key === key)) return null;
+async function received(sub) {
+  if (!sms || !sub) return null;
   const kind = KIND[sub.type] || 'form';
   const message = fit([
     'MOWMMAS: We received your ' + kind + ' for ' + sub.facilityName + '. Ref: ' + sub.ref + ". We'll text you when it's updated.",
     'MOWMMAS: We received your ' + kind + '. Ref: ' + sub.ref + ". We'll text you when it's updated.",
     'MOWMMAS: We received your form. Ref: ' + sub.ref + '.'
   ]);
-  return text(sub, 'received', key, { message, type: 'received', event: 'Form received', facility: sub.facilityName || null });
+  return text(sub, 'received', 'received|' + sub.ref, { message, type: 'received', event: 'Form received', facility: sub.facilityName || null });
 }
 
 /* ───────────── the admin moved it on ───────────── */
 
-function updateText(sub, entry, previous) {
+async function updateText(sub, entry, previous) {
   const kind = KIND[sub.type] || 'form';
   const noteText = sms.clean(entry.note || '');   // cleaned first, so its length is the length sent
   if (isReferral(entry)) {
@@ -199,7 +206,7 @@ function updateText(sub, entry, previous) {
     const r = sub.referral && sub.referral.facilityId ? sub.referral : null;
     const facility = named || (r && r.facilityName) || 'a health facility';
     const facilityId = entry.facilityId || (r && r.facilityName === facility ? r.facilityId : null);
-    const phone = facilityId ? facilityPhone(facilityId) : null;
+    const phone = facilityId ? await facilityPhone(facilityId) : null;
     const message = fit([
       'MOWMMAS: Your ' + kind + ' ' + sub.ref + ' was referred to ' + facility + '. Please contact them' + (phone ? ' at ' + phone : '') + ' to confirm the next steps.',
       'MOWMMAS: Your ' + kind + ' ' + sub.ref + ' was referred to ' + facility + (phone ? '. Call ' + phone : '') + '.'
@@ -228,34 +235,126 @@ function updateText(sub, entry, previous) {
   };
 }
 
-async function updated(sub, before) {
-  if (!sms || !sub) return [];
+/* Texts each admin update of the last day that hasn't been texted.
+   Resolves with { records, done } (done: false when the deadline stopped it early). */
+async function updated(sub, deadline) {
+  const records = [];
+  if (!sms || !sub) return { records, done: true };
   const history = Array.isArray(sub.statusHistory) ? sub.statusHistory : [];
-  const had = new Set((Array.isArray(before) ? before : []).map(signature));
-  const sent = new Set(notes().map((n) => n && n.key));
-  const out = [];
+  const due = [];
   for (let i = 0; i < history.length; i++) {
     const entry = history[i];
-    if (!entry || entry.by !== 'admin' || had.has(signature(entry))) continue;
-    const key = 'status|' + sub.ref + '|' + signature(entry);
-    if (sent.has(key)) continue;
-    if (!(Date.now() - (Date.parse(entry.at) || 0) < DAY)) continue; // too old to text now
-    out.push(await text(sub, 'status', key, updateText(sub, entry, history[i - 1])));
+    if (!entry || entry.by !== 'admin') continue;
+    if (!(Date.now() - (Date.parse(entry.at) || 0) < DAY)) continue;   // too old to text now
+    due.push({ entry, previous: history[i - 1], key: 'status|' + sub.ref + '|' + signature(entry) });
   }
-  return out;
+  if (!due.length) return { records, done: true };
+  const noted = new Set((await cloud.notesFor(sub.ref)).map((n) => n && n.key));
+  for (const d of due) {
+    if (noted.has(d.key)) continue;
+    if (deadline && Date.now() > deadline) return { records, done: false };
+    const record = await text(sub, 'status', d.key, await updateText(sub, d.entry, d.previous));
+    if (record) records.push(record);
+  }
+  return { records, done: true };
+}
+
+/* One pass over the submissions after where the last one stopped (counters/<stateId>), at
+   most a day back. list(since) → the documents, oldest first, each with _at (the time it is
+   listed by, as Firestore stores it); each(doc) → { records, done }. The place is saved as
+   it goes, and only past a time no later document shares (the list is "later than"), so a
+   pass that stops (the deadline, a server stopped) never skips one.
+     start: where a first pass starts: 'day' (a day back) or 'now'
+     margin: how far before the saved place to look again (saves still landing) */
+async function pass(stateId, list, each, deadline, options) {
+  const o = options || {};
+  const state = await firestore.getDoc('counters', stateId);
+  const dayAgo = Date.now() - DAY;
+  let since;
+  if (state && typeof state.until === 'string') {
+    const from = Date.parse(state.until) - (o.margin || 0);
+    since = from > dayAgo ? (o.margin ? new Date(from).toISOString() : state.until) : new Date(dayAgo).toISOString();
+  } else {
+    since = new Date(o.start === 'now' ? Date.now() : dayAgo).toISOString();
+  }
+  const docs = await list(since);
+  const records = [];
+  let checked = 0;
+  let done = true;
+  // From the saved place (a quiet pass then writes nothing); moved on only by listed documents
+  const kept = state && typeof state.until === 'string' && !Number.isNaN(Date.parse(state.until)) ? state.until : null;
+  let reached = kept || since;
+  let saved = state ? state.until : null;
+  let sinceSave = 0;
+  const save = async () => {
+    if (reached === saved) return;
+    const until = reached;
+    await firestore.setDoc('counters', stateId, { until, updatedAt: new Date() })
+      .then(() => { saved = until; sinceSave = 0; })
+      .catch((err) => console.warn('[sms] Could not save where the sweep stopped: ' + err.message));
+  };
+  for (let i = 0; i < docs.length; i++) {
+    if (deadline && Date.now() > deadline) { done = false; break; }   // the rest waits for the next sweep
+    const doc = docs[i];
+    if (cloud.isOwn(doc.ref)) {
+      const result = await each(doc);
+      records.push(...result.records);
+      if (!result.done) { done = false; break; }
+      checked++;
+    }
+    const next = docs[i + 1];
+    if (doc._at && (!next || next._at !== doc._at) && Date.parse(doc._at) > Date.parse(reached)) reached = doc._at;
+    if (++sinceSave >= 20) await save();
+  }
+  await save();
+  return { checked, records, done };
+}
+
+/* Texts every admin update of the last day not texted yet (counters/notify-sweep), and
+   every form of the last day whose reference number nobody texted (counters/notify-received:
+   e.g. it was sent to a server without the PhilSMS key, or Firestore failed right then).
+   Forms are listed by savedAt, Firestore's own clock when it was saved (forms from before it
+   had one were texted by the old server, and aren't listed). A quiet sweep costs a few reads.
+   Resolves with { checked, records, done }. */
+async function sweep(deadline) {
+  if (!sms) return { checked: 0, records: [], done: true };
+  const updates = await pass(cloud.limitId('notify-sweep'), (since) => cloud.changedByAdminSince(since),
+    (doc) => updated(doc, deadline), deadline, { start: 'day' });
+  if (!updates.done) return updates;
+  const forms = await pass(cloud.limitId('notify-received'), (since) => cloud.savedSince(since), async (sub) => {
+    if (!(Date.now() - (Date.parse(sub.savedAt || sub.createdAt) || 0) < DAY)) return { records: [], done: true };
+    if (await cloud.hasNote('received|' + sub.ref)) return { records: [], done: true };
+    const record = await received(sub);
+    return { records: record ? [record] : [], done: true };
+  }, deadline, { start: 'day', margin: 60 * 1000 });
+  return { checked: updates.checked + forms.checked, records: updates.records.concat(forms.records), done: forms.done };
 }
 
 /* ───────────── an admin texted her ───────────── */
 
-function copy(sub, record) {
+async function copy(sub, record) {
   if (!sub || !record || record.status !== 'sent') return;
   try {
-    store.update('notifications', [], (list) => {
-      list.push({ id: record.id, ref: sub.ref, key: 'manual|' + record.id, kind: 'manual', to: record.to, message: record.message, status: record.status, createdAt: record.sentAt });
-    });
+    await cloud.addManualNote(sub.ref, record);
   } catch (err) {
     console.warn('[sms] Sent, but the copy for Track Submission could not be saved: ' + err.message);
   }
 }
 
-module.exports = { use, received, updated, copy, submission, recover, isReferral };
+/* ───────────── texts cut off ───────────── */
+
+async function recover() {
+  if (!tools) return 0;
+  return cloud.recoverStuckNotes(STUCK_AFTER_MS, async (n, id) => {
+    const sub = await submission(n.ref).catch(() => null);
+    return ({
+      id, to: n.to, name: (sub && sub.contact && sub.contact.name) || null, ref: n.ref,
+      facility: (sub && sub.facilityName) || null, type: n.kind === 'received' ? 'received' : 'status', event: 'Automatic text',
+      message: n.message, segments: tools.segments(n.message || ''), status: 'unknown',
+      error: 'The MOWMMAS server stopped before PhilSMS answered, so it may or may not have been sent. Check Reports in the PhilSMS dashboard before sending it again.',
+      gatewayUid: null, auto: true, sentAt: n.createdAt, sentBy: null, resendOf: null
+    });
+  });
+}
+
+module.exports = { use, received, updated, sweep, copy, submission, recover, isReferral, signature };

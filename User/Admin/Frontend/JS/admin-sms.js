@@ -7,8 +7,9 @@
      sendSms({ to, message, type, ref, name, facility, event, resendOf })
                    → the SMS record { id, status: "sent" | "failed" | "skipped", error, ... }
      getGateway()  → { configured, connected, sender, keyHint, balance, expiresOn, error }
-     getSmsLog()   → every SMS sent, newest first (the server's data/sms-log.json)
-   Nothing about SMS is kept in Firebase: Firebase only confirms who is signed in.
+     getSmsLog()   → every SMS sent, newest first (the server keeps the log in Firestore)
+   The pages never read the SMS records themselves: only the server does, and the
+   admin's Firebase sign-in only confirms who is asking.
    cachedSmsLog() is this tab's copy (shown at once on the next page), and a
    sent SMS is added to it at once (rememberSms).
 
@@ -17,7 +18,10 @@
      server, stays open while sending, and says plainly if it wasn't sent.
      contact(mobileKey) → { name, ref } of that mother (her latest submission)
 
-   Templates: the wording on the SMS page, saved on the server (data/sms-templates.json)
+   textUpdate(ref), sweepUpdates(): the server texts the mother an admin's update
+     (status, message, referral) right after it is saved; see below
+
+   Templates: the wording on the SMS page, saved by the server
      SMS_TEMPLATES, getSmsTemplates(), saveSmsTemplate(key, text), fillTemplate(text, values),
      fillTemplateToFit(text, values): her complete name, or her first name if that doesn't fit one SMS
    ========================================================================== */
@@ -40,7 +44,8 @@ function apiError(code, message) {
 }
 
 // what: the result for the admin if it fails, e.g. "nothing was sent" or "the SMS log couldn't be loaded"
-function callApi(method, path, body, what) {
+// options.keepalive: the request goes on if the admin leaves the page
+function callApi(method, path, body, what, options) {
   var result = what || "nothing was sent";
   var user = auth.currentUser;
   if (!user) return Promise.reject(apiError("signed-out", "You're signed out. Sign in again, then try again."));
@@ -53,6 +58,7 @@ function callApi(method, path, body, what) {
         method: method,
         headers: Object.assign({ Authorization: "Bearer " + token }, body ? { "Content-Type": "application/json" } : {}),
         body: body ? JSON.stringify(body) : undefined,
+        keepalive: Boolean(options && options.keepalive),
         signal: AbortSignal.timeout(API_TIMEOUT_MS)
       }).catch(function (error) {
         if (error && (error.name === "TimeoutError" || error.name === "AbortError")) {
@@ -117,6 +123,18 @@ function keepLog(list) {
   try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(list)); } catch (error) { /* full or blocked: no copy */ }
 }
 
+/* The server sends the newest SMS only (1,000). When there are older ones, this says how
+   many are shown ("Showing the newest 1,000 SMS."), else "". */
+var PARTIAL_KEY = "mowmmas.cache.smsPartial";
+export function smsLogNote() {
+  try {
+    var shown = Number(sessionStorage.getItem(PARTIAL_KEY) || 0);
+    return shown ? "Showing the newest " + shown.toLocaleString("en-US") + " SMS. Older ones are in the PhilSMS dashboard (Reports)." : "";
+  } catch (error) {
+    return "";
+  }
+}
+
 export function getSmsLog(options) {
   if (logRead && !(options && options.fresh) && Date.now() - logRead.at < SHARE_MS) {
     return logRead.promise.then(function (list) { return list.slice(); });
@@ -125,11 +143,53 @@ export function getSmsLog(options) {
   entry.promise = callApi("GET", "/admin/sms/log", null, "the SMS log couldn't be loaded").then(function (data) {
     var list = (Array.isArray(data.records) ? data.records : []).slice().sort(newestFirst);
     keepLog(list);
+    try {
+      if (data.more) sessionStorage.setItem(PARTIAL_KEY, String(data.limit || list.length));
+      else sessionStorage.removeItem(PARTIAL_KEY);
+    } catch (error) { /* blocked */ }
     return list;
   });
   entry.promise.catch(function () { if (logRead === entry) logRead = null; });
   logRead = entry;
   return entry.promise.then(function (list) { return list.slice(); });
+}
+
+/* ───────────── texting the mother an admin's update ─────────────
+   After a status change, message or referral is saved, the MOWMMAS server texts her
+   (it decides what to text, and never texts the same update twice).
+     textUpdate(ref)   right after saving that submission
+     sweepUpdates()    on each admin page (at most once a minute per tab): any update
+                       of the last day that wasn't texted, e.g. the page closed too soon
+   Nothing waits for them; what was sent shows in the Message log. */
+function textUpdates(body) {
+  return callApi("POST", "/admin/notify", body, "the update couldn't be texted", { keepalive: true })
+    .then(function (answer) {
+      // New texts: the next read of the Message log is a fresh one
+      if (answer && answer.texts && answer.texts.length) {
+        logRead = null;
+        try { sessionStorage.removeItem(CACHE_KEY); } catch (error) { /* blocked */ }
+      }
+      return answer;
+    })
+    .catch(function (error) {
+      console.warn("Texting the mother an update: " + (error && error.message));
+      return null;
+    });
+}
+
+export function textUpdate(ref) {
+  return textUpdates({ ref: ref });
+}
+
+var SWEEP_KEY = "mowmmas.textSweepAt";
+var SWEEP_EVERY_MS = 60000;
+
+export function sweepUpdates() {
+  try {
+    if (Date.now() - Number(sessionStorage.getItem(SWEEP_KEY) || 0) < SWEEP_EVERY_MS) return Promise.resolve(null);
+    sessionStorage.setItem(SWEEP_KEY, String(Date.now()));
+  } catch (error) { /* storage blocked: sweep anyway */ }
+  return textUpdates({});
 }
 
 /* An SMS just sent from this page: the tab's copy and the shared read have it at once */

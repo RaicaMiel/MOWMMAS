@@ -12,18 +12,20 @@
       (data/facility-photos.json)         (Wikimedia Commons, or a file in data/photos/)
 
    4. The admin's facilities            → the facilities as managed on the admin
-      (data/firestore-facilities.json)     Facilities page (Firestore), copied here by the
-                                          Admin backend's sync. Once that copy exists it
-                                          replaces the local profiles (2): mothers see what
-                                          the admin manages. A facility that isn't public
-                                          shows only its basic facts; one the admin added
-                                          (not on OpenStreetMap) shows only when public.
+      (Firestore: facilities/<id>)         Facilities page, read from Firestore (see the
+                                          end of this file). Once read they replace the
+                                          local profiles (2): mothers see what the admin
+                                          manages. A facility that isn't public shows only
+                                          its basic facts; one the admin added (not on
+                                          OpenStreetMap) shows only when public.
 
    A profile value always wins over OSM. Anything neither source knows is
    returned as null, and the website shows it as "Not reported yet" — it is
    never guessed. */
 const osm = require('./osm');
 const store = require('./store');
+const firestore = require('../../../Admin/Backend/src/firestore');
+const adminConfig = require('../../../Admin/Backend/src/config');
 
 const SERVICE_KEYS = ['milkBank', 'milkStorage', 'acceptsDonations', 'providesDonorMilk', 'lactationServices'];
 const AVAILABILITY = ['available', 'limited', 'none'];
@@ -158,13 +160,8 @@ function osmCache() {
   return cache;
 }
 
-/* All facilities, participating ones first, then by name. */
-function list() {
-  const mirror = store.read('firestoreFacilities', null);
-  return combine(osmCache(), mirror && mirror.facilities && typeof mirror.facilities === 'object' ? mirror.facilities : null);
-}
-
-/* managed: the admin's facilities by id (see 4. above), or null when there are none to show */
+/* managed: the admin's facilities by id (see 4. above), or null when there are none to show.
+   Participating ones first, then by name. */
 function combine(cache, managed) {
   const photos = store.read('photos', {}).photos || {};
   let facilities;
@@ -189,24 +186,16 @@ function combine(cache, managed) {
   return { province: cache.province, source: source(cache), municipalities: cache.municipalities, facilities };
 }
 
-function get(id) {
-  return pick(list(), id);
-}
-
-function pick(data, id) {
-  const facility = data.facilities.find((f) => f.id === id) || null;
-  return { facility, source: data.source };
-}
-
-/* ───────────── online (Vercel): the admin's facilities straight from Firestore ─────────────
-   There is no copy on disk there, so the admin's facilities are read from Firestore
-   (public, like the map) at most once every LIVE_MS. If Firestore can't be read, the
-   last copy read is used; with none yet, the OpenStreetMap facts only (like a first start). */
+/* ───────────── the admin's facilities, straight from Firestore ─────────────
+   Read without signing in (public, like the map) at most once every LIVE_MS. If
+   Firestore can't be read, the last copy read is used; with none yet, the
+   OpenStreetMap facts only (like a first start). */
 const LIVE_MS = 60 * 1000;
 let live = null;      // { at, managed }: the last copy read
 let reading = null;   // one read at a time
+const readAll = () => firestore.listPublic(adminConfig.FACILITIES_COLLECTION);
 
-function managedFacilities(readAll) {
+function managedFacilities() {
   if (live && Date.now() - live.at < LIVE_MS) return Promise.resolve(live.managed);
   if (!reading) {
     reading = readAll()
@@ -232,14 +221,16 @@ function managedFacilities(readAll) {
   return reading;
 }
 
-/* readAll() → every document in the facilities collection (Firestore) */
-async function listLive(readAll) {
+/* All facilities, participating ones first, then by name */
+async function list() {
   const cache = osmCache();
-  return combine(cache, await managedFacilities(readAll));
+  return combine(cache, await managedFacilities());
 }
 
-async function getLive(id, readAll) {
-  return pick(await listLive(readAll), id);
+async function get(id) {
+  const data = await list();
+  const facility = data.facilities.find((f) => f.id === id) || null;
+  return { facility, source: data.source };
 }
 
-module.exports = { SERVICE_KEYS, AVAILABILITY, merge, list, get, listLive, getLive };
+module.exports = { SERVICE_KEYS, AVAILABILITY, merge, list, get };

@@ -93,7 +93,9 @@ const STATUS_CODES = {
   INVALID_ARGUMENT: ['invalid-argument', 'Firestore could not store this data.', 400],
   RESOURCE_EXHAUSTED: ['resource-exhausted', 'The Firestore quota is used up for now. Try again later.', 429],
   UNAVAILABLE: ['unavailable', "Firestore can't be reached right now. It will be tried again.", 503],
-  FAILED_PRECONDITION: ['failed-precondition', 'Firestore is not ready. Check that the database exists in the Firebase console.', 412]
+  FAILED_PRECONDITION: ['failed-precondition', 'Firestore refused the change: the document changed meanwhile, or the database is not ready.', 412],
+  ABORTED: ['aborted', 'Firestore was busy with the same document. Try again.', 409],
+  DEADLINE_EXCEEDED: ['unavailable', "Firestore didn't answer in time. Try again.", 503]
 };
 
 async function request(method, path, body, retried) {
@@ -115,12 +117,26 @@ async function request(method, path, body, retried) {
     auth.invalidate(); // expired or revoked: sign in again once
     return request(method, path, body, true);
   }
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const status = (data.error && data.error.status) || '';
+  const text = await response.text().catch(() => null);
+  let data = {};
+  if (text && text.trim()) {
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      if (response.ok) throw new FirebaseError('unavailable', "Firestore's answer was cut off. Try again.", 503);
+    }
+  } else if (text === null && response.ok) {
+    throw new FirebaseError('unavailable', "Firestore's answer was cut off. Try again.", 503);
+  }
+  // Most answers carry { error }. A query (:runQuery) answers with a list, and an error after
+  // the first rows comes as a last [{ error }] with HTTP 200: the rows before it are not all.
+  const rowError = Array.isArray(data) ? (data.find((row) => row && row.error) || {}).error || null : null;
+  if (!response.ok || rowError) {
+    const error = rowError || (data && !Array.isArray(data) && data.error) || null;
+    const status = (error && error.status) || '';
     const known = STATUS_CODES[status];
-    const detail = data.error && data.error.message ? ' (' + data.error.message + ')' : '';
-    if (known) throw new FirebaseError(known[0], known[1] + (known[0] === 'invalid-argument' ? detail : ''), known[2]);
+    const detail = error && error.message ? ' (' + error.message + ')' : '';
+    if (known) throw new FirebaseError(known[0], known[1] + (known[0] === 'invalid-argument' || known[0] === 'failed-precondition' ? detail : ''), known[2]);
     throw new FirebaseError('firestore-error', 'Firestore error ' + response.status + detail, 502);
   }
   return data;
@@ -128,14 +144,19 @@ async function request(method, path, body, retried) {
 
 const docPath = (collection, id) => '/' + encodeURIComponent(collection) + '/' + encodeURIComponent(id);
 const idOf = (name) => decodeURIComponent(String(name).split('/').pop());
+// The full name Firestore uses for a document in writes: projects/<id>/databases/(default)/documents/<collection>/<id>
+const docName = (collection, id) => 'projects/' + config.PROJECT_ID + '/databases/(default)/documents/' + collection + '/' + id;
+const fromDoc = (doc) => Object.assign(decodeFields(doc.fields), { _id: idOf(doc.name), _updateTime: doc.updateTime });
 
 /* Create or replace a document.
    precondition (optional): { exists: false }    only create it ('already-exists' if it is there)
+                            { exists: true }     only change it if it is there ('not-found' if not)
                             { updateTime: '…' }  only replace that exact version ('failed-precondition' if it changed)
    onlyFields (optional):   top-level field names; only those are written, every other field is kept */
 async function setDoc(collection, id, data, precondition, onlyFields) {
   const params = [];
   if (precondition && precondition.exists === false) params.push('currentDocument.exists=false');
+  else if (precondition && precondition.exists === true) params.push('currentDocument.exists=true');
   else if (precondition && precondition.updateTime) params.push('currentDocument.updateTime=' + encodeURIComponent(precondition.updateTime));
   for (const field of onlyFields || []) params.push('updateMask.fieldPaths=' + encodeURIComponent(field));
   const query = params.length ? '?' + params.join('&') : '';
@@ -145,12 +166,71 @@ async function setDoc(collection, id, data, precondition, onlyFields) {
 
 async function getDoc(collection, id) {
   try {
-    const doc = await request('GET', docPath(collection, id));
-    return Object.assign(decodeFields(doc.fields), { _id: idOf(doc.name), _updateTime: doc.updateTime });
+    return fromDoc(await request('GET', docPath(collection, id)));
   } catch (err) {
     if (err.code === 'not-found') return null;
     throw err;
   }
+}
+
+/* ───────────── several writes at once ─────────────
+   await commit([write(…), write(…)]);   all or nothing
+   Each write can carry a condition (below); if one isn't met, nothing is written and it
+   fails with 'already-exists' or 'failed-precondition'. (Firestore doesn't let a signed-in
+   user start a server-side transaction, so this is how the admin pages' transactions work too:
+   read, then write only if what was read is unchanged.) */
+async function commit(writes) {
+  return request('POST', ':commit', { writes });
+}
+
+/* A write for commit(): the document's data, plus
+     exists: false | true   only create it / only change an existing one
+     updateTime: '…'        only if it is still the version read (its _updateTime)
+     onlyFields: [...]      only these top-level fields are written
+     increments: { field: n }  added to what is stored (a missing field counts as 0)
+     serverTimes: [field]   set to Firestore's own clock when the write lands */
+function write(collection, id, data, options) {
+  const o = options || {};
+  const w = { update: { name: docName(collection, id), fields: encodeFields(data || {}) } };
+  if (o.exists === false || o.exists === true) w.currentDocument = { exists: o.exists };
+  else if (o.updateTime) w.currentDocument = { updateTime: o.updateTime };
+  if (o.onlyFields) w.updateMask = { fieldPaths: o.onlyFields };
+  const transforms = [];
+  for (const [fieldPath, n] of Object.entries(o.increments || {})) transforms.push({ fieldPath, increment: { integerValue: String(n) } });
+  for (const fieldPath of o.serverTimes || []) transforms.push({ fieldPath, setToServerValue: 'REQUEST_TIME' });
+  if (transforms.length) w.updateTransforms = transforms;
+  return w;
+}
+
+/* Adds n to a whole-number field of several documents at once (created when missing) and
+   resolves with each one's new value, in order. Safe when many requests do it at the same moment.
+   items: [{ collection, id, field, n, data? }]  (data: other fields to set on it) */
+async function increment(items) {
+  const answer = await commit(items.map((it) => write(it.collection, it.id, it.data || {}, {
+    onlyFields: Object.keys(it.data || {}),
+    increments: { [it.field]: it.n }
+  })));
+  return (answer.writeResults || []).map((r) => {
+    const v = r && r.transformResults && r.transformResults[0];
+    return v ? Number(v.integerValue != null ? v.integerValue : v.doubleValue) : NaN;
+  });
+}
+
+/* ───────────── queries ─────────────
+   query(collection, { where: [[field, op, value], …], orderBy: [[field, 'desc'|'asc'], …], limit })
+   op: '==', '<', '<=', '>', '>='. Values as in setDoc (a Date is a timestamp). */
+const OPS = { '==': 'EQUAL', '<': 'LESS_THAN', '<=': 'LESS_THAN_OR_EQUAL', '>': 'GREATER_THAN', '>=': 'GREATER_THAN_OR_EQUAL' };
+
+async function query(collection, options) {
+  const o = options || {};
+  const filters = (o.where || []).map(([field, op, value]) => ({ fieldFilter: { field: { fieldPath: field }, op: OPS[op], value: encode(value) } }));
+  const structuredQuery = { from: [{ collectionId: collection }] };
+  if (filters.length === 1) structuredQuery.where = filters[0];
+  else if (filters.length > 1) structuredQuery.where = { compositeFilter: { op: 'AND', filters } };
+  if (o.orderBy) structuredQuery.orderBy = o.orderBy.map(([field, dir]) => ({ field: { fieldPath: field }, direction: dir === 'desc' ? 'DESCENDING' : 'ASCENDING' }));
+  if (o.limit) structuredQuery.limit = o.limit;
+  const rows = await request('POST', ':runQuery', { structuredQuery });
+  return (Array.isArray(rows) ? rows : []).filter((row) => row && row.document).map((row) => fromDoc(row.document));
 }
 
 async function deleteDoc(collection, id) {
@@ -194,12 +274,18 @@ async function listPublic(collection) {
     } catch (err) {
       throw new FirebaseError('unavailable', "Can't reach Firestore. Check the internet connection.", 503);
     }
-    const data = await response.json().catch(() => ({}));
+    const text = await response.text().catch(() => null);
+    let data = null;
+    try { data = text && text.trim() ? JSON.parse(text) : null; } catch (err) { data = null; }
     if (!response.ok) {
-      const known = STATUS_CODES[(data.error && data.error.status) || ''];
+      const known = STATUS_CODES[(data && data.error && data.error.status) || ''];
       throw known ? new FirebaseError(known[0], known[1], known[2]) : new FirebaseError('firestore-error', 'Firestore error ' + response.status, 502);
     }
-    return data;
+    // A cut-off answer is not "no documents": the caller keeps what it had
+    if (text === null || (text.trim() && !data) || (data && typeof data !== 'object')) {
+      throw new FirebaseError('unavailable', "Firestore's answer was cut off. Try again.", 503);
+    }
+    return data || {};
   });
 }
 
@@ -217,4 +303,7 @@ async function pages(collection, get) {
   return docs;
 }
 
-module.exports = { baseUrl, encode, decode, encodeFields, decodeFields, setDoc, getDoc, deleteDoc, listDocs, listPublic, listAfter };
+module.exports = {
+  baseUrl, encode, decode, encodeFields, decodeFields, setDoc, getDoc, deleteDoc, listDocs, listPublic, listAfter,
+  commit, write, increment, query
+};

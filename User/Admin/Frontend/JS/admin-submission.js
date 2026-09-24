@@ -36,6 +36,7 @@ import {
   formatDateTime
 } from "./admin-data.js";
 import { formatMobile, capitalize, hideFormError, holdDialog } from "./admin-ui.js";
+import { textUpdate } from "./admin-sms.js";
 
 var SLOW_SAVE_MS = 12000;
 
@@ -386,6 +387,7 @@ export function setUpSubmissionView(options) {
       .then(function (updated) {
         clearTimeout(slowTimer);
         saving = false;
+        textUpdate(updated.ref || s.ref);   // the server texts her this update
         options.onSaved(updated);
         var done = status === s.status
           ? "Message saved for " + who + ". She sees it on Track Submission."

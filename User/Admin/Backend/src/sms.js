@@ -1,16 +1,17 @@
 'use strict';
-/* SMS through PhilSMS (API v3, https://dashboard.philsms.com/api/v3). Like
-   sync.js, it runs inside the mother backend (User/Mother/Backend/server.js).
+/* SMS through PhilSMS (API v3, https://dashboard.philsms.com/api/v3). It runs
+   inside the MOWMMAS server (User/Mother/Backend/src/app.js), on a computer
+   and online.
 
-   send({ to, message, type, event, ref, name, facility, by, auto, resendOf })
+   send({ to, message, type, event, ref, name, facility, by, auto, resendOf, id })
        texts one Philippine mobile number through PhilSMS and records it with
-       the log writer (useLog): the mother backend keeps data/sms-log.json,
-       which the admin's Message log, Dashboard and Records read through its
-       admin API. Resolves with that record: status "sent", "failed" (error
+       the log writer (useLog): the server keeps the SMS log in Firestore
+       (smsLog), which the admin's Message log, Dashboard and Records read
+       through its admin API. Resolves with that record: status "sent", "failed" (error
        says why), "unknown" (PhilSMS didn't answer, so it may or may not have
        gone out) or "skipped" (an automatic text over its limit). It doesn't
        throw for a gateway problem; the record says what happened.
-   useLog(write)         write(record) saves one record (the mother backend's store)
+   useLog(write)         write(record) saves one record (it may return a promise)
    gateway()             { configured, sender, keyHint, connected, balance, expiresOn, error,
                            problem: "unreachable" | "refused" | null }
                          (reads PhilSMS's balance; nothing is sent)
@@ -219,11 +220,12 @@ async function send(options) {
     }
   }
 
-  record.id = newId(at);
+  // o.id: an id chosen by the caller (an automatic text's is fixed by its note, so it is logged once)
+  record.id = typeof o.id === 'string' && /^sms-[\w-]{1,80}$/.test(o.id) ? o.id : newId(at);
   record.sentAt = at.toISOString();
   try {
     if (!logWriter) throw new Error('no SMS log is set up on this server');
-    logWriter(Object.assign({}, record));
+    await logWriter(Object.assign({}, record));
     record.logged = true;
   } catch (err) {
     record.logged = false;

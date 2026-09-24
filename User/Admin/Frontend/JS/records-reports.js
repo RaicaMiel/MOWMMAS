@@ -35,7 +35,7 @@ import {
 } from "./admin-data.js";
 import { createPager, formatMobile } from "./admin-ui.js";
 import { setUpSubmissionView } from "./admin-submission.js";
-import { getSmsLog, cachedSmsLog } from "./admin-sms.js";
+import { getSmsLog, cachedSmsLog, smsLogNote } from "./admin-sms.js";
 
 var DAY = 24 * 60 * 60 * 1000;
 
@@ -184,7 +184,18 @@ function renderStats(day) {
   setStat(2, String(referrals(day).length));
   var from4 = addDays(day, -28);
   var smsSent = state.sms.filter(function (r) { var d = isoDay(r.sentAt); return r.status === "sent" && d > from4 && d <= day; }).length;
-  setStat(3, state.smsError && !state.sms.length ? "–" : String(smsSent), isToday ? "In the last 4 weeks" : "In the 4 weeks to " + shortDay(day));
+  var cut = smsCut(from4);
+  setStat(3, state.smsError && !state.sms.length ? "–" : String(smsSent) + (cut ? "+" : ""),
+    (isToday ? "In the last 4 weeks" : "In the 4 weeks to " + shortDay(day)) + (cut ? " (newest SMS only)" : ""));
+}
+
+/* When the server sent only the newest SMS (admin-sms.js smsLogNote), the loaded log is
+   complete only after the day of its oldest SMS. smsCut(from): whether the days after
+   `from` reach back past that, so a count over them may be short. */
+function smsCut(from) {
+  if (!smsLogNote() || !state.sms.length) return false;
+  var oldest = isoDay(state.sms[state.sms.length - 1].sentAt);
+  return Boolean(oldest) && from < oldest;
 }
 
 /* ───────────── charts ───────────── */
@@ -340,8 +351,9 @@ function renderSmsChart(day) {
   svg.innerHTML = out.join("");
 
   if (table) {
-    table.querySelector("caption").textContent = "SMS sent per week by type, 4 weeks to " + shortDay(day) + ", " + total + " in total." +
-      (total ? "" : state.smsError && !state.sms.length ? " The SMS log couldn't be loaded." : " No SMS has been sent yet.");
+    var cut = smsCut(addDays(day, -28));
+    table.querySelector("caption").textContent = "SMS sent per week by type, 4 weeks to " + shortDay(day) + ", " + total + (cut ? " or more" : "") + " in total." +
+      (cut ? " " + smsLogNote() : total ? "" : state.smsError && !state.sms.length ? " The SMS log couldn't be loaded." : " No SMS has been sent yet.");
     table.querySelector("tbody").innerHTML = weeks.map(function (week) {
       return '<tr><th scope="row"><time datetime="' + week.day + '">' + esc(shortDay(week.day)) + "</time></th>" +
         "<td>" + week.update + "</td><td>" + week.reminder + "</td><td>" + week.referral + "</td></tr>";
@@ -478,12 +490,34 @@ var SMS_EMPTY = (function () {
 function renderAll() {
   var day = reportDay();
   var smsEmpty = document.querySelector("#panel_sms .mw-empty__title");
-  if (smsEmpty) smsEmpty.textContent = state.smsError && !state.sms.length ? "The SMS log couldn't be loaded" : SMS_EMPTY;
+  if (smsEmpty) {
+    smsEmpty.textContent = state.smsError && !state.sms.length ? "The SMS log couldn't be loaded"
+      : smsLogNote() && state.sms.length ? "No SMS up to " + shortDay(day) + " among the newest ones"
+      : SMS_EMPTY;
+  }
   renderStats(day);
   renderHmbChart();
   renderSmsChart(day);
   renderHistory(day);
   renderPanel("panel_sms", "SMS history", smsRows(day));
+  showSmsNote(document.getElementById("panel_sms"));
+}
+
+// When the server sent only the newest SMS, the SMS tab says so (the counts above cover those)
+function showSmsNote(panel) {
+  if (!panel) return;
+  var note = panel.querySelector("[data-sms-note]");
+  var text = smsLogNote();
+  if (!note && text) {
+    note = document.createElement("p");
+    note.className = "mw-table__sub";
+    note.setAttribute("data-sms-note", "");
+    panel.appendChild(note);
+  }
+  if (note) {
+    note.textContent = text;
+    note.hidden = !text;
+  }
 }
 
 /* ───────────── Export CSV ───────────── */
@@ -514,13 +548,16 @@ function buildCsv(day) {
       s.referral.facilityName || "", statusText(s.status), s.ref || ""]);
   });
 
+  // When only the newest SMS were loaded, the file says so in its SMS section (not counted as a record)
+  var partial = smsLogNote();
+  if (partial) rows.push(["SMS", "", partial, "", "", "", ""]);
   smsUpTo(day).forEach(function (r) {
     var t = SMS_TYPES[r.type] || SMS_TYPES.update;
     rows.push(["SMS", stamp(r.sentAt), r.name || formatMobile(r.to), t.label + (r.event && r.event !== t.label ? ": " + r.event : "") + " · " + formatMobile(r.to),
       r.facility || "", r.status === "sent" ? (/^delivered$/i.test(r.delivery || "") ? "Delivered" : r.delivery ? "Sent (" + r.delivery + ")" : "Sent") : r.status === "skipped" ? "Not sent" : r.status === "unknown" ? "Not confirmed" : "Failed", r.ref || ""]);
   });
 
-  return { text: rows.map(function (row) { return row.map(csvCell).join(","); }).join("\r\n") + "\r\n", count: rows.length - 1 };
+  return { text: rows.map(function (row) { return row.map(csvCell).join(","); }).join("\r\n") + "\r\n", count: rows.length - 1 - (partial ? 1 : 0) };
 }
 
 function download(text, fileName) {
@@ -547,9 +584,10 @@ function exportCsv() {
       var day = reportDay();
       var csv = buildCsv(day);
       download(csv.text, "mowmmas-history-" + day + ".csv");
-      toast(csv.count
+      toast((csv.count
         ? "CSV downloaded with " + plural(csv.count, "record", "records") + "."
-        : "CSV downloaded. There are no records up to " + shortDay(day) + " yet.");
+        : "CSV downloaded. There are no records up to " + shortDay(day) + " yet.") +
+        (smsLogNote() ? " Its SMS rows are the newest ones only: " + smsLogNote() : ""));
     })
     .catch(function (error) {
       showPageError(errorMessage(error, "the records for the CSV"));

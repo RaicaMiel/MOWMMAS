@@ -146,7 +146,10 @@ export var ready = new Promise(function (resolve, reject) {
         import("./admin-data.js").then(function (data) {
           return Promise.all([data.getSubmissions(), data.getFacilities()]);
         }).catch(function () { /* each page loads its own data anyway */ });
-        import("./admin-sms.js").then(function (sms) { return sms.getSmsLog(); }).catch(function () { /* the SMS pages say if the server can't be reached */ });
+        import("./admin-sms.js").then(function (sms) {
+          sms.sweepUpdates();   // any admin update not texted yet (at most once a minute)
+          return sms.getSmsLog();
+        }).catch(function () { /* the SMS pages say if the server can't be reached */ });
       })
       .catch(function (error) {
         if (error && error.code === "permission-denied") {

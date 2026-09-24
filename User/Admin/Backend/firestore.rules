@@ -37,5 +37,25 @@ service cloud.firestore {
     match /submissions/{ref} {
       allow read, write: if isAdmin();
     }
+
+    // The MOWMMAS server's own records. It signs in as the admin, so only an admin
+    // can read or write them: the last reference number handed out (counters), every
+    // SMS sent (smsLog), the SMS wording (smsTemplates), the texts sent about each
+    // submission (notifications) and the limits on forms and automatic texts (limits).
+    match /counters/{id} {
+      allow read, write: if isAdmin();
+    }
+    match /smsLog/{id} {
+      allow read, write: if isAdmin();
+    }
+    match /smsTemplates/{key} {
+      allow read, write: if isAdmin();
+    }
+    match /notifications/{id} {
+      allow read, write: if isAdmin();
+    }
+    match /limits/{id} {
+      allow read, write: if isAdmin();
+    }
   }
 }

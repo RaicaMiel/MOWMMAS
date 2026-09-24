@@ -19,6 +19,7 @@
 import { ready, toast, showPageError } from "./admin-session.js";
 import { referSubmission, statusLabel } from "./admin-data.js";
 import { hideFormError, holdDialog } from "./admin-ui.js";
+import { textUpdate } from "./admin-sms.js";
 
 var SLOW_SAVE_MS = 12000;
 
@@ -106,6 +107,7 @@ export function setUpRefer(options) {
     referSubmission(ref, f, options.note.value, session && session.user && session.user.email)
       .then(function (updated) {
         clearTimeout(slowTimer);
+        textUpdate(ref);   // the server texts her where she was referred
         var closeIt = ownDialog() && (mine() || slow);
         release();
         options.onSaved(updated);

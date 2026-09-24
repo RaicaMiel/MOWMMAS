@@ -869,10 +869,38 @@
     $('submitLabel').textContent = busy ? 'Sending…' : T.submit;
   }
 
+  /* One key for this fill of the form, sent with every try: if an answer is lost (a weak
+     signal) and she presses Send again, MOWMMAS gives back the form it already saved
+     instead of saving a second one. The key is kept with the draft, so it is the same after
+     a reload, and it goes with the draft (sent, or Start over). MOWMMAS saves changed answers
+     as a new form, so a fix she makes before sending again is never lost. */
+  var SAVE_KEY_STORE = DRAFT_KEY + '.saveKey';
+  var SAVE_KEY_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  var saveKey = null;
+  function storedSaveKey() {
+    try {
+      var k = sessionStorage.getItem(SAVE_KEY_STORE);
+      return k && SAVE_KEY_RE.test(k) ? k : null;
+    } catch (e) { return null; }
+  }
+  function newSaveKey() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+    var b = new Uint8Array(16);
+    if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(b);
+    else for (var i = 0; i < 16; i++) b[i] = Math.floor(Math.random() * 256);
+    b[6] = (b[6] & 15) | 64;
+    b[8] = (b[8] & 63) | 128;
+    var h = Array.prototype.map.call(b, function (x) { return (x + 256).toString(16).slice(1); }).join('');
+    return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20);
+  }
+
   function send() {
     sending = true;
     setBusy(true);
     var data = payload();
+    saveKey = saveKey || storedSaveKey() || newSaveKey();
+    try { sessionStorage.setItem(SAVE_KEY_STORE, saveKey); } catch (e) { /* storage off: the key still covers tries on this page */ }
+    data.saveId = saveKey;
     api.submit(data).then(function (res) {
       util.rememberSubmission({
         ref: res.ref,
@@ -942,7 +970,7 @@
 
   function clearDraft() {
     clearTimeout(saveTimer);
-    try { sessionStorage.removeItem(DRAFT_KEY); } catch (e) { /* ignore */ }
+    try { sessionStorage.removeItem(DRAFT_KEY); sessionStorage.removeItem(SAVE_KEY_STORE); } catch (e) { /* ignore */ }
   }
 
   function restoreDraft() {
@@ -972,6 +1000,7 @@
   function startOver() {
     form.reset();
     clearDraft();
+    saveKey = null;   // a new fill: a new save key
     touched = {};
     attempted = false;
     generalErrors = [];
