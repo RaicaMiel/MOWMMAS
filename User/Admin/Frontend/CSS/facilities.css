@@ -15,6 +15,17 @@
   }
 }
 
+/* Add / Edit facility: the five service selects, with their hint under them */
+.fac-services > .mw-field__hint {
+  margin-top: var(--mw-s3);
+}
+
+/* HMB status beside Donor milk availability: the two selects line up at the
+   top, so the donor milk hint under its select doesn't push it up */
+.mw-form-row.fac-form-row--top {
+  align-items: start;
+}
+
 /* The panel: search row, map, then what was pinned */
 .fac-location__panel {
   display: grid;

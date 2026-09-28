@@ -4,9 +4,12 @@
    Everything on this page comes from Firestore (facilities/<id>):
      - the four KPI cards, the town filter and the facility table
        (10 facilities a page, with numbered pages under it)
-     - Public toggle        → saves participating
+     - Published switch     → saves participating (Published: mothers see
+                              the facility's service information)
      - Update status        → saves HMB status, donor milk and the note
-     - Add / Edit facility  → creates or updates the facility, with its
+     - Add / Edit facility  → creates or updates the facility (its five
+                              human milk-related services each "Yes — documented",
+                              "Not verified" or "Not offered"), with its
                               location picked on a map (Leaflet + OpenStreetMap;
                               addresses found with OpenStreetMap Nominatim)
    Every save stamps dataStatus.updatedAt / updatedBy with the signed-in admin.
@@ -18,10 +21,13 @@ import {
   getFacilities,
   cachedFacilities,
   isParticipating,
-  hasDonorMilk,
   isOverdue,
   hmbStatus,
   HMB,
+  MILK_SERVICES,
+  SERVICE_STATE,
+  serviceState,
+  hasMilkServices,
   DONOR_MILK,
   donorMilk,
   facilityUpdatedAt,
@@ -52,27 +58,23 @@ var KIND_LABEL = {
   clinic: "Clinic"
 };
 
-// Services shown in the table, in this order, and the filter / checkbox for each
-var SERVICES = [
-  { key: "lactationServices", label: "Lactation", filter: "lactation", field: "service_lactation" },
-  { key: "acceptsDonations", label: "Donations", filter: "donations", field: "service_donations" },
-  { key: "providesDonorMilk", label: "Donor milk", filter: "donor_milk", field: "service_donor_milk" },
-  { key: "milkStorage", label: "Milk storage", filter: "milk_storage" }
-];
+/* The human milk-related services (MILK_SERVICES in admin-data.js) are in the
+   table, the Service filter (value = the service's key) and the facility
+   dialog (one select each: serviceField below). */
+function isServiceKey(key) {
+  return MILK_SERVICES.some(function (service) { return service.key === key; });
+}
 
-// HMB status (form value) → what is saved
+// HMB status (hmbStatus value, also the form value) → what is saved
 var HMB_SAVE = {
   verified: { milkBank: true, verified: true },
   not_verified: { milkBank: true, verified: false },
-  no: { milkBank: false, verified: false },
-  unknown: { milkBank: null, verified: false }
+  none: { milkBank: false, verified: false }
 };
-var HMB_FORM_LABEL = {
-  verified: "Verified HMB",
-  not_verified: "HMB, not verified",
-  no: "Not an HMB",
-  unknown: "Not reported"
-};
+
+function hmbMeaning(f) {
+  return HMB[hmbStatus(f)] || HMB.none;
+}
 
 // Donor milk: Firestore value ↔ form value
 var DONOR_TO_FORM = { available: "available", limited: "limited", none: "not_available", unknown: "unknown" };
@@ -250,7 +252,7 @@ function focusRowControl(selector) {
   if (control) control.focus();
 }
 
-/* The rules every page shares (public, donor milk, needs updating) are in admin-data.js. */
+/* The rules every page shares (published, HMB status, services, needs updating) are in admin-data.js. */
 
 /* ───────────── KPI cards ───────────── */
 
@@ -261,14 +263,11 @@ function setStat(key, value) {
 
 function renderStats() {
   var all = state.facilities;
-  var participating = all.filter(isParticipating);
-  setStat("participating", participating.length);
+  var published = all.filter(isParticipating);
+  setStat("participating", published.length);
   setStat("verified", all.filter(function (f) { return hmbStatus(f) === "verified"; }).length);
-  setStat("donor_milk", all.filter(hasDonorMilk).length);
-  setStat("overdue", participating.filter(isOverdue).length);
-
-  var caption = document.querySelector('[data-stat-caption="participating"]');
-  if (caption) caption.textContent = "Marked public, out of " + all.length + (all.length === 1 ? " facility" : " facilities");
+  setStat("milk_services", all.filter(hasMilkServices).length);
+  setStat("overdue", published.filter(isOverdue).length);
 }
 
 /* ───────────── filters ───────────── */
@@ -318,8 +317,7 @@ function matches(f, filter) {
   if (filter.town && text(f.municipality) !== filter.town) return false;
   if (filter.hmb && hmbStatus(f) !== filter.hmb) return false;
   if (filter.service) {
-    var service = SERVICES.filter(function (s) { return s.filter === filter.service; })[0];
-    if (!service || !(f.services && f.services[service.key] === true)) return false;
+    if (!isServiceKey(filter.service) || !(f.services && f.services[filter.service] === true)) return false;
   }
   if (filter.words.length) {
     var haystack = [f.name, f.address, f.municipality].map(text).join(" ").toLowerCase();
@@ -342,12 +340,14 @@ function shortAddress(f) {
   return address || text(f.municipality);
 }
 
+// The services marked "Yes — documented"; else "None documented" (some marked
+// "Not offered") or "Not verified" (none marked either way)
 function servicesHtml(f) {
   var s = f.services || {};
-  var offered = SERVICES.filter(function (service) { return s[service.key] === true; }).map(function (service) { return service.label; });
-  if (offered.length) return esc(offered.join(", "));
-  var reported = Object.keys(s).some(function (key) { return s[key] === true || s[key] === false; });
-  return '<span class="mw-text-muted">' + (reported ? "None" : "Not reported") + "</span>";
+  var documented = MILK_SERVICES.filter(function (service) { return s[service.key] === true; }).map(function (service) { return service.short; });
+  if (documented.length) return esc(documented.join(", "));
+  var notOffered = MILK_SERVICES.some(function (service) { return s[service.key] === false; });
+  return '<span class="mw-text-muted">' + (notOffered ? "None documented" : "Not verified") + "</span>";
 }
 
 function updatedCell(f) {
@@ -374,14 +374,13 @@ function rowHtml(f) {
     "</td>" +
     "<td>" + esc(text(f.municipality)) + "</td>" +
     "<td>" + esc(f.kindLabel || KIND_LABEL[f.kind] || "") + "</td>" +
-    "<td>" + chip(HMB[hmbStatus(f)]) + "</td>" +
+    "<td>" + chip(hmbMeaning(f)) + "</td>" +
     "<td>" + servicesHtml(f) + "</td>" +
-    "<td>" + chip(DONOR_MILK[donorMilk(f)]) + "</td>" +
     updatedCell(f) +
     "<td>" +
       '<label class="mw-toggle">' +
         '<input class="mw-toggle__input" id="' + esc(toggleId(f)) + '" name="' + esc(toggleId(f)) + '" type="checkbox" role="switch" data-facility-id="' + id + '"' + (isParticipating(f) ? " checked" : "") + ">" +
-        '<span class="mw-visually-hidden">Show ' + name + " in the public directory</span>" +
+        '<span class="mw-visually-hidden">Publish ' + name + " (show its service information to mothers)</span>" +
       "</label>" +
     "</td>" +
     '<td class="mw-table__js">' +
@@ -493,7 +492,7 @@ page.clear.addEventListener("click", function (event) {
   page.search.focus();
 });
 
-/* ───────────── Public toggle ───────────── */
+/* ───────────── Published switch ───────────── */
 
 function showSaveErrorOnPage(message) {
   showPageError(message);
@@ -529,7 +528,9 @@ page.rows.addEventListener("change", function (event) {
       clearSaveErrorOnPage();
       render(f.id);
       focusRowControl("#" + CSS.escape(toggleId(f)));
-      toast(show ? f.name + " is now marked public." : f.name + " is now marked not public.");
+      toast(show
+        ? f.name + " is published. Mothers can now see its service information."
+        : f.name + " is unpublished. Mothers no longer see its service information.");
     })
     .catch(function (error) {
       input.checked = !show;
@@ -563,7 +564,7 @@ function openStatus(f, trigger) {
   // "No change" says what the status is now
   var hmbSelect = statusForm.elements.hmb_status;
   var donorSelect = statusForm.elements.donor_milk;
-  hmbSelect.options[0].textContent = "No change (now: " + HMB_FORM_LABEL[hmbStatus(f)] + ")";
+  hmbSelect.options[0].textContent = "No change (now: " + hmbMeaning(f).label + ")";
   donorSelect.options[0].textContent = "No change (now: " + DONOR_MILK[donorMilk(f)].label + ")";
   hmbSelect.value = "";
   donorSelect.value = "";
@@ -632,7 +633,19 @@ statusDialog.addEventListener("close", function () {
 
 var fields = facilityForm.elements;
 
+// A service's select in the dialog (values: the SERVICE_STATE keys "yes", "unverified", "no")
+function serviceField(key) {
+  return fields["service_" + key];
+}
+
+// The value saved for a service's select value: true, null or false
+function serviceValue(formValue) {
+  return SERVICE_STATE[formValue] ? SERVICE_STATE[formValue].value : null;
+}
+
 function readFacilityForm() {
+  var services = {};
+  MILK_SERVICES.forEach(function (service) { services[service.key] = serviceField(service.key).value; });
   return {
     name: text(fields.facility_name.value),
     kind: fields.facility_type.value,
@@ -646,9 +659,7 @@ function readFacilityForm() {
     email: text(fields.email.value),
     hours: text(fields.operating_hours.value),
     open24: fields.open_24_hours.checked,
-    lactation: fields.service_lactation.checked,
-    donations: fields.service_donations.checked,
-    donorMilk: fields.service_donor_milk.checked,
+    services: services,
     hmb: fields.hmb_status.value,
     donor: fields.donor_milk.value,
     isPublic: fields.is_public.checked
@@ -739,10 +750,11 @@ function openEdit(f, trigger) {
   fields.email.value = text(f.email);
   fields.operating_hours.value = isAllDay(hours) ? "" : hours;
   fields.open_24_hours.checked = isAllDay(hours);
-  SERVICES.forEach(function (service) {
-    if (service.field) fields[service.field].checked = s[service.key] === true;
+  MILK_SERVICES.forEach(function (service) {
+    serviceField(service.key).value = serviceState(s[service.key]);
   });
-  fields.hmb_status.value = hmbStatus(f);
+  var hmb = hmbStatus(f);
+  fields.hmb_status.value = HMB_SAVE[hmb] ? hmb : "none";
   fields.donor_milk.value = DONOR_TO_FORM[donorMilk(f)];
   fields.is_public.checked = isParticipating(f);
 
@@ -773,7 +785,9 @@ if (page.add) {
 function newFacility(v, when) {
   var lat = round6(v.lat);
   var lon = round6(v.lon);
-  var hmb = HMB_SAVE[v.hmb] || HMB_SAVE.no;
+  var hmb = HMB_SAVE[v.hmb] || HMB_SAVE.none;
+  var services = { milkBank: hmb.milkBank };
+  MILK_SERVICES.forEach(function (service) { services[service.key] = serviceValue(v.services[service.key]); });
   var id = "adm-" + Date.now().toString(36);
   return {
     id: id,
@@ -792,13 +806,7 @@ function newFacility(v, when) {
     operatingHours: hoursValue(v),
     operator: null,
     participating: v.isPublic,
-    services: {
-      milkBank: hmb.milkBank,
-      milkStorage: null,
-      acceptsDonations: v.donations,
-      providesDonorMilk: v.donorMilk,
-      lactationServices: v.lactation
-    },
+    services: services,
     donorMilkAvailability: Object.prototype.hasOwnProperty.call(DONOR_SAVE, v.donor) ? DONOR_SAVE[v.donor] : null,
     milkStock: null,
     requirements: [],
@@ -845,9 +853,10 @@ function changesFor(v, before, when) {
   if (v.mobile !== before.mobile) u.smsNumber = orNull(v.mobile);
   if (v.email !== before.email) u.email = orNull(v.email);
   if (v.hours !== before.hours || v.open24 !== before.open24) u.operatingHours = hoursValue(v);
-  if (v.lactation !== before.lactation) u["services.lactationServices"] = v.lactation;
-  if (v.donations !== before.donations) u["services.acceptsDonations"] = v.donations;
-  if (v.donorMilk !== before.donorMilk) u["services.providesDonorMilk"] = v.donorMilk;
+  MILK_SERVICES.forEach(function (service) {
+    var now = v.services[service.key];
+    if (now !== before.services[service.key] && SERVICE_STATE[now]) u["services." + service.key] = SERVICE_STATE[now].value;
+  });
   if (v.hmb !== before.hmb && HMB_SAVE[v.hmb]) {
     u["services.milkBank"] = HMB_SAVE[v.hmb].milkBank;
     u["dataStatus.verified"] = HMB_SAVE[v.hmb].verified;

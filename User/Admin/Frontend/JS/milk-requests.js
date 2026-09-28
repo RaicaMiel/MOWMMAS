@@ -305,7 +305,7 @@ function fillReferList(facilities) {
   REFER_HINT = banks.length
     ? "Verified milk banks are listed first. The mother contacts the facility to confirm availability, requirements and schedule."
     : "No verified milk bank is listed yet. Call the facility to check before referring.";
-  if (!listed.length) REFER_HINT = "No facility can take referrals right now. Make a facility public on the Health Facilities page.";
+  if (!listed.length) REFER_HINT = "No facility can take referrals right now. Publish a facility on the Health Facilities page.";
   page.referHint.textContent = REFER_HINT;
 }
 

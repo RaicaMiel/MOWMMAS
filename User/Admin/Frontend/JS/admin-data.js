@@ -202,9 +202,11 @@ export function smsStatusChip(record) {
 
 /* ───────────── the rules every page shares ───────────── */
 
-// "Needs updating": a public facility never updated, or not in this many days
+// "Needs updating": a published facility never updated, or not in this many days
 export var STALE_AFTER_DAYS = 30;
 
+/* "Published": mothers see this facility's service information. Stored in
+   the facility's existing `participating` field (true = Published). */
 export function isParticipating(facility) {
   return !!facility && facility.participating === true;
 }
@@ -225,6 +227,14 @@ export function isOverdue(facility) {
 export function isVerifiedHmb(facility) {
   var s = facility && facility.services;
   return !!s && s.milkBank === true && !!facility.dataStatus && facility.dataStatus.verified === true;
+}
+
+/* Published, with at least one human milk-related service (MILK_SERVICES)
+   marked "Yes — documented" (true) */
+export function hasMilkServices(facility) {
+  if (!isParticipating(facility)) return false;
+  var s = facility.services || {};
+  return MILK_SERVICES.some(function (service) { return s[service.key] === true; });
 }
 
 // Statuses after which nothing more happens (same as the backends' statuses.js)
@@ -492,20 +502,45 @@ export function submissionChip(submission) {
   return statusChip(submission && submission.status, submission && submission.type);
 }
 
-/* Human milk bank status of a facility */
+/* Human milk-related services, in the order the admin and mother pages list them.
+   Each is stored in facility.services[key] as true, false or null (SERVICE_STATE). */
+export var MILK_SERVICES = [
+  { key: "lactationServices", label: "Lactation support", short: "Lactation" },
+  { key: "milkReferral", label: "Human milk-related information & referral", short: "Milk info & referral" },
+  { key: "milkStorage", label: "Milk storage", short: "Milk storage" },
+  { key: "acceptsDonations", label: "Accepts milk donations", short: "Donations" },
+  { key: "providesDonorMilk", label: "Provides donor milk", short: "Donor milk" }
+];
+
+/* What a service's stored value means. "Yes — documented" only with a real source. */
+export var SERVICE_STATE = {
+  yes: { label: "Yes — documented", value: true, tone: "success" },
+  unverified: { label: "Not verified", value: null, tone: "" },
+  no: { label: "Not offered", value: false, tone: "" }
+};
+
+// A service's stored value → "yes" | "no" | "unverified" (null or missing)
+export function serviceState(value) {
+  return value === true ? "yes" : value === false ? "no" : "unverified";
+}
+
+/* Human Milk Bank status of a facility, worded the same on the mother site:
+     "verified"      services.milkBank true and dataStatus.verified true
+     "not_verified"  services.milkBank true, verification not on file
+     "none"          anything else (milkBank false, null or missing)
+   The admin forms save verified → { milkBank: true, verified: true },
+   not_verified → { milkBank: true, verified: false },
+   none → { milkBank: false, verified: false }. */
 export function hmbStatus(facility) {
   var s = facility && facility.services;
-  var bank = s ? s.milkBank : null;
-  if (bank === true) return facility.dataStatus && facility.dataStatus.verified ? "verified" : "not_verified";
-  if (bank === false) return "no";
-  return "unknown";
+  if (!s || s.milkBank !== true) return "none";
+  return facility.dataStatus && facility.dataStatus.verified === true ? "verified" : "not_verified";
 }
 
 export var HMB = {
-  verified: { label: "HMB: Verified", tone: "success" },
-  not_verified: { label: "HMB: Not verified", tone: "warning" },
-  no: { label: "HMB: No", tone: "" },
-  unknown: { label: "HMB: Not reported", tone: "" }
+  verified: { label: "Verified HMB", tone: "success" },
+  not_verified: { label: "HMB: Not Verified", tone: "warning" },
+  none: { label: "No Confirmed HMB", tone: "" }
 };
 
 export var DONOR_MILK = {

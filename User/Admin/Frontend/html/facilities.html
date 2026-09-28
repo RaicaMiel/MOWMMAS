@@ -140,7 +140,7 @@
                 <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
               </span>
               <p class="mw-stat__value" data-stat="participating">&nbsp;</p>
-              <p class="mw-stat__caption" data-stat-caption="participating">Marked public</p>
+              <p class="mw-stat__caption" data-stat-caption="participating">Service information shown to mothers</p>
             </li>
             <li class="mw-stat">
               <p class="mw-stat__label">Verified HMBs</p>
@@ -151,12 +151,12 @@
               <p class="mw-stat__caption">Verification on file</p>
             </li>
             <li class="mw-stat">
-              <p class="mw-stat__label">Donor milk available</p>
+              <p class="mw-stat__label">With human milk-related services</p>
               <span class="mw-stat__icon">
-                <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.79 0l2.96 2.66"/><path d="m18 15-2-2"/><path d="m15 18-2-2"/></svg>
+                <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
               </span>
-              <p class="mw-stat__value" data-stat="donor_milk">&nbsp;</p>
-              <p class="mw-stat__caption">Available or limited, latest reports</p>
+              <p class="mw-stat__value" data-stat="milk_services">&nbsp;</p>
+              <p class="mw-stat__caption">Published, at least one service documented</p>
             </li>
             <li class="mw-stat">
               <p class="mw-stat__label">Needs updating</p>
@@ -164,7 +164,7 @@
                 <svg class="mw-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
               </span>
               <p class="mw-stat__value" data-stat="overdue">&nbsp;</p>
-              <p class="mw-stat__caption">Public, not updated in 30+ days</p>
+              <p class="mw-stat__caption">Published, not updated in 30+ days</p>
             </li>
           </ul>
         </section>
@@ -192,10 +192,9 @@
               <div class="mw-select">
                 <select class="mw-input" id="filter_hmb_status" name="hmb_status">
                   <option value="">All HMB statuses</option>
-                  <option value="verified">HMB: Verified</option>
-                  <option value="not_verified">HMB: Not verified</option>
-                  <option value="no">HMB: No</option>
-                  <option value="unknown">HMB: Not reported</option>
+                  <option value="verified">Verified HMB</option>
+                  <option value="not_verified">HMB: Not Verified</option>
+                  <option value="none">No Confirmed HMB</option>
                 </select>
               </div>
             </div>
@@ -204,10 +203,11 @@
               <div class="mw-select">
                 <select class="mw-input" id="filter_service" name="service">
                   <option value="">All services</option>
-                  <option value="lactation">Lactation</option>
-                  <option value="donations">Donations</option>
-                  <option value="donor_milk">Donor milk</option>
-                  <option value="milk_storage">Milk storage</option>
+                  <option value="lactationServices">Lactation</option>
+                  <option value="milkReferral">Milk info &amp; referral</option>
+                  <option value="milkStorage">Milk storage</option>
+                  <option value="acceptsDonations">Donations</option>
+                  <option value="providesDonorMilk">Donor milk</option>
                 </select>
               </div>
             </div>
@@ -222,16 +222,15 @@
                   <th scope="col">Town</th>
                   <th scope="col">Type</th>
                   <th scope="col">HMB status</th>
-                  <th scope="col">Services</th>
-                  <th scope="col">Donor milk</th>
+                  <th scope="col">Human Milk-Related Services</th>
                   <th scope="col">Last updated</th>
-                  <th scope="col">Public</th>
+                  <th scope="col">Published</th>
                   <th class="mw-table__js" scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody data-facility-rows>
                 <tr data-loading-row>
-                  <td class="mw-text-muted" colspan="9">Loading facilities…</td>
+                  <td class="mw-text-muted" colspan="8">Loading facilities…</td>
                 </tr>
               </tbody>
             </table>
@@ -378,50 +377,89 @@
             <label class="mw-checkbox__label" for="open_24_hours">Open 24 hours</label>
           </div>
         </div>
-        <fieldset class="mw-fieldset">
-          <legend class="mw-field__label">Services</legend>
-          <div class="mw-checkbox-group">
-            <div class="mw-checkbox">
-              <input class="mw-checkbox__input" id="service_lactation" name="service_lactation" type="checkbox" value="1" checked>
-              <label class="mw-checkbox__label" for="service_lactation">Lactation support</label>
+        <fieldset class="mw-fieldset fac-services" aria-describedby="services_hint">
+          <legend class="mw-field__label">Human milk-related services</legend>
+          <div class="mw-form-row">
+            <div class="mw-field">
+              <label class="mw-field__label" for="service_lactationServices">Lactation support</label>
+              <div class="mw-select">
+                <select class="mw-input" id="service_lactationServices" name="service_lactationServices">
+                  <option value="unverified">Not verified</option>
+                  <option value="yes">Yes — documented</option>
+                  <option value="no">Not offered</option>
+                </select>
+              </div>
             </div>
-            <div class="mw-checkbox">
-              <input class="mw-checkbox__input" id="service_donations" name="service_donations" type="checkbox" value="1">
-              <label class="mw-checkbox__label" for="service_donations">Accepts milk donations</label>
+            <div class="mw-field">
+              <label class="mw-field__label" for="service_milkReferral">Human milk-related information &amp; referral</label>
+              <div class="mw-select">
+                <select class="mw-input" id="service_milkReferral" name="service_milkReferral">
+                  <option value="unverified">Not verified</option>
+                  <option value="yes">Yes — documented</option>
+                  <option value="no">Not offered</option>
+                </select>
+              </div>
             </div>
-            <div class="mw-checkbox">
-              <input class="mw-checkbox__input" id="service_donor_milk" name="service_donor_milk" type="checkbox" value="1">
-              <label class="mw-checkbox__label" for="service_donor_milk">Donor milk</label>
+            <div class="mw-field">
+              <label class="mw-field__label" for="service_milkStorage">Milk storage</label>
+              <div class="mw-select">
+                <select class="mw-input" id="service_milkStorage" name="service_milkStorage">
+                  <option value="unverified">Not verified</option>
+                  <option value="yes">Yes — documented</option>
+                  <option value="no">Not offered</option>
+                </select>
+              </div>
+            </div>
+            <div class="mw-field">
+              <label class="mw-field__label" for="service_acceptsDonations">Accepts milk donations</label>
+              <div class="mw-select">
+                <select class="mw-input" id="service_acceptsDonations" name="service_acceptsDonations">
+                  <option value="unverified">Not verified</option>
+                  <option value="yes">Yes — documented</option>
+                  <option value="no">Not offered</option>
+                </select>
+              </div>
+            </div>
+            <div class="mw-field">
+              <label class="mw-field__label" for="service_providesDonorMilk">Provides donor milk</label>
+              <div class="mw-select">
+                <select class="mw-input" id="service_providesDonorMilk" name="service_providesDonorMilk">
+                  <option value="unverified">Not verified</option>
+                  <option value="yes">Yes — documented</option>
+                  <option value="no">Not offered</option>
+                </select>
+              </div>
             </div>
           </div>
+          <p class="mw-field__hint" id="services_hint">Choose “Yes — documented” only when there is a source for it. Mothers see this information only when the facility is published.</p>
         </fieldset>
-        <div class="mw-form-row">
+        <div class="mw-form-row fac-form-row--top">
           <div class="mw-field">
             <label class="mw-field__label" for="facility_hmb_status">HMB status</label>
             <div class="mw-select">
               <select class="mw-input" id="facility_hmb_status" name="hmb_status">
-                <option value="no">Not an HMB</option>
-                <option value="not_verified">HMB, not verified</option>
+                <option value="none">No Confirmed HMB</option>
+                <option value="not_verified">HMB: Not Verified</option>
                 <option value="verified">Verified HMB</option>
-                <option value="unknown">Not reported</option>
               </select>
             </div>
           </div>
           <div class="mw-field">
-            <label class="mw-field__label" for="facility_donor_milk">Donor milk</label>
+            <label class="mw-field__label" for="facility_donor_milk">Donor milk availability</label>
             <div class="mw-select">
-              <select class="mw-input" id="facility_donor_milk" name="donor_milk">
+              <select class="mw-input" id="facility_donor_milk" name="donor_milk" aria-describedby="facility_donor_milk_hint">
                 <option value="unknown">Unknown</option>
                 <option value="available">Available</option>
                 <option value="limited">Limited</option>
                 <option value="not_available">Not available</option>
               </select>
             </div>
+            <p class="mw-field__hint" id="facility_donor_milk_hint">Shown to mothers only for a Verified HMB.</p>
           </div>
         </div>
         <label class="mw-toggle">
-          <input class="mw-toggle__input" id="is_public" name="is_public" type="checkbox" role="switch" value="1" checked>
-          <span class="mw-toggle__label">Show in the public directory</span>
+          <input class="mw-toggle__input" id="is_public" name="is_public" type="checkbox" role="switch" value="1">
+          <span class="mw-toggle__label">Published: show this facility's service information to mothers</span>
         </label>
       </div>
       <div class="mw-modal__footer">
@@ -456,8 +494,8 @@
             <select class="mw-input" id="hmb_status" name="hmb_status">
               <option value="">No change</option>
               <option value="verified">Verified HMB</option>
-              <option value="not_verified">HMB, not verified</option>
-              <option value="no">Not an HMB</option>
+              <option value="not_verified">HMB: Not Verified</option>
+              <option value="none">No Confirmed HMB</option>
             </select>
           </div>
         </div>
