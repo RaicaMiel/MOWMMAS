@@ -93,16 +93,16 @@ export var ANSWERS = {
 };
 
 // The dialog's title, and what the saved message calls it
-var TITLES = { donate: "Review donation inquiry", request: "Review request", inquire: "Review question" };
-var NOUNS = { donate: "donation inquiry", request: "milk request", inquire: "question" };
+var TITLES = { donate: "Review donation inquiry", request: "Review receiving inquiry", inquire: "Review question" };
+var NOUNS = { donate: "donation inquiry", request: "receiving inquiry", inquire: "question" };
 
 // What the mother reads on Track Submission for each status (User/Mother/Frontend/js/status.js)
 var MOTHER_SEES = {
-  under_review: "A health worker is reviewing your details.",
-  referral_needed: "A health worker is finding the right facility for you. You will get the referral details by SMS.",
-  next_steps: "A health worker has worked out the next steps or a referral for your donation. You will get the details by SMS.",
+  under_review: "A MOWMMAS administrator is reviewing your details.",
+  referral_needed: "A MOWMMAS administrator is finding the right facility for you. You will get the referral details by SMS.",
+  next_steps: "A MOWMMAS administrator has worked out the next steps or a referral for your donation inquiry. You will get the details by SMS.",
   information_sent: "The referral or next-step information was sent to you. Please contact the referred facility to confirm current availability, requirements, and schedule.",
-  answered: "A health worker answered your question. See the messages below or your SMS.",
+  answered: "A MOWMMAS administrator answered your question. See the messages below or your SMS.",
   completed: "All done. Thank you for using MOWMMAS.",
   closed: "This is closed. You can send a new form anytime."
 };
@@ -174,7 +174,7 @@ function factsHtml(s) {
   var html = fact("Name", c.name || "Name not given") +
     fact("Mobile", formatMobile(c.mobile) || "Not given", [c.email]) +
     fact("Address", [c.barangay, c.municipality].filter(function (v) { return text(v); }).join(", ") || "Not given") +
-    fact("Sent to", s.facilityName || "No facility chosen", [s.createdAt ? "On " + formatDateTime(s.createdAt) : ""]);
+    fact("Facility she chose", s.facilityName || "No facility chosen", [s.createdAt ? "On " + formatDateTime(s.createdAt) : ""]);
   var r = s.referral;
   if (r && r.facilityName) {
     html += fact("Referred to", r.facilityName, [

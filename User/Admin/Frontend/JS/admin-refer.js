@@ -9,7 +9,7 @@
    setUpRefer({ modal, select, note, noun, submission, facility, onOpen, onSaved })
      modal       the <dialog> (#refer_modal)
      select      its facility <select>, note its note <textarea>
-     noun        "donation inquiry" or "milk request", for messages
+     noun        "donation inquiry" or "receiving inquiry", for messages
      submission  ref → the submission shown in that row
      facility    id → the facility chosen in the list
      onOpen      (submission, trigger) → the page's own touches (e.g. the hint)
@@ -28,7 +28,7 @@ import { textUpdate } from "./admin-sms.js";
 
 var SLOW_SAVE_MS = 12000;
 
-// type: the submission's type, for the name of its status ("This milk request is already completed, …")
+// type: the submission's type, for the name of its status ("This receiving inquiry is already completed, …")
 function referError(error, noun, type) {
   var code = (error && error.code) || "";
   if (code === "final") return "This " + noun + " is already " + statusLabel(error.detail, type).toLowerCase() + ", so it can't be referred.";

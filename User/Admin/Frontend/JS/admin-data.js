@@ -238,7 +238,7 @@ export function isFinalStatus(status) {
 
 /* The status names the mother sees, and the admin pages too (same as the
    backends' statuses.js). Only "submitted" depends on the type:
-   "New Donation Inquiry", "New Request" or "New Question" ("New" without one). */
+   "New Donation Inquiry", "New Receiving Inquiry" or "New Question" ("New" without one). */
 var MOTHER_STATUS_LABELS = {
   submitted: "New",
   under_review: "Under Review",
@@ -250,7 +250,7 @@ var MOTHER_STATUS_LABELS = {
   closed: "Closed"
 };
 
-var SUBMITTED_LABELS = { donate: "New Donation Inquiry", request: "New Request", inquire: "New Question" };
+var SUBMITTED_LABELS = { donate: "New Donation Inquiry", request: "New Receiving Inquiry", inquire: "New Question" };
 
 // type: the submission's type ("donate" | "request" | "inquire")
 export function motherStatusLabel(status, type) {
@@ -455,8 +455,8 @@ export function updateSubmissionStatus(ref, change) {
 /* ───────────── what things mean ───────────── */
 
 export var TYPES = {
-  donate: { label: "Donation", verb: "wants to donate" },
-  request: { label: "Milk request", verb: "needs donor milk" },
+  donate: { label: "Donation Inquiry", verb: "sent a donation inquiry" },
+  request: { label: "Receiving Inquiry", verb: "sent a receiving inquiry" },
   inquire: { label: "Inquiry", verb: "asked a question" }
 };
 
@@ -473,7 +473,7 @@ var STATUS_TONE = {
 };
 
 /* The admin pages name a status as the mother sees it (MOTHER_STATUS_LABELS above).
-   type: the submission's type, for "New Donation Inquiry" / "New Request" / "New Question" */
+   type: the submission's type, for "New Donation Inquiry" / "New Receiving Inquiry" / "New Question" */
 export function statusLabel(status, type) {
   return motherStatusLabel(status, type);
 }

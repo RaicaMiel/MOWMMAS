@@ -135,7 +135,7 @@ function babyText(d) {
 function needChip(d) {
   var urgency = URGENCY[d.urgency];
   if (urgency) return '<span class="mw-chip mw-chip--' + urgency.tone + '">' + esc(urgency.label) + "</span>";
-  return '<span class="mw-chip mw-chip--brand">' + esc(capitalize(TYPES.request.verb)) + "</span>";
+  return '<span class="mw-chip mw-chip--brand">' + esc("Urgency not given") + "</span>";
 }
 
 function relationshipText(d) {
@@ -164,9 +164,9 @@ function smsFor(s) {
     return fillTemplateToFit(referralTemplate, { name: name, firstName: first, facility: facility, phone: f && (f.contactNumber || f.smsNumber) });
   }
   return fitSms([
-    (name ? "Hi " + name + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your request for donor milk. A health worker will review it and text you the next steps. - MOWMMAS",
-    (first ? "Hi " + first + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your request for donor milk. A health worker will review it and text you the next steps. - MOWMMAS",
-    "MOWMMAS: We received your request for donor milk. A health worker will review it and text you the next steps."
+    (name ? "Hi " + name + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your receiving inquiry. MOWMMAS will review it and text you the next steps. - MOWMMAS",
+    (first ? "Hi " + first + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your receiving inquiry. MOWMMAS will review it and text you the next steps. - MOWMMAS",
+    "MOWMMAS: We received your receiving inquiry. MOWMMAS will review it and text you the next steps."
   ]);
 }
 
@@ -218,7 +218,7 @@ function rowHtml(s) {
   var referTo = state.referIds[wanted] ? wanted : "";
   var context = esc(name ? name + " · " + s.ref : s.ref);
   var actions =
-    '<button class="mw-link" type="button" data-modal-open="submission_modal" data-modal-context="' + context + '">Review<span class="mw-visually-hidden"> request from ' + esc(label) + "</span></button>";
+    '<button class="mw-link" type="button" data-modal-open="submission_modal" data-modal-context="' + context + '">Review<span class="mw-visually-hidden"> inquiry from ' + esc(label) + "</span></button>";
   // A finished request (completed or closed) can't be referred
   if (!isFinalStatus(s.status)) {
     actions +=
@@ -261,7 +261,7 @@ function render() {
 
   var none = state.rows.length === 0;
   emptyTitle.textContent = none ? "No milk requests yet" : EMPTY_SEARCH.title;
-  emptyText.textContent = none ? "When a mother or family sends the donor milk request form, it shows here." : EMPTY_SEARCH.text;
+  emptyText.textContent = none ? "When a mother or family sends the receiving inquiry form, it shows here." : EMPTY_SEARCH.text;
   emptyLink.hidden = none;
   page.empty.hidden = shown.length !== 0;
 }
@@ -303,9 +303,9 @@ function fillReferList(facilities) {
   addGroup("Other facilities", others, where);
 
   REFER_HINT = banks.length
-    ? "Verified milk banks are listed first. The facility confirms availability, requirements and schedule with the mother."
+    ? "Verified milk banks are listed first. The mother contacts the facility to confirm availability, requirements and schedule."
     : "No verified milk bank is listed yet. Call the facility to check before referring.";
-  if (!listed.length) REFER_HINT = "No facility can take referrals right now. Make a facility public on the Facilities page.";
+  if (!listed.length) REFER_HINT = "No facility can take referrals right now. Make a facility public on the Health Facilities page.";
   page.referHint.textContent = REFER_HINT;
 }
 
@@ -314,8 +314,8 @@ function referHintFor(id) {
   var f = state.referIds[id];
   if (!f) return REFER_HINT;
   if (isVerifiedHmb(f)) {
-    if (!hasDonorMilkReport(f)) return f.name + " is a verified milk bank. It hasn't reported its donor milk yet. The facility confirms it with the mother.";
-    return f.name + " is a verified milk bank. It last reported donor milk as " + lastReported(f) + ". The facility confirms it with the mother.";
+    if (!hasDonorMilkReport(f)) return f.name + " is a verified milk bank. It hasn't reported its donor milk yet. The mother contacts the facility to confirm it.";
+    return f.name + " is a verified milk bank. It last reported donor milk as " + lastReported(f) + ". The mother contacts the facility to confirm it.";
   }
   if (givesSupport(f)) return f.name + " has documented breastfeeding support. It is not a verified milk bank.";
   return f.name + "'s services are not verified yet. Call the facility to check before referring.";
@@ -356,13 +356,13 @@ setUpRefer({
   modal: page.referModal,
   select: page.referSelect,
   note: document.getElementById("refer_note"),
-  noun: "milk request",
+  noun: "receiving inquiry",
   submission: function (ref) { return state.byRef[ref] || null; },
   facility: function (id) { return state.referIds[id] || null; },
   onOpen: function (s) {
     page.referHint.textContent = referHintFor(page.referSelect.value);
     if (s && s.facilityName && !state.referIds[s.facilityId] && Object.keys(state.referIds).length) {
-      page.referHint.textContent = REFER_HINT + " The request was sent to " + s.facilityName + ", which isn't on this list.";
+      page.referHint.textContent = REFER_HINT + " The mother chose " + s.facilityName + ", which isn't on this list.";
     }
   },
   onSaved: replaceSubmission

@@ -106,16 +106,16 @@ function plural(n, one, many) {
   return n + " " + (n === 1 ? one : many);
 }
 
-// A status as text, named for the submission's type (e.g. "New Request")
+// A status as text, named for the submission's type (e.g. "New Receiving Inquiry")
 var chipText = document.createElement("span");
 function statusText(status, type) {
   chipText.innerHTML = statusChip(status, type);
   return chipText.textContent;
 }
 
-// Facility status in the History: public and fresh, public but overdue, or not public
+// Facility status in the History: public and fresh, public but overdue, or unpublished
 function facilityState(f) {
-  if (!isParticipating(f)) return { label: "Not public", tone: "" };
+  if (!isParticipating(f)) return { label: "Unpublished", tone: "" };
   if (isOverdue(f)) return { label: "Needs updating", tone: "warning" };
   return { label: "Published", tone: "success" };
 }
@@ -291,7 +291,7 @@ function renderHmbChart() {
   if (counts.unknown) {
     parts.push(counts.unknown + (counts.unknown === 1 ? " that hasn't reported its HMB status" : " that haven't reported their HMB status"));
   }
-  caption.textContent = plural(participating.length, "participating facility", "participating facilities") + ": " +
+  caption.textContent = plural(participating.length, "published facility", "published facilities") + ": " +
     parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ".";
 }
 
@@ -454,7 +454,8 @@ function renderHistory(day) {
     var chose = s.facilityName && s.facilityName !== ref.facilityName ? "Mother chose " + s.facilityName : "";
     return '<tr data-ref="' + esc(s.ref) + '">' +
       dateCell(ref.referredAt) +
-      "<td>" + viewButton(s) +
+      "<td>Referral information provided" +
+        '<span class="mw-table__sub">' + viewButton(s) + "</span>" +
         '<span class="mw-table__sub">' + esc(type ? capitalize(type.verb) : (s.typeLabel || "Inquiry")) +
         (s.ref ? ' · <span class="mw-table__nowrap">' + esc(s.ref) + "</span>" : "") + "</span>" +
       "</td>" +

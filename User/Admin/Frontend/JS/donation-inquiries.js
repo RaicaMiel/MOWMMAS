@@ -105,9 +105,9 @@ function smsFor(s) {
     return fillTemplateToFit(referralTemplate, { name: name, firstName: first, facility: facility, phone: f && (f.contactNumber || f.smsNumber) });
   }
   return fitSms([
-    (name ? "Hi " + name + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your milk donation inquiry. A health worker will review it and text you the next steps. - MOWMMAS",
-    (first ? "Hi " + first + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your milk donation inquiry. A health worker will review it and text you the next steps. - MOWMMAS",
-    "MOWMMAS: We received your milk donation inquiry. A health worker will review it and text you the next steps."
+    (name ? "Hi " + name + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your donation inquiry. MOWMMAS will review it and text you the next steps. - MOWMMAS",
+    (first ? "Hi " + first + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your donation inquiry. MOWMMAS will review it and text you the next steps. - MOWMMAS",
+    "MOWMMAS: We received your donation inquiry. MOWMMAS will review it and text you the next steps."
   ]);
 }
 
@@ -234,9 +234,9 @@ function fillReferList(facilities) {
   addGroup("Verified milk banks (HMB)", banks);
   addGroup("Other facilities", others);
   REFER_HINT = banks.length
-    ? "Verified milk banks are listed first. The facility confirms availability, requirements and schedule with the mother."
+    ? "Verified milk banks are listed first. The mother contacts the facility to confirm availability, requirements and schedule."
     : "No verified milk bank is listed yet. Call the facility to check before referring.";
-  if (!listed.length) REFER_HINT = "No facility can take referrals right now. Make a facility public on the Facilities page.";
+  if (!listed.length) REFER_HINT = "No facility can take referrals right now. Make a facility public on the Health Facilities page.";
   page.referHint.textContent = REFER_HINT;
 }
 

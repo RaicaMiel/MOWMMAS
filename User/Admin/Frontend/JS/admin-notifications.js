@@ -3,8 +3,8 @@
 
    The bell gets a count badge, and opens a panel listing what needs the admin:
      - new submissions nobody has handled yet (status "submitted", shown as
-       New Donation Inquiry, New Request or New Question):
-       "<name> wants to donate", "<name> needs donor milk", "<name> asked a question"
+       New Donation Inquiry, New Receiving Inquiry or New Question):
+       "<name> sent a donation inquiry", "<name> sent a receiving inquiry", "<name> asked a question"
        → opens it on Donation inquiries, Milk requests, or Records & reports
          (?ref=<reference>), where the admin sets its status; then it leaves the list
      - public facilities overdue for an update (admin-data.js isOverdue)
@@ -62,7 +62,7 @@ function setUp() {
       '<p class="mw-notify__summary" data-notify-summary>Loading…</p>' +
     "</div>" +
     '<ul class="mw-notify__list" data-notify-list></ul>' +
-    '<p class="mw-notify__empty" data-notify-empty hidden>You\'re all caught up. New donation inquiries, requests and questions show up here.</p>';
+    '<p class="mw-notify__empty" data-notify-empty hidden>You\'re all caught up. New donation inquiries, receiving inquiries and questions show up here.</p>';
   holder.appendChild(panel);
 
   bell.setAttribute("role", "button");

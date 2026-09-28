@@ -197,7 +197,7 @@ if (templateModal && templateForm) {
 
 var ROLES = [
   { type: "donate", label: "Donor", tone: "brand" },
-  { type: "request", label: "Requester", tone: "info" },
+  { type: "request", label: "Receiving", tone: "info" },
   { type: "inquire", label: "Inquiry", tone: "" }
 ];
 
