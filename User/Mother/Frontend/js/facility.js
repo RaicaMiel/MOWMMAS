@@ -47,18 +47,6 @@
     return value && Object.prototype.hasOwnProperty.call(M.SERVICE_TYPES, value) ? value : null;
   }
 
-
-  function number(n) {
-    return Number(n).toLocaleString('en-PH');
-  }
-
-  function stockText(stock) {
-    if (!stock || !isFinite(stock.bottles)) return '';
-    var text = number(stock.bottles) + (stock.bottles === 1 ? ' bottle' : ' bottles');
-    if (stock.volumeMl) text += ' · ' + number(stock.volumeMl) + ' ml';
-    return text;
-  }
-
   /* A number that can receive a text: the SMS number, or a Philippine mobile number */
   function smsTarget(f) {
     if (f.smsNumber) return f.smsNumber;
@@ -200,18 +188,15 @@
     }).join('');
 
     // Donor milk availability only for a verified milk bank ("Availability not reported"
-    // until it reports it); anywhere else the mother can send a request and a health
-    // worker refers her
-    var stock = stockText(f.milkStock);
+    // until it reports it); anywhere else the mother can send a receiving inquiry and a
+    // MOWMMAS administrator refers her. No milk stock is shown: MOWMMAS isn't a milk bank
     var updated = f.dataStatus && f.dataStatus.updatedAt;
     var known = f.donorMilkAvailability === 'available' || f.donorMilkAvailability === 'limited' || f.donorMilkAvailability === 'none';
     var avail;
     if (M.isVerifiedHmb(f)) {
       avail = '<div class="fac-avail">' +
           '<p class="fac-avail__label">Donor milk availability</p>' +
-          '<div class="fac-avail__row">' + ui.availability(f.donorMilkAvailability) +
-            (stock ? '<span class="fac-avail__stock">' + ui.icon('i-box', 'icon--sm') + esc(stock) + '</span>' : '') +
-          '</div>' +
+          '<div class="fac-avail__row">' + ui.availability(f.donorMilkAvailability) + '</div>' +
           (known && updated
             ? '<p class="fac-avail__updated">' + ui.icon('i-clock', 'icon--xs') + 'Updated ' + esc(util.timeAgo(updated)) + '</p>'
             : '') +
@@ -220,8 +205,6 @@
     } else {
       var requestHref = f.infoOnly ? 'hospitals.html?service=request' : formHref('request');
       avail = '<div class="fac-avail">' +
-          '<p class="fac-avail__label">Donor milk</p>' +
-          '<div class="fac-avail__row">' + ui.statusChip({ text: 'Not reported', tone: 'no' }) + '</div>' +
           '<p class="fac-avail__updated">' + ui.icon('i-send', 'icon--xs') +
             '<span>Need donor milk? <a href="' + esc(requestHref) + '">Submit a receiving inquiry</a> to ask about referral options.</span></p>' +
         '</div>';

@@ -197,25 +197,29 @@
 
   /* ───────────── labels ───────────── */
   /* A Human Milk Bank MOWMMAS can show as one: the facility has a milk bank
-     and its details were verified */
+     and its details were verified (the admin portal's "Verified HMB") */
   function isVerifiedHmb(f) {
-    return Boolean(f && f.services && f.services.milkBank === true && f.dataStatus && f.dataStatus.verified);
+    return Boolean(f && f.services && f.services.milkBank === true && f.dataStatus && f.dataStatus.verified === true);
   }
 
-  /* The three statuses shown for every facility, in this order, worded as MOWMMAS
-     lists them: tone 'yes' (documented), 'no' (not there / N/A) or 'unknown' (not verified).
-     Only a verified milk bank is called an HMB. options.withStorage (the facility page)
-     adds Milk Storage as a 4th row, after HMB Status. */
+  /* The three statuses shown for every facility, in this order, worded exactly as the
+     admin portal words them: tone 'yes' (documented), 'no' (not offered / N/A) or
+     'unknown' (not verified).
+     HMB Status: "Verified HMB" (a milk bank, verified) · "HMB: Not Verified" (a milk bank,
+     not verified yet) · "No Confirmed HMB" (no milk bank on record: tone 'no' when the
+     facility has none, 'unknown' when nobody has said).
+     Each service: "Yes — documented" (true) · "Not offered" (false) · "Not Verified" (null).
+     options.withStorage (the facility page) adds Milk Storage as a 4th row, after HMB Status. */
   function facilityStatuses(f, options) {
     var s = (f && f.services) || {};
     var tri = function (value) {
       if (value === true) return { text: 'Yes — documented', tone: 'yes' };
-      if (value === false) return { text: 'No', tone: 'no' };
+      if (value === false) return { text: 'Not offered', tone: 'no' };
       return { text: 'Not Verified', tone: 'unknown' };
     };
     var hmb = isVerifiedHmb(f) ? { text: 'Verified HMB', tone: 'yes' }
-      : s.milkBank === false ? { text: 'No HMB', tone: 'no' }
-      : { text: 'No Confirmed HMB', tone: 'unknown' };
+      : s.milkBank === true ? { text: 'HMB: Not Verified', tone: 'unknown' }
+      : { text: 'No Confirmed HMB', tone: s.milkBank === false ? 'no' : 'unknown' };
     var list = [
       Object.assign({ key: 'lactation', label: 'Breastfeeding/Lactation Support', icon: 'i-heart' },
         f && f.infoOnly ? { text: 'N/A', tone: 'no' } : tri(s.lactationServices)),
@@ -263,10 +267,10 @@
       return '<svg class="icon' + (cls ? ' ' + cls : '') + '" aria-hidden="true"><use href="' + ICONS + '#' + name + '"/></svg>';
     },
 
-    /* Yes / No / Not Verified chip for a true | false | null value */
+    /* Yes / Not offered / Not Verified chip for a true | false | null value */
     yesNo: function (value) {
       if (value === true)  return '<span class="yn yn--yes">' + ui.icon('i-check-circle') + 'Yes</span>';
-      if (value === false) return '<span class="yn yn--no">' + ui.icon('i-x-circle') + 'No</span>';
+      if (value === false) return '<span class="yn yn--no">' + ui.icon('i-x-circle') + 'Not offered</span>';
       return '<span class="yn yn--unknown">' + ui.icon('i-help') + 'Not Verified</span>';
     },
 
