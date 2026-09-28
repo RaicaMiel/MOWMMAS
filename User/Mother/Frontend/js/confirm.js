@@ -17,21 +17,27 @@
 
   function $(id) { return document.getElementById(id); }
 
+  // then: the end of step 3, whom she contacts once she has a referral
+  var CONTACT_REFERRED = ' Then contact the referred facility to confirm availability, requirements and schedule.';
   var TYPES = {
     donate: {
       title: 'Your donation inquiry has been submitted.', eyebrow: 'Donation inquiry sent', noun: 'donation inquiry',
-      label: 'Donation inquiry', icon: 'i-hand-heart', example: 'Information Sent', referred: true,
+      label: 'Donation inquiry', icon: 'i-hand-heart', example: 'Information Sent',
+      step2: 'They send information or a referral', then: CONTACT_REFERRED,
       note: 'A MOWMMAS administrator reviews your inquiry and gives you the next steps or a referral. Screening, collection and sharing of breast milk are done only by authorized facilities.'
     },
     request: {
       title: 'Your receiving inquiry has been submitted.', eyebrow: 'Receiving inquiry sent', noun: 'receiving inquiry',
-      label: 'Receiving inquiry', icon: 'i-bottle', example: 'Information Sent', referred: true,
+      label: 'Receiving inquiry', icon: 'i-bottle', example: 'Information Sent',
+      step2: 'They send information or a referral', then: CONTACT_REFERRED,
       note: 'A MOWMMAS administrator reviews your inquiry and gives you referral or next-step information. Donor milk is given out only by authorized facilities and Human Milk Banks.'
     },
     inquire: {
       title: 'Your question has been submitted.', eyebrow: 'Question sent', noun: 'question',
       label: 'Question', icon: 'i-chat', example: 'Answered',
-      note: 'A MOWMMAS administrator answers your question and keeps you updated.'
+      step2: 'They reply or send referral information',
+      then: ' If you get referral information, contact that facility to confirm availability, requirements and schedule.',
+      note: 'A MOWMMAS administrator replies to your question or gives you referral information, and keeps you updated.'
     }
   };
   var LEDE = 'A MOWMMAS administrator will review it and update you by SMS.'; // under the title, after "Thank you."
@@ -106,23 +112,22 @@
   });
 
   /* ───────────── what happens next ───────────── */
-  // A MOWMMAS administrator reviews it and gives information or a referral; a donation
-  // inquiry or receiving inquiry then ends with her contacting the referred facility
+  // A MOWMMAS administrator reviews it and gives information or a referral (a question gets
+  // a reply or referral information); a referral ends with her contacting that facility
   function renderSteps(mobile) {
     var sms = mobile
       ? 'You receive an SMS on <strong>' + esc(util.formatMobile(mobile)) + '</strong>.'
       : 'You receive an SMS on the mobile number you gave.';
-    var then = T.referred ? ' Then contact the referred facility to confirm availability, requirements and schedule.' : '';
     els.steps.innerHTML =
       '<li class="cf-step"><span class="cf-step__num" aria-hidden="true">1</span><div>' +
         '<p class="cf-step__title">A MOWMMAS administrator reviews it</p>' +
         '<p class="cf-step__text">They look at your ' + esc(T.noun) + '.</p></div></li>' +
       '<li class="cf-step"><span class="cf-step__num" aria-hidden="true">2</span><div>' +
-        '<p class="cf-step__title">They send information or a referral</p>' +
+        '<p class="cf-step__title">' + esc(T.step2) + '</p>' +
         '<p class="cf-step__text">For example your status changes to “' + esc(T.example) + '”, with a short note.</p></div></li>' +
       '<li class="cf-step"><span class="cf-step__num" aria-hidden="true">3</span><div>' +
         '<p class="cf-step__title">You get a message</p>' +
-        '<p class="cf-step__text">' + sms + then + ' You can also <a href="status.html?ref=' + encodeURIComponent(ref) + '">check here anytime</a>.</p></div></li>';
+        '<p class="cf-step__text">' + sms + esc(T.then) + ' You can also <a href="status.html?ref=' + encodeURIComponent(ref) + '">check here anytime</a>.</p></div></li>';
   }
 
   /* ───────────── status panel ───────────── */

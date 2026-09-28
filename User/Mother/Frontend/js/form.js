@@ -56,7 +56,7 @@
       ['nonSmoker', 'I do not smoke or vape'],
       ['noMedication', 'I am not taking any regular medicine'],
       ['noTransfusion', 'I have not had a blood transfusion in the last 12 months'],
-      ['willingToScreen', 'I am willing to undergo the facility\'s screening and blood tests']
+      ['willingToScreen', 'I understand the facility will screen me (health check and blood tests) before I can donate']
     ],
     delivery: [
       ['dropoff', 'I will bring it to the facility', 'You drop off the milk yourself.'],
@@ -316,7 +316,7 @@
       donate: [
         { key: 'donor', title: 'You and your baby', short: 'Your baby',
           desc: 'A few details help MOWMMAS give you the right next steps.',
-          tip: { icon: 'i-info', text: 'Milk donors need to be 18 to 55 years old.' },
+          tip: { icon: 'i-info', text: 'Facilities usually accept milk donors aged 18 to 55. The facility decides after its screening.' },
           fields: [
             ['age', { kind: 'text', label: 'Your age', help: 'In years, for example 28.',
               attrs: { inputmode: 'numeric', maxlength: 3, autocomplete: 'off', placeholder: 'e.g. 28' } }],
@@ -397,15 +397,20 @@
   }
 
   function sendSectionHtml(n, f) {
-    // A donation inquiry or request ends with her contacting the referred facility
-    var then = TYPE === 'inquire' ? '' : ' Then contact the referred facility to confirm availability, requirements and schedule.';
+    // A donation inquiry or request ends with her contacting the referred facility;
+    // a question gets a reply, or referral information she then follows up the same way
+    var then = TYPE === 'inquire'
+      ? ' If you get referral information, contact that facility to confirm availability, requirements and schedule.'
+      : ' Then contact the referred facility to confirm availability, requirements and schedule.';
     return '<fieldset class="form-card form-card--send" id="sec-send" aria-describedby="desc-send">' +
       '<legend class="form-card__legend"><span class="form-card__num" aria-hidden="true">' + n + '</span>' +
         '<h2 class="form-card__title">Agree and send</h2></legend>' +
       '<p class="form-card__desc" id="desc-send">What happens after you send it:</p>' +
       '<ol class="form-next">' +
         '<li><span class="form-next__num" aria-hidden="true">1</span><span>A MOWMMAS administrator reviews your details.</span></li>' +
-        '<li><span class="form-next__num" aria-hidden="true">2</span><span>They send you information or a referral to the right facility.</span></li>' +
+        '<li><span class="form-next__num" aria-hidden="true">2</span><span>' + (TYPE === 'inquire'
+          ? 'They reply, or give you referral information for the right facility.'
+          : 'They send you information or a referral to the right facility.') + '</span></li>' +
         '<li><span class="form-next__num" aria-hidden="true">3</span><span>You get an SMS, and can check anytime on Track Submission.' + then + '</span></li>' +
       '</ol>' +
       '<div class="form-card__body">' +
@@ -595,13 +600,14 @@
         if (!v) return 'Please enter your age.';
         if (!/^\d{1,3}$/.test(v)) return 'Please enter your age as a whole number, like 28.';
         n = Number(v);
-        if (n < 18 || n > 55) return 'Milk donors need to be between 18 and 55 years old. You can still send a question about this facility.';
+        // guidance only (the facility decides after its screening): just catch a mistyped age
+        if (n < 12 || n > 65) return 'Please check your age.';
         return '';
       case 'babyAge':
         return radio('babyAge') ? '' : TYPE === 'donate' ? 'Please choose your baby\'s age.' : 'Please choose the baby\'s age.';
       case 'willingToScreen':
         return checked('willingToScreen') ? ''
-          : 'To donate, please agree to a health screening at the facility. It keeps the babies who receive your milk safe.';
+          : 'Please tick the box to show you understand the facility\'s screening.';
       case 'delivery':
         return radio('delivery') ? '' : 'Please choose whether you will drop off the milk or need it picked up.';
       case 'preferredDate':

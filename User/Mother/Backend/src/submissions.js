@@ -207,23 +207,24 @@ function validate(payload, facility, municipalities) {
 
   /* The checks below run in the order the fields appear on the form,
      so the first entry in `fields` is the first field to fix. */
+  /* The age is for the facility's guidance only: MOWMMAS does not decide who can donate
+     (the facility does, after its screening), so only an age that looks mistyped is sent back */
   const ageField = () => {
     const raw = typeof d.age === 'string' ? d.age.trim() : d.age;
     if (raw == null || raw === '') { bad('age', 'Please enter your age.'); return null; }
     const age = typeof raw === 'number' ? raw : /^\d{1,3}$/.test(String(raw)) ? Number(raw) : NaN;
     if (!Number.isInteger(age)) { bad('age', 'Please enter your age as a whole number, like 28.'); return null; }
-    if (age < 18 || age > 55) {
-      bad('age', 'Milk donors need to be between 18 and 55 years old. You can still send a question about this facility.');
-      return null;
-    }
+    if (age < 12 || age > 65) { bad('age', 'Please check your age.'); return null; }
     return age;
   };
+  /* willingToScreen is her acknowledgment that the facility will screen her first (required);
+     the other ticks are optional */
   const screeningField = () => {
     const input = isObject(d.screening) ? d.screening : {};
     const screening = {};
     for (const key of DONATE.screening) screening[key] = truthy(input[key]);
     if (!screening.willingToScreen) {
-      bad('willingToScreen', 'To donate, please agree to a health screening at the facility. It keeps the babies who receive your milk safe.');
+      bad('willingToScreen', "Please tick the box to show you understand the facility's screening.");
     }
     return screening;
   };

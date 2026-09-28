@@ -189,14 +189,25 @@
 }
 .home-steps__arrow { color: var(--ink-400); }
 
-.home-service-grid .service { padding: 24px 22px 16px; }
-.home-service-grid .service__icon { width: 52px; height: 52px; margin-bottom: 16px; border-radius: 16px; }
-.home-service-grid .service__title { font-size: 19.5px; }
-.home-service-grid .service__text { margin: 8px 0 12px; font-size: 15px; line-height: 1.6; }
+/* Four cards: one column on phones, two by two on tablets and small laptops, one row
+   on wide screens. minmax(0, 1fr) lets long words wrap instead of widening the page.
+   (These rules come after style.css's .service-grid, so they replace its three columns.) */
+.home-service-grid { gap: 12px; }
+@media (min-width: 640px) { .home-service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; } }
+@media (min-width: 1100px) { .home-service-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; } }
 
-/* phones & tablets: icon beside the text keeps the three cards short */
-@media (max-width: 859px) {
-  .home-service-grid { gap: 12px; }
+.home-service-grid .service { min-width: 0; padding: 24px 22px 16px; }
+.home-service-grid .service__icon { width: 52px; height: 52px; margin-bottom: 16px; border-radius: 16px; }
+.home-service-grid .service__title { font-size: 19.5px; overflow-wrap: break-word; }
+.home-service-grid .service__text { margin: 8px 0 12px; font-size: 15px; line-height: 1.6; }
+/* four in a row: slightly smaller so each title keeps to two or three lines */
+@media (min-width: 1100px) {
+  .home-service-grid .service { padding: 22px 20px 14px; }
+  .home-service-grid .service__title { font-size: 18px; }
+}
+
+/* phones: icon beside the text keeps the four stacked cards short */
+@media (max-width: 639px) {
   .home-service-grid .service {
     display: grid; grid-template-columns: 52px minmax(0, 1fr); column-gap: 14px;
     padding: 18px 16px 8px;

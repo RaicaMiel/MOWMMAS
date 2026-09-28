@@ -26,17 +26,23 @@
   var LETTER = { D: 'donate', R: 'request', I: 'inquire' };
 
   /* What each status means for the mother, in plain words
-     (the admin hint "She'll see: …" in admin-submission.js uses the same words) */
+     (the admin hint "She'll see: …" in admin-submission.js uses the same words).
+     An entry that depends on what she sent is an object keyed by type. */
   var MEANING = {
     submitted: {
       donate: 'Your donation inquiry was sent. A MOWMMAS administrator will review it and give you the next steps.',
       request: 'Your receiving inquiry was sent. A MOWMMAS administrator will review it and give you referral or next-step information.',
-      inquire: 'Your question was sent. A MOWMMAS administrator will reply soon.'
+      inquire: 'Your question was sent. A MOWMMAS administrator will reply or give you referral information.'
     },
     under_review: 'A MOWMMAS administrator is reviewing your details.',
     referral_needed: 'A MOWMMAS administrator is finding the right facility for you. You will get the referral details by SMS.',
     next_steps: 'A MOWMMAS administrator has worked out the next steps or a referral for your donation inquiry. You will get the details by SMS.',
-    information_sent: 'The referral or next-step information was sent to you. Please contact the referred facility to confirm current availability, requirements, and schedule.',
+    // a question can be referred too: it gets the referral wording, not "next steps"
+    information_sent: {
+      donate: 'The referral or next-step information was sent to you. Please contact the referred facility to confirm current availability, requirements, and schedule.',
+      request: 'The referral or next-step information was sent to you. Please contact the referred facility to confirm current availability, requirements, and schedule.',
+      inquire: 'A MOWMMAS administrator sent you referral information. Please contact the facility to confirm availability, requirements, and schedule.'
+    },
     answered: 'A MOWMMAS administrator answered your question. See the messages below or your SMS.',
     completed: 'All done. Thank you for using MOWMMAS.',
     closed: 'This is closed. You can send a new form anytime.'
