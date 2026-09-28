@@ -172,6 +172,8 @@ function validate(payload, facility, municipalities) {
     bad('facilityId', 'Please choose a health facility first.');
   } else if (!facility || facility.id !== facilityId) {
     bad('facilityId', "We couldn't find that health facility. Please go back and choose it again from the list.");
+  } else if (facility.infoOnly) {
+    bad('facilityId', `${facility.name} is listed for information only, so it can't receive forms through MOWMMAS. Please choose another facility.`);
   } else if (type === 'donate' && facility.services && facility.services.acceptsDonations === false) {
     bad('facilityId', `${facility.name} does not accept breast milk donations. Please choose another facility, or send them a question instead.`);
   } else if (type === 'request' && facility.services && facility.services.providesDonorMilk === false) {

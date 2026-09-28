@@ -106,26 +106,34 @@
     return '<figcaption class="pin-card__credit">Photo: ' + whoHtml + (lic ? ' · ' + lic : '') + '</figcaption>';
   }
 
-  /* The top of the card: the facility's photo, or a plain cover when it has none */
+  /* The top of the card: the facility's photo, when it has one */
   function mediaHtml(facility) {
-    var ui = window.MOWMMAS && window.MOWMMAS.ui;
-    var badge = '<span class="pin-card__badge">' + (hasReported(facility) && ui
-      ? ui.availability(facility.donorMilkAvailability)
-      : '<span class="avail avail--unknown">' + icon('i-help') + 'Services not reported yet</span>') + '</span>';
     var src = photoUrl(facility.photo);
-    if (!src) return '<div class="pin-card__media pin-card__media--empty">' + icon('i-hospital') + '<span>No photo yet</span>' + badge + '</div>';
+    if (!src) return '';
     return '<figure class="pin-card__media">' +
       '<img src="' + esc(src) + '" alt="Photo of ' + esc(facility.name) + '" decoding="async" referrerpolicy="no-referrer" />' +
-      badge + creditHtml(facility.photo) + '</figure>';
+      creditHtml(facility.photo) + '</figure>';
   }
 
-  /* Popup: a card with the facility's photo and the details of the place.
-     opts.href = link for "View facility details", opts.distance = "2.4 km away" */
+  /* The facility's three statuses (api.js facilityStatuses), one line each */
+  function statusesHtml(facility) {
+    var M = window.MOWMMAS;
+    if (!M || !M.facilityStatuses) return '';
+    return '<ul class="pin-card__status">' + M.facilityStatuses(facility).map(function (st) {
+      return '<li><span class="pin-card__status-label">' + icon(st.icon) + '<span>' + esc(st.label) + '</span></span>' + M.ui.statusChip(st) + '</li>';
+    }).join('') + '</ul>';
+  }
+
+  /* Popup: a card with the facility's photo (if any) and the details of the place.
+     opts.href = link for "View Details" (with it comes "Ask About a Service", unless the
+     facility is listed for information only), opts.distance = "2.4 km away" */
   function popupHtml(facility, opts) {
     opts = opts || {};
+    var ui = window.MOWMMAS && window.MOWMMAS.ui;
     var address = facility.address || [facility.municipality, 'Antique'].filter(Boolean).join(', ');
     var hours = facility.operatingHours;
     var phone = facility.contactNumber;
+    var ask = opts.href && !facility.infoOnly ? 'form.html?type=inquire&facility=' + encodeURIComponent(facility.id) : '';
     return '<article class="pin-card">' + mediaHtml(facility) +
       '<div class="pin-card__body">' +
         '<p class="pin-card__name">' + esc(facility.name) + '</p>' +
@@ -133,24 +141,25 @@
           (facility.municipality ? ' · ' + esc(facility.municipality) : '') +
           (opts.distance ? ' · ' + esc(opts.distance) : '') + '</p>' +
         '<ul class="pin-card__facts">' +
-          '<li class="pin-card__address" title="' + esc(address) + '">' + icon('i-pin') + '<span>' + esc(address) + '</span></li>' +
-          '<li' + (hours ? ' title="' + esc(hours) + '"' : ' class="is-missing"') + '>' + icon('i-clock') + '<span>' + (hours ? esc(hours) : 'No hours listed') + '</span></li>' +
+          '<li>' + icon('i-pin') + '<span>' + esc(address) + '</span></li>' +
           '<li' + (phone ? '' : ' class="is-missing"') + '>' + icon('i-phone') + '<span>' +
-            (phone ? '<a href="tel:' + esc(String(phone).replace(/[^\d+]/g, '')) + '">' + esc(phone) + '</a>' : 'No phone listed') + '</span></li>' +
+            (phone ? (ui ? ui.phoneLinks(phone) : esc(phone)) : 'Not Verified') + '</span></li>' +
+          '<li' + (hours ? '' : ' class="is-missing"') + '>' + icon('i-clock') + '<span>' + (hours ? esc(hours) : 'Operating Hours: Not Verified') + '</span></li>' +
         '</ul>' +
-        (opts.href ? '<a class="btn btn--primary btn--block pin-card__cta" href="' + esc(opts.href) + '">View facility details' + icon('i-arrow-right', 'icon--sm') + '</a>' : '') +
+        statusesHtml(facility) +
+        (opts.href
+          ? '<div class="pin-card__actions">' +
+              '<a class="btn btn--primary btn--block pin-card__cta" href="' + esc(opts.href) + '">View Details' + icon('i-arrow-right', 'icon--sm') + '</a>' +
+              (ask ? '<a class="btn btn--outline btn--block pin-card__ask" href="' + esc(ask) + '">' + icon('i-chat', 'icon--sm') + 'Ask About a Service</a>' : '') +
+            '</div>'
+          : '') +
       '</div></article>';
   }
 
-  /* If a photo can't load (offline, removed), show the plain cover instead */
+  /* If a photo can't load (offline, removed), the card goes on without it */
   function swapPhoto(img) {
     var fig = img.closest('.pin-card__media');
-    if (!fig) return;
-    fig.classList.add('pin-card__media--empty');
-    var credit = fig.querySelector('.pin-card__credit');
-    if (credit) credit.remove();
-    img.insertAdjacentHTML('afterend', icon('i-hospital') + '<span>No photo yet</span>');
-    img.remove();
+    if (fig) fig.remove();
   }
 
   /* Listen on the popup itself (errors don't bubble, so capture): pages may
@@ -182,24 +191,29 @@
       marker.bindPopup(popupHtml(facility, opts), {
         className: 'pin-popup',
         maxWidth: 280, minWidth: 280,
-        autoPanPadding: [10, 10]
+        // the left side keeps clear of the zoom buttons
+        autoPanPaddingTopLeft: [56, 10],
+        autoPanPaddingBottomRight: [10, 10]
       });
       marker.on('popupopen', function (e) { guardPhoto(e.popup); });
     }
     marker.on('add', function () {
       var el = marker.getElement();
-      if (el) el.setAttribute('aria-label', facility.name + (hasReported(facility) ? '' : ', services not reported'));
+      if (el) el.setAttribute('aria-label', facility.name + (hasReported(facility) ? '' : ', services not verified yet'));
     });
     var el = marker.getElement();
-    if (el) el.setAttribute('aria-label', facility.name + (hasReported(facility) ? '' : ', services not reported'));
+    if (el) el.setAttribute('aria-label', facility.name + (hasReported(facility) ? '' : ', services not verified yet'));
     return marker;
   }
 
-  function fitTo(map, points, maxZoom) {
+  /* options.animate false: jump there at once. Leaflet starts a zoom animation on the next
+     frame, so a view set right after an animated fit would be undone by it. */
+  function fitTo(map, points, maxZoom, options) {
+    var still = options && options.animate === false ? { animate: false } : {};
     var latlngs = points.map(function (p) { return [p.lat, p.lon]; });
-    if (!latlngs.length) { map.fitBounds(ANTIQUE_BOUNDS); return; }
-    if (latlngs.length === 1) { map.setView(latlngs[0], maxZoom || 15); return; }
-    map.fitBounds(L.latLngBounds(latlngs).pad(0.12), { maxZoom: maxZoom || 14 });
+    if (!latlngs.length) { map.fitBounds(ANTIQUE_BOUNDS, still); return; }
+    if (latlngs.length === 1) { map.setView(latlngs[0], maxZoom || 15, still); return; }
+    map.fitBounds(L.latLngBounds(latlngs).pad(0.12), Object.assign({ maxZoom: maxZoom || 14 }, still));
   }
 
   /* Friendly placeholder when Leaflet or the tiles can't load (offline) */

@@ -3,9 +3,11 @@
    facility.html?id=<facility id>(&service=donate|request|inquire)
 
    Shows everything the mother needs before she calls, visits or sends
-   a form: name, address, contact number, operating hours, the
-   breast-milk services (tri-state: Yes / No / Not reported), donor-milk
-   availability, a small OpenStreetMap map, and the next step.
+   a form: name, address, contact number, operating hours, about, the
+   three statuses (breastfeeding/lactation support, HMB status, human
+   milk-related information & referral), donor-milk availability when
+   reported, a small OpenStreetMap map, and the next step (none for a
+   facility listed for information only).
    Needs: api.js (window.MOWMMAS), Leaflet + map.js (optional — the
    page still works without the map).
    ══════════════════════════════════════════════════════════════════ */
@@ -59,8 +61,7 @@
   /* A number that can receive a text: the SMS number, or a Philippine mobile number */
   function smsTarget(f) {
     if (f.smsNumber) return f.smsNumber;
-    if (f.contactNumber && util.validMobile(f.contactNumber)) return f.contactNumber;
-    return null;
+    return util.phones(f.contactNumber).filter(util.validMobile)[0] || null;
   }
 
   function announce(text) {
@@ -156,21 +157,23 @@
   function infoPanel(f) {
     var contact;
     if (f.contactNumber) {
-      contact =
-        '<span class="fac-phone">' +
-          '<a class="fac-phone__num" href="' + esc(util.telHref(f.contactNumber)) + '">' + ui.icon('i-phone', 'icon--sm') + esc(f.contactNumber) + '</a>' +
-          '<button class="btn btn--outline btn--sm fac-copy" type="button" data-copy="' + esc(f.contactNumber) + '">' +
-            ui.icon('i-copy', 'icon--sm') + 'Copy<span class="sr-only"> contact number</span></button>' +
+      // Each number with its own call link and Copy button
+      contact = util.phones(f.contactNumber).map(function (p) {
+        return '<span class="fac-phone">' +
+          '<a class="fac-phone__num" href="' + esc(util.telHref(p)) + '">' + ui.icon('i-phone', 'icon--sm') + esc(p) + '</a>' +
+          '<button class="btn btn--outline btn--sm fac-copy" type="button" data-copy="' + esc(p) + '">' +
+            ui.icon('i-copy', 'icon--sm') + 'Copy<span class="sr-only"> ' + esc(p) + '</span></button>' +
         '</span>';
+      }).join('') || esc(f.contactNumber);
     } else {
       contact =
-        '<span class="fac-missing">' + ui.icon('i-help', 'icon--sm') + 'No number listed yet</span>' +
+        '<span class="fac-missing">' + ui.icon('i-help', 'icon--sm') + 'Not Verified</span>' +
         '<span class="fac-hint">Visit the facility or ask at your barangay health station.</span>';
     }
 
     var hours = f.operatingHours
       ? esc(f.operatingHours)
-      : '<span class="fac-missing">' + ui.icon('i-help', 'icon--sm') + 'Not reported yet</span>' +
+      : '<span class="fac-missing">' + ui.icon('i-help', 'icon--sm') + 'Not Verified</span>' +
         '<span class="fac-hint">Call or visit the facility to ask.</span>';
 
     var actions = '';
@@ -196,45 +199,43 @@
         '<h2 class="panel__title" id="infoTitle">Facility information</h2></div>' +
       '<dl class="fac-kv">' +
         kv('Hospital / facility name', esc(f.name)) +
-        kv('Address', esc(f.address || (f.municipality ? f.municipality + ', Antique' : 'Not reported yet'))) +
+        kv('Type', esc(f.kindLabel || 'Health facility')) +
+        kv('Address', esc(f.address || (f.municipality ? f.municipality + ', Antique' : 'Antique'))) +
         kv('Contact number', contact) +
         kv('Operating hours', hours) +
+        (f.about ? kv('About', esc(f.about)) : '') +
       '</dl>' +
       actions +
     '</section>';
   }
 
   function servicesPanel(f) {
-    var s = f.services || {};
-    var reported = window.MOWMMAS_MAP ? window.MOWMMAS_MAP.hasReported(f) : Object.keys(s).some(function (k) { return s[k] !== null; });
-
-    var facts = M.SERVICES.map(function (item) {
+    var facts = M.facilityStatuses(f).map(function (st) {
       return '<li class="service-fact">' +
-        '<span class="service-fact__name">' + ui.icon(item.icon) + esc(item.label) + '</span>' +
-        ui.yesNo(s[item.key] === undefined ? null : s[item.key]) +
+        '<span class="service-fact__name">' + ui.icon(st.icon) + esc(st.label) + '</span>' +
+        ui.statusChip(st) +
       '</li>';
     }).join('');
 
+    // Donor milk only when the facility reported it (a milk bank's stock)
     var stock = stockText(f.milkStock);
     var updated = f.dataStatus && f.dataStatus.updatedAt;
     var known = f.donorMilkAvailability === 'available' || f.donorMilkAvailability === 'limited' || f.donorMilkAvailability === 'none';
-
-    var avail =
-      '<div class="fac-avail">' +
-        '<p class="fac-avail__label">Donor milk availability</p>' +
-        '<div class="fac-avail__row">' + ui.availability(f.donorMilkAvailability) +
-          (stock ? '<span class="fac-avail__stock">' + ui.icon('i-box', 'icon--sm') + esc(stock) + '</span>' : '') +
-        '</div>' +
-        (known && updated
-          ? '<p class="fac-avail__updated">' + ui.icon('i-clock', 'icon--xs') + 'Updated ' + esc(util.timeAgo(updated)) + '</p>'
-          : '<p class="fac-avail__updated">' + ui.icon('i-phone', 'icon--xs') + 'Call the facility to ask about donor milk today.</p>') +
-      '</div>';
+    var avail = known || stock
+      ? '<div class="fac-avail">' +
+          '<p class="fac-avail__label">Donor milk availability</p>' +
+          '<div class="fac-avail__row">' + ui.availability(f.donorMilkAvailability) +
+            (stock ? '<span class="fac-avail__stock">' + ui.icon('i-box', 'icon--sm') + esc(stock) + '</span>' : '') +
+          '</div>' +
+          (known && updated
+            ? '<p class="fac-avail__updated">' + ui.icon('i-clock', 'icon--xs') + 'Updated ' + esc(util.timeAgo(updated)) + '</p>'
+            : '<p class="fac-avail__updated">' + ui.icon('i-phone', 'icon--xs') + 'Call the facility to ask about donor milk today.</p>') +
+        '</div>'
+      : '';
 
     return '<section class="panel fac-panel fac-panel--grow" aria-labelledby="svcTitle">' +
       '<div class="panel__head"><span class="panel__icon">' + ui.icon('i-droplet') + '</span>' +
         '<h2 class="panel__title" id="svcTitle">Breast-milk services</h2></div>' +
-      (reported ? '' : '<p class="fac-unreported">' + ui.icon('i-info', 'icon--sm') +
-        '<span><strong>Not reported yet. Call to ask.</strong> This facility hasn\'t told MOWMMAS about these services.</span></p>') +
       '<ul class="service-facts">' + facts + '</ul>' +
       avail +
     '</section>';
@@ -293,6 +294,18 @@
   }
 
   function chooseSection(f) {
+    if (f.infoOnly) {
+      return '<section class="fac-choose" id="nextStep" aria-labelledby="chooseTitle">' +
+        '<div class="fac-choose__copy">' +
+          '<h2 class="fac-choose__title" id="chooseTitle">For information only</h2>' +
+          '<p class="fac-choose__text">MOWMMAS lists ' + esc(f.name) + ' for information only, so it can\'t receive forms here. ' +
+            'Please contact the facility directly, or choose another facility.</p>' +
+        '</div>' +
+        '<div class="fac-choose__actions">' +
+          '<a class="fac-choose__ask" href="hospitals.html' + serviceQuery + '">' + ui.icon('i-list', 'icon--sm') + 'See other facilities</a>' +
+        '</div>' +
+      '</section>';
+    }
     return '<section class="fac-choose" id="nextStep" aria-labelledby="chooseTitle">' +
       '<div class="fac-choose__copy">' +
         '<h2 class="fac-choose__title" id="chooseTitle">What would you like to do here?</h2>' +
@@ -304,7 +317,7 @@
         choiceHtml(f, 'donate') +
         choiceHtml(f, 'request') +
         '<a class="fac-choose__ask" href="' + esc(formHref('inquire')) + '">' + ui.icon('i-chat', 'icon--sm') +
-          'Not sure yet? Ask this facility a question</a>' +
+          'Not sure yet? Ask About a Service</a>' +
       '</div>' +
     '</section>';
   }
@@ -384,7 +397,7 @@
     var f = data.facility;
     renderHead(f);
 
-    els.sticky.hidden = false;
+    els.sticky.hidden = Boolean(f.infoOnly);   // no forms to go to
 
     els.body.innerHTML =
       '<div class="fac-grid">' +

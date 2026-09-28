@@ -80,8 +80,8 @@
 
   function servicesText(f) {
     return window.MOWMMAS_MAP && window.MOWMMAS_MAP.hasReported
-      ? (window.MOWMMAS_MAP.hasReported(f) ? 'Services shared' : 'Services not reported')
-      : (f.dataStatus && f.dataStatus.hasProfile ? 'Services shared' : 'Services not reported');
+      ? (window.MOWMMAS_MAP.hasReported(f) ? 'Services shared' : 'Services not verified yet')
+      : (f.dataStatus && f.dataStatus.hasProfile ? 'Services shared' : 'Services not verified yet');
   }
 
   /* ───────────── the list: grouped by municipality, filtered by the search ───────────── */
@@ -199,7 +199,8 @@
 
   /* ───────────── loading the facilities ───────────── */
   function loaded(data) {
-    facilities = (data && data.facilities) || [];
+    // A facility listed for information only can't receive questions
+    facilities = ((data && data.facilities) || []).filter(function (f) { return !f.infoOnly; });
     els.btn.disabled = false;
     var pre = util.param('facility');
     selected = facilities.filter(function (f) { return f.id === pre; })[0] || null;

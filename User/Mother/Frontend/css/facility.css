@@ -126,15 +126,10 @@
 .fac-contact__btn { flex: 1 1 140px; }
 .fac-contact .fac-hint { margin-top: 10px; }
 
-/* Breast-milk services */
-.fac-unreported {
-  display: flex; align-items: flex-start; gap: 9px;
-  margin-bottom: 12px; padding: 11px 13px; border-radius: var(--r-md);
-  background: var(--amber-50); border: 1px solid var(--amber-100);
-  font-size: 14px; line-height: 1.55; color: var(--ink-700);
-}
-.fac-unreported .icon { margin-top: 2px; color: var(--amber-600); }
-.fac-panel .service-fact__name { font-size: 15.5px; }
+/* Breast-milk services: the three statuses (long names wrap; the chip goes under when it doesn't fit) */
+.fac-panel .service-fact { flex-wrap: wrap; }
+.fac-panel .service-fact__name { font-size: 15.5px; line-height: 1.4; }
+.fac-panel .service-fact__name .icon { flex: none; }
 /* narrow phones: give the service names more room next to the chips */
 @media (max-width: 420px) {
   .fac-panel { padding: 18px 16px; }

@@ -88,7 +88,7 @@
 
 /* ──────────────── 05 · STATUS & DATA LABELS ──────────────── */
 
-/* Yes / No / Not reported — never colour alone: always icon + word */
+/* Yes / No / Not Verified — never colour alone: always icon + word */
 .yn {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 4px 11px 4px 8px; border-radius: var(--r-pill);

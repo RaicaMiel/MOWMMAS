@@ -195,10 +195,11 @@
         facts += '<span class="send-to__fact">Right now' + ui.availability(f.donorMilkAvailability) + '</span>';
       }
     }
+    var firstPhone = util.phones(f.contactNumber)[0] || f.contactNumber;
     var phone = f.contactNumber
-      ? '<a class="send-to__phone" href="' + esc(util.telHref(f.contactNumber)) + '">' + ui.icon('i-phone', 'icon--sm') +
-        '<span><span class="sr-only">Call </span>' + esc(f.contactNumber) + '</span></a>'
-      : '<span class="send-to__phone is-missing">' + ui.icon('i-phone', 'icon--sm') + 'No number listed yet</span>';
+      ? '<a class="send-to__phone" href="' + esc(util.telHref(firstPhone)) + '">' + ui.icon('i-phone', 'icon--sm') +
+        '<span><span class="sr-only">Call </span>' + esc(firstPhone) + '</span></a>'
+      : '<span class="send-to__phone is-missing">' + ui.icon('i-phone', 'icon--sm') + 'Contact number not verified</span>';
 
     var note = f.dataStatus && f.dataStatus.sample
       ? '<p class="send-to__note">' + ui.icon('i-alert', 'icon--sm') + '<span><strong>Sample information.</strong> ' +
@@ -1032,7 +1033,7 @@
     if (!box) return;
     if (radio('urgency') !== '24h') { box.innerHTML = ''; return; }
     var call = facility.contactNumber
-      ? 'please also call ' + esc(facility.name) + ' now at <a href="' + esc(util.telHref(facility.contactNumber)) + '">' + esc(facility.contactNumber) + '</a>'
+      ? 'please also call ' + esc(facility.name) + ' now at ' + ui.phoneLinks(facility.contactNumber)
       : 'please also go to ' + esc(facility.name) + ' or the nearest hospital now';
     box.innerHTML = '<p class="form-urgent__box">' + ui.icon('i-alert', 'icon--sm') +
       '<span><strong>Needed within 24 hours?</strong> Send this form, and ' + call + '. Don\'t wait for a reply.</span></p>';
@@ -1071,6 +1072,15 @@
     doneLoading();
   }
 
+  function showInfoOnly(f) {
+    setHead(T.title, f.name + ' is listed on MOWMMAS for information only.');
+    els.side.innerHTML = chipHtml(f);
+    els.root.innerHTML = stateHtml('i-info', 'This facility can\'t receive forms',
+      'Please contact ' + f.name + ' directly, or choose another facility.',
+      linkBtn(hospitalsHref(), T.otherFacilities || 'Find another facility', 'primary', 'i-search'));
+    doneLoading();
+  }
+
   function load() {
     els.root.setAttribute('aria-busy', 'true');
     els.root.innerHTML = '<div class="form-skel" aria-hidden="true"><div class="skeleton form-skel__card"></div>' +
@@ -1084,6 +1094,7 @@
       if (!facility) return showNoFacility();
 
       setBack(facilityHref(facility.id), 'Back to facility details');
+      if (facility.infoOnly) return showInfoOnly(facility);
       if (T.needs && facility.services && facility.services[T.needs] === false) return showNotOffered(facility);
 
       setHead(T.title, 'Your details will be sent to the health workers of ' + facility.name + '.');

@@ -135,14 +135,14 @@
     var ds = f.dataStatus || {};
     var honesty = '';
     if (!ds.hasProfile) {
-      honesty = '<p class="svc-fac__note">' + ui.icon('i-info', 'icon--xs') + 'Services not reported yet. The facility will tell you.</p>';
+      honesty = '<p class="svc-fac__note">' + ui.icon('i-info', 'icon--xs') + 'Services not verified yet. The facility will tell you.</p>';
     } else if (ds.sample) {
       honesty = '<p class="svc-fac__note">' + ui.icon('i-alert', 'icon--xs') + 'Sample information. Please call to confirm.</p>';
     }
 
     var contact = f.contactNumber
-      ? '<a href="' + esc(util.telHref(f.contactNumber)) + '">' + esc(f.contactNumber) + '</a>'
-      : '<span class="svc-fac__missing">No number listed yet</span>';
+      ? ui.phoneLinks(f.contactNumber)
+      : '<span class="svc-fac__missing">Not Verified</span>';
 
     els.summary.hidden = false;
     els.summary.innerHTML =
@@ -248,6 +248,14 @@
   function render(data) {
     var f = data.facility;
     renderHead(f);
+    if (f.infoOnly) {
+      els.body.innerHTML = '<div class="svc-state">' + ui.emptyState('For information only',
+        'MOWMMAS lists ' + f.name + ' for information only, so it can\'t receive forms here. Please contact the facility directly, or choose another facility.',
+        '<a class="btn btn--primary btn--sm" href="hospitals.html' + serviceQuery + '">' + ui.icon('i-pin', 'icon--sm') + 'Find another facility</a>') + '</div>';
+      els.body.setAttribute('aria-busy', 'false');
+      announce(f.name + ' is listed for information only.');
+      return;
+    }
     els.body.innerHTML =
       '<div class="svc-grid">' + CARDS.map(function (c) { return cardHtml(c, f); }).join('') + '</div>' +
       nextHtml(f);

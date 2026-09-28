@@ -52,8 +52,14 @@
       var m = util.normalizeMobile(value);
       return /^09\d{9}$/.test(m) ? m.slice(0, 4) + ' ' + m.slice(4, 7) + ' ' + m.slice(7) : String(value || '');
     },
+    /* A contact number can hold more than one: "0966-911-6494 / 0917-305-0883" → both */
+    phones: function (value) {
+      return String(value || '').split(/\s*[\/,;]\s*/).map(function (p) { return p.trim(); })
+        .filter(function (p) { return /\d{3}/.test(p); });
+    },
+    /* Calls the first number when there are several */
     telHref: function (value) {
-      return 'tel:' + String(value || '').replace(/[^\d+]/g, '');
+      return 'tel:' + String(util.phones(value)[0] || value || '').replace(/[^\d+]/g, '');
     },
     smsHref: function (value, body) {
       return 'sms:' + String(value || '').replace(/[^\d+]/g, '') + (body ? '?body=' + encodeURIComponent(body) : '');
@@ -198,6 +204,27 @@
     { key: 'lactationServices', label: 'Lactation services',  icon: 'i-heart' }
   ];
 
+  /* The three statuses shown for every facility, in this order, worded as MOWMMAS
+     lists them: tone 'yes' (documented), 'no' (not there / N/A) or 'unknown' (not verified) */
+  function facilityStatuses(f) {
+    var s = (f && f.services) || {};
+    var verified = Boolean(f && f.dataStatus && f.dataStatus.verified);
+    var tri = function (value) {
+      if (value === true) return { text: 'Yes — documented', tone: 'yes' };
+      if (value === false) return { text: 'No', tone: 'no' };
+      return { text: 'Not Verified', tone: 'unknown' };
+    };
+    var hmb = s.milkBank === true ? (verified ? { text: 'Verified HMB', tone: 'yes' } : { text: 'HMB, not verified', tone: 'unknown' })
+      : s.milkBank === false ? { text: 'No HMB', tone: 'no' }
+      : { text: 'No Confirmed HMB', tone: 'unknown' };
+    return [
+      Object.assign({ key: 'lactation', label: 'Breastfeeding/Lactation Support', icon: 'i-heart' },
+        f && f.infoOnly ? { text: 'N/A', tone: 'no' } : tri(s.lactationServices)),
+      Object.assign({ key: 'hmb', label: 'HMB Status', icon: 'i-droplet' }, hmb),
+      Object.assign({ key: 'referral', label: 'Human Milk-Related Information & Referral', icon: 'i-send' }, tri(s.milkReferral))
+    ];
+  }
+
   var AVAILABILITY = {
     available: { label: 'Donor milk available',     tone: 'available', icon: 'i-check-circle' },
     limited:   { label: 'Limited donor milk',       tone: 'limited',   icon: 'i-alert' },
@@ -233,11 +260,26 @@
       return '<svg class="icon' + (cls ? ' ' + cls : '') + '" aria-hidden="true"><use href="' + ICONS + '#' + name + '"/></svg>';
     },
 
-    /* Yes / No / Not reported chip for a true | false | null value */
+    /* Yes / No / Not Verified chip for a true | false | null value */
     yesNo: function (value) {
       if (value === true)  return '<span class="yn yn--yes">' + ui.icon('i-check-circle') + 'Yes</span>';
       if (value === false) return '<span class="yn yn--no">' + ui.icon('i-x-circle') + 'No</span>';
-      return '<span class="yn yn--unknown">' + ui.icon('i-help') + 'Not reported</span>';
+      return '<span class="yn yn--unknown">' + ui.icon('i-help') + 'Not Verified</span>';
+    },
+
+    /* A facility status (facilityStatuses) as a chip */
+    statusChip: function (status) {
+      var icon = { yes: 'i-check-circle', no: 'i-minus-circle', unknown: 'i-help' }[status.tone] || 'i-help';
+      return '<span class="yn yn--' + status.tone + '">' + ui.icon(icon) + util.esc(status.text) + '</span>';
+    },
+
+    /* Each number of a contact number as its own call link, joined by " / " */
+    phoneLinks: function (value) {
+      var list = util.phones(value);
+      if (!list.length) return util.esc(value);
+      return list.map(function (p) {
+        return '<a href="tel:' + util.esc(p.replace(/[^\d+]/g, '')) + '">' + util.esc(p) + '</a>';
+      }).join(' / ');
     },
 
     availability: function (value) {
@@ -279,7 +321,7 @@
       var ds = facility && facility.dataStatus;
       if (!ds || !ds.hasProfile) {
         return '<p class="data-note">' + ui.icon('i-info') +
-          '<span><strong>Services not reported yet.</strong> This facility has not shared its breast-milk services with MOWMMAS. Please call or visit to ask.</span></p>';
+          '<span><strong>Services not verified yet.</strong> MOWMMAS hasn\'t confirmed this facility\'s breast-milk services. Please call or visit to ask.</span></p>';
       }
       if (ds.sample) {
         return '<p class="data-note">' + ui.icon('i-alert') +
@@ -287,7 +329,7 @@
       }
       if (!ds.verified) {
         return '<p class="data-note data-note--info">' + ui.icon('i-info') +
-          '<span><strong>Reported by facility staff' + (ds.updatedAt ? ', ' + util.esc(util.timeAgo(ds.updatedAt)) : '') + '.</strong> Details can change, so please call to confirm.</span></p>';
+          '<span><strong>Please call to confirm before you go.</strong> Details can change, and anything marked Not Verified hasn\'t been confirmed with the facility yet.</span></p>';
       }
       return '<p class="data-note data-note--info">' + ui.icon('i-shield') +
         '<span><strong>Confirmed by facility staff' + (ds.updatedAt ? ' ' + util.esc(util.timeAgo(ds.updatedAt)) : '') + '.</strong> Stock changes quickly, so please call before you travel.</span></p>';
@@ -316,6 +358,7 @@
     ui: ui,
     util: util,
     SERVICES: SERVICES,
+    facilityStatuses: facilityStatuses,
     AVAILABILITY: AVAILABILITY,
     SERVICE_TYPES: SERVICE_TYPES,
     STATUS_STYLE: STATUS_STYLE,

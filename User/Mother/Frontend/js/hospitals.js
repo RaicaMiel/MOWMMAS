@@ -1,7 +1,8 @@
 /* ══════════════════════════════════════════════════════════════════
    MOWMMAS · Mother side · Hospitals Near Me (flow step 3)
-   - List + OpenStreetMap of every facility, with its milk bank, milk
-     storage, lactation services, donor milk and contact number
+   - List + OpenStreetMap of every facility: address, contact number,
+     hours, about, and its three statuses (breastfeeding/lactation support,
+     HMB status, human milk-related information & referral)
    - Search, municipality, filter chips, "shared services only", sort
    - "Use my location" (asked only when the mother taps it)
    - ?service=donate|request|inquire context (legacy "donation" too)
@@ -61,11 +62,6 @@
     }
   };
 
-  var FACTS = [
-    { key: 'milkBank',          label: 'Milk bank',          icon: 'i-droplet' },
-    { key: 'milkStorage',       label: 'Milk storage',       icon: 'i-snowflake' },
-    { key: 'lactationServices', label: 'Lactation services', icon: 'i-heart' }
-  ];
   var AVAIL_RANK = { available: 0, limited: 1, none: 2 };
 
   /* Antique plus its islands (Caluya lies west of the mainland) */
@@ -125,6 +121,9 @@
   function facilityHref(f) {
     return 'facility.html?id=' + encodeURIComponent(f.id) +
       (state.service ? '&service=' + encodeURIComponent(state.service) : '');
+  }
+  function askHref(f) {
+    return 'form.html?type=inquire&facility=' + encodeURIComponent(f.id);
   }
   function insideAntique(p) {
     return p && p.lat >= NEAR_ANTIQUE.south && p.lat <= NEAR_ANTIQUE.north &&
@@ -297,19 +296,6 @@
     els.count.textContent = text;
   }
 
-  function hintHtml(f) {
-    var ds = f.dataStatus || {};
-    if (!ds.hasProfile) {
-      return '<p class="fcard__hint">' + ui.icon('i-help') + '<span>Services not reported yet. Call or visit to ask.</span></p>';
-    }
-    if (ds.sample) return ''; // no extra line on the card; the facility page explains it
-    var when = ds.updatedAt ? ' · ' + esc(util.timeAgo(ds.updatedAt)) : '';
-    if (ds.verified) {
-      return '<p class="fcard__hint fcard__hint--ok">' + ui.icon('i-shield') + '<span>Confirmed by facility staff' + when + '</span></p>';
-    }
-    return '<p class="fcard__hint fcard__hint--info">' + ui.icon('i-info') + '<span>Reported by facility staff' + when + '. Call to confirm.</span></p>';
-  }
-
   function cardHtml(row, res) {
     var f = row.f;
     var s = f.services || {};
@@ -326,25 +312,25 @@
         ui.yesNo(s[needs]) + '</div>';
     }
 
-    var facts = FACTS.map(function (item) {
-      return '<div class="fact"><span class="fact__label">' + ui.icon(item.icon, 'icon--sm') + esc(item.label) + '</span>' +
-        ui.yesNo(s[item.key]) + '</div>';
-    }).join('') +
-      '<div class="fact fact--wide"><span class="fact__label">' + ui.icon('i-bottle', 'icon--sm') + 'Donor milk</span>' +
-      ui.availability(f.donorMilkAvailability) + '</div>';
+    var statuses = M.facilityStatuses(f).map(function (st) {
+      return '<div class="fact fact--wide fact--status"><span class="fact__label">' + ui.icon(st.icon, 'icon--sm') + esc(st.label) + '</span>' +
+        ui.statusChip(st) + '</div>';
+    }).join('');
 
-    var contact = f.contactNumber
-      ? '<a href="' + esc(util.telHref(f.contactNumber)) + '">' + esc(f.contactNumber) + '</a>'
-      : '<span class="fcard__none">No number listed yet</span>';
+    var address = f.address || [f.municipality, 'Antique'].filter(Boolean).join(', ');
+    var lines =
+      '<li class="fcard__line">' + ui.icon('i-pin', 'icon--sm') + '<span>' + esc(address) + '</span></li>' +
+      '<li class="fcard__line">' + ui.icon('i-phone', 'icon--sm') +
+        (f.contactNumber ? '<span>' + ui.phoneLinks(f.contactNumber) + '</span>' : '<span class="fcard__none">Not Verified</span>') + '</li>' +
+      '<li class="fcard__line">' + ui.icon('i-clock', 'icon--sm') +
+        (f.operatingHours ? '<span>' + esc(f.operatingHours) + '</span>' : '<span class="fcard__none">Operating Hours: Not Verified</span>') + '</li>';
 
     var actions = '<a class="btn btn--primary btn--sm fcard__details" href="' + esc(facilityHref(f)) + '" data-details="' + esc(f.id) + '">' +
-        'View details<span class="sr-only"> for ' + name + '</span>' + ui.icon('i-arrow-right', 'icon--sm') + '</a>' +
+        'View Details<span class="sr-only"> for ' + name + '</span>' + ui.icon('i-arrow-right', 'icon--sm') + '</a>' +
       '<button class="btn btn--outline btn--sm fcard__mapbtn" type="button" data-show="' + esc(f.id) + '">' +
-        ui.icon('i-map', 'icon--sm') + 'Show on map<span class="sr-only">: ' + name + '</span></button>' +
-      (f.contactNumber
-        ? '<a class="btn btn--outline btn--sm" href="' + esc(util.telHref(f.contactNumber)) + '">' +
-          ui.icon('i-phone', 'icon--sm') + 'Call<span class="sr-only"> ' + name + '</span></a>'
-        : '');
+        ui.icon('i-map', 'icon--sm') + 'View Location<span class="sr-only">: ' + name + '</span></button>' +
+      (f.infoOnly ? '' : '<a class="btn btn--outline btn--sm" href="' + esc(askHref(f)) + '">' +
+        ui.icon('i-chat', 'icon--sm') + 'Ask About a Service<span class="sr-only">: ' + name + '</span></a>');
 
     return '<article class="fcard' + (state.selected === f.id ? ' is-selected' : '') + '" id="fac-' + esc(f.id) + '" aria-labelledby="fac-' + esc(f.id) + '-name">' +
       '<div class="fcard__head">' +
@@ -360,11 +346,9 @@
         '</div>' +
       '</div>' +
       match +
-      '<div class="fcard__facts">' + facts + '</div>' +
-      '<div class="fcard__info">' +
-        '<p class="fcard__contact">' + ui.icon('i-phone', 'icon--sm') + contact + '</p>' +
-        hintHtml(f) +
-      '</div>' +
+      '<ul class="fcard__lines">' + lines + '</ul>' +
+      (f.about ? '<p class="fcard__about"><strong>About:</strong> ' + esc(f.about) + '</p>' : '') +
+      '<div class="fcard__facts">' + statuses + '</div>' +
       '<div class="fcard__actions">' + actions + '</div>' +
     '</article>';
   }
@@ -379,7 +363,7 @@
     if (!res.rows.length) {
       var where = state.town ? ' in ' + state.town : '';
       html += ui.emptyState('No facilities match' + where,
-        'Try another name or town, or remove a filter. Facilities that have not reported their services can still help, so call to ask.',
+        'Try another name or town, or remove a filter. Facilities whose services aren\'t verified yet can still help, so call to ask.',
         '<button class="btn btn--primary btn--sm" type="button" data-clear>' + ui.icon('i-refresh', 'icon--sm') + 'Clear filters</button>');
     } else {
       html += res.rows.map(function (row) { return cardHtml(row, res); }).join('');
@@ -451,13 +435,15 @@
         });
       }).observe(els.map);
     }
-    if (data) drawMarkers(true);
-    else MAP.fitTo(map, []);
+    // The first view comes at once: an animated one would run a frame later and undo
+    // a facility chosen with "View Location" right now
+    if (data) { drawMarkers(false); fitResults(false); }
+    else MAP.fitTo(map, [], null, { animate: false });
     return map;
   }
 
   function markerLabel(f) {
-    return f.name + (reported(f) ? '' : ', services not reported');
+    return f.name + (reported(f) ? '' : ', services not verified yet');
   }
 
   function drawUser() {
@@ -493,11 +479,12 @@
     if (fit) fitResults();
   }
 
-  function fitResults() {
+  // animate false: jump there at once
+  function fitResults(animate) {
     if (!map || !mapVisible()) { needsFit = true; return; }
     var pts = rows.map(function (r) { return r.f; });
     if (state.user && !(lastResult && lastResult.fallbackTown)) pts = pts.concat([state.user]);
-    MAP.fitTo(map, pts);
+    MAP.fitTo(map, pts, null, animate === false ? { animate: false } : null);
     needsFit = false;
   }
 
@@ -551,10 +538,11 @@
     if (!ensureMap()) return;
     map.invalidateSize();
     select(id);
-    map.setView([f.lat, f.lon], Math.max(map.getZoom(), 14), { animate: !reduceMotion.matches });
     needsFit = false;
+    // The popup opens once the map is there, so it can pan the whole card into view
     var m = markers[id];
-    if (m) m.openPopup();
+    if (m) map.once('moveend', function () { m.openPopup(); });
+    map.setView([f.lat, f.lon], Math.max(map.getZoom(), 14), { animate: !reduceMotion.matches });
   }
 
   /* ───────────── List | Map (phones & tablets) ───────────── */

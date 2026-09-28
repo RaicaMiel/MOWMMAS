@@ -54,7 +54,10 @@
   padding: 0; overflow: hidden;
   border-radius: var(--r-lg); box-shadow: var(--sh-3);
 }
-.pin-popup .leaflet-popup-content { width: 280px !important; margin: 0; font-size: 14px; line-height: 1.45; }
+/* narrow maps: narrower, so the card fits beside the zoom buttons (see autoPanPadding in map.js) */
+.pin-popup .leaflet-popup-content { width: min(280px, calc(100cqw - 66px)) !important; margin: 0; font-size: 14px; line-height: 1.45; }
+/* the card is never taller than the map (room left for the pin): on a short map it scrolls */
+.pin-popup .pin-card { max-height: calc(100cqh - 90px); overflow-y: auto; overscroll-behavior: contain; }
 .pin-popup .leaflet-popup-content p { margin: 0; }
 .pin-popup .leaflet-popup-tip { box-shadow: none; }
 .pin-popup a.leaflet-popup-close-button {
@@ -73,17 +76,6 @@
 }
 @container facility-map (min-height: 440px) { .pin-card__media { height: 150px; } }
 .pin-card__media img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.pin-card__media--empty {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-  padding-bottom: 22px; color: var(--rose-600);
-}
-.pin-card__media--empty > .icon { width: 36px; height: 36px; }
-.pin-card__media--empty > span:not(.pin-card__badge) {
-  font-family: var(--font-ui); font-size: 12px; font-weight: 700; color: var(--ink-700);
-}
-.pin-card__badge { position: absolute; left: 10px; bottom: 8px; max-width: calc(100% - 20px); }
-.pin-card__media:not(.pin-card__media--empty) .pin-card__badge { bottom: auto; top: 10px; max-width: calc(100% - 58px); }
-.pin-card__badge .avail { min-height: 26px; padding: 3px 10px; font-size: 12px; background: rgba(255, 255, 255, .95); box-shadow: var(--sh-1); }
 .pin-card__credit {
   position: absolute; left: 0; right: 0; bottom: 0;
   padding: 14px 10px 4px;
@@ -99,20 +91,52 @@
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
   font-family: var(--font-ui); font-size: 16px; font-weight: 800; line-height: 1.3; color: var(--ink-900);
 }
+/* no photo: the name starts at the top, clear of the close button */
+.pin-card__body:first-child .pin-card__name { padding-right: 30px; }
 .pin-popup .pin-card__meta { margin-top: 2px; font-size: 13px; color: var(--text-mute); }
 .pin-card__facts {
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5px 10px;
+  display: grid; gap: 5px;
   margin: 10px 0 0; padding: 10px 0 0; list-style: none;
   border-top: 1px solid var(--line);
 }
-.pin-card__facts li { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 13px; line-height: 1.4; color: var(--ink-700); }
-.pin-card__facts li > span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pin-card__facts .pin-card__address { grid-column: 1 / -1; }
-.pin-card__facts .icon { flex: none; width: 15px; height: 15px; color: var(--rose-600); }
+.pin-card__facts li { display: flex; align-items: flex-start; gap: 6px; min-width: 0; font-size: 13px; line-height: 1.4; color: var(--ink-700); }
+.pin-card__facts li > span { min-width: 0; overflow-wrap: anywhere; }
+.pin-card__facts .icon { flex: none; width: 15px; height: 15px; margin-top: 1px; color: var(--rose-600); }
 .pin-card__facts .is-missing { color: var(--text-mute); }
 .pin-card__facts .is-missing .icon { color: var(--ink-400); }
 .pin-popup .pin-card__facts a { color: var(--rose-700); font-weight: 700; }
-.pin-popup a.pin-card__cta { margin-top: 12px; min-height: 42px; color: #fff; }
+
+/* the three statuses: label, then its chip (on the next line when it doesn't fit) */
+.pin-card__status {
+  display: grid; gap: 6px;
+  margin: 10px 0 0; padding: 10px 0 0; list-style: none;
+  border-top: 1px solid var(--line);
+}
+.pin-card__status li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 3px 8px; }
+.pin-card__status-label {
+  display: flex; align-items: flex-start; gap: 6px; min-width: 0;
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 700; line-height: 1.35; color: var(--ink-700);
+}
+.pin-card__status-label .icon { flex: none; width: 14px; height: 14px; margin-top: 1px; color: var(--rose-600); }
+.pin-card__status .yn { padding: 2px 9px 2px 6px; font-size: 12px; }
+.pin-card__status .yn .icon { width: 14px; height: 14px; }
+
+/* Leaflet lifts every svg in the map (.leaflet-map-pane svg { z-index: 200 }); the card's icons
+   stay in the card's own order, so the pinned buttons below cover them when the details scroll */
+.pin-popup .icon { z-index: auto; }
+/* the buttons stay in sight at the bottom of the card while its details scroll */
+.pin-card__actions {
+  position: sticky; bottom: 0;
+  margin: 4px -14px -14px; padding: 8px 14px 14px;
+  background: var(--surface);
+}
+.pin-popup a.pin-card__cta { min-height: 42px; color: #fff; }
+.pin-popup a.pin-card__ask { margin-top: 8px; min-height: 40px; color: var(--ink-800); }
+.pin-popup a.pin-card__ask:hover { color: var(--rose-700); }
+.pin-card__ask .icon { color: var(--rose-600); }
+/* short maps (phones, the Home map): the card stays compact; "Ask About a Service" is on the
+   facility's card in the list and on its page */
+@container facility-map (max-height: 560px) { .pin-popup a.pin-card__ask { display: none; } }
 
 /* shown when the map library or tiles can't load */
 .map-fallback {

@@ -368,16 +368,18 @@
   .fact--wide { grid-column: 1 / -1; flex-direction: row; align-items: center; padding: 9px 12px; }
 }
 
-.fcard__info { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
-.fcard__contact { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--ink-800); }
-.fcard__contact .icon { color: var(--ink-500); }
-.fcard__contact a { font-weight: 600; color: var(--rose-700); text-decoration: underline; text-underline-offset: 3px; }
-.fcard__none { color: var(--text-mute); }
+/* the three statuses: one row each; their long labels wrap on narrow cards */
+.fact--status .fact__label { white-space: normal; }
+.fact--status .fact__label .icon { flex: none; }
 
-.fcard__hint { display: flex; align-items: flex-start; gap: 7px; font-size: 13.5px; line-height: 1.5; font-weight: 500; color: var(--amber-600); }
-.fcard__hint .icon { flex: none; width: 16px; height: 16px; margin-top: 2px; stroke-width: 2.2; }
-.fcard__hint--info { color: var(--violet-700); }
-.fcard__hint--ok { color: var(--mint-700); }
+/* address, contact number, hours */
+.fcard__lines { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.fcard__line { display: flex; align-items: flex-start; gap: 8px; font-size: 15px; line-height: 1.45; color: var(--ink-800); overflow-wrap: anywhere; }
+.fcard__line .icon { flex: none; margin-top: 2px; color: var(--ink-500); }
+.fcard__line a { font-weight: 600; color: var(--rose-700); text-decoration: underline; text-underline-offset: 3px; }
+.fcard__none { color: var(--text-mute); }
+.fcard__about { margin-top: 10px; font-size: 14.5px; line-height: 1.55; color: var(--ink-700); }
+.fcard__about strong { color: var(--ink-800); }
 
 .fcard__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .fcard__actions .btn { min-height: 44px; }

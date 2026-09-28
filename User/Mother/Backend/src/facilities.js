@@ -13,10 +13,12 @@
 
    4. The admin's facilities            → the facilities as managed on the admin
       (Firestore: facilities/<id>)         Facilities page, read from Firestore (see the
-                                          end of this file). Once read they replace the
-                                          local profiles (2): mothers see what the admin
-                                          manages. A facility that isn't public shows only
-                                          its basic facts; one the admin added (not on
+                                          end of this file). Once read they are the list
+                                          mothers see: only the facilities in Firestore
+                                          are shown (one removed there is gone from the
+                                          map too), and OpenStreetMap only fills gaps.
+                                          A facility that isn't public shows only its
+                                          basic facts; one the admin added (not on
                                           OpenStreetMap) shows only when public.
 
    A profile value always wins over OSM. Anything neither source knows is
@@ -27,7 +29,8 @@ const store = require('./store');
 const firestore = require('../../../Admin/Backend/src/firestore');
 const adminConfig = require('../../../Admin/Backend/src/config');
 
-const SERVICE_KEYS = ['milkBank', 'milkStorage', 'acceptsDonations', 'providesDonorMilk', 'lactationServices'];
+// milkReferral: human milk-related information & referral
+const SERVICE_KEYS = ['milkBank', 'milkStorage', 'acceptsDonations', 'providesDonorMilk', 'lactationServices', 'milkReferral'];
 const AVAILABILITY = ['available', 'limited', 'none'];
 
 const triState = (v) => (v === true || v === false ? v : null);
@@ -75,6 +78,8 @@ function merge(base, profile, photo) {
     website: base.website || null,
     operatingHours: p.operatingHours || base.openingHours || null,
     operator: base.operator || null,
+    about: p.about || null,
+    infoOnly: Boolean(p.infoOnly),
     participating: Boolean(profile && p.participating !== false),
     services,
     donorMilkAvailability: AVAILABILITY.includes(p.donorMilkAvailability) ? p.donorMilkAvailability : null,
@@ -126,6 +131,10 @@ function fromFirestore(base, doc, photo) {
     website: value('website') || b.website || null,
     operatingHours: value('operatingHours') || b.openingHours || null,
     operator: value('operator') || b.operator || null,
+    about: typeof doc.about === 'string' && doc.about.trim() ? doc.about.trim() : null,
+    // Listed for information only (e.g. a diagnostic center): breastfeeding support is N/A
+    // and mothers can't send it forms
+    infoOnly: doc.infoOnly === true,
     participating: shared,
     services,
     donorMilkAvailability: shared && AVAILABILITY.includes(doc.donorMilkAvailability) ? doc.donorMilkAvailability : null,
@@ -166,16 +175,16 @@ function combine(cache, managed) {
   const photos = store.read('photos', {}).photos || {};
   let facilities;
   if (managed) {
-    // The admin's facilities (Firestore) are the source; OpenStreetMap fills any gaps.
-    const seen = new Set();
-    facilities = cache.facilities.map((f) => {
-      seen.add(f.id);
-      return managed[f.id] ? fromFirestore(f, managed[f.id], photos[f.id]) : merge(f, null, photos[f.id]);
-    });
+    // The admin's facilities (Firestore) are the list; OpenStreetMap fills any gaps
+    // of the ones that came from it. One the admin added shows only when public.
+    const osmById = new Map(cache.facilities.map((f) => [f.id, f]));
+    facilities = [];
     for (const [id, doc] of Object.entries(managed)) {
-      if (seen.has(id) || !doc || doc.participating !== true || !doc.name) continue;
-      const added = fromFirestore(null, Object.assign({ id }, doc), photos[id]);
-      if (typeof added.lat === 'number' && typeof added.lon === 'number') facilities.push(added);
+      if (!doc) continue;
+      const base = osmById.get(id) || null;
+      if (!base && (doc.participating !== true || !doc.name)) continue;
+      const f = fromFirestore(base, Object.assign({ id }, doc), photos[id]);
+      if (f.name && typeof f.lat === 'number' && typeof f.lon === 'number') facilities.push(f);
     }
   } else {
     // No copy from Firestore yet (first start, or Firebase not set up): local profiles.
