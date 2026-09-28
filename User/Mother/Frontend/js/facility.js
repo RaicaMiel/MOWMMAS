@@ -21,7 +21,7 @@
   var util = M.util;
   var esc = util.esc;
 
-  var SMS_TEXT = 'Hello! I found your facility on MOWMMAS (Mothers Online With Milk Management, Access, and Support). ' +
+  var SMS_TEXT = 'Hello! I found your facility on MOWMMAS (Mothers Online with Milk Management, Access, and Support). ' +
     'I would like to ask about your breast-milk services. Thank you.';
 
   var els = {

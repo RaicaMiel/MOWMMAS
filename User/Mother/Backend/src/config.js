@@ -30,5 +30,5 @@ module.exports = {
     'https://overpass.private.coffee/api/interpreter'
   ],
   // Overpass asks every client to identify itself
-  USER_AGENT: 'MOWMMAS/0.1 (Mothers Online With Milk Management, Access, and Support; capstone prototype)'
+  USER_AGENT: 'MOWMMAS/0.1 (Mothers Online with Milk Management, Access, and Support; capstone prototype)'
 };

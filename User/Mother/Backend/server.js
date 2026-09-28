@@ -1,6 +1,6 @@
 'use strict';
 /* ══════════════════════════════════════════════════════════════════
-   MOWMMAS — Mothers Online With Milk Management, Access, and Support
+   MOWMMAS — Mothers Online with Milk Management, Access, and Support
    The MOWMMAS server on a computer (Node built-ins only — no npm install needed)
 
    Start:   node server.js          (or double-click start.bat)
