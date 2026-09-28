@@ -1,6 +1,7 @@
 # Private: PhilSMS key and the admin password
 .env
 .env.*
+!User/Admin/Backend/.env.example
 
 # Mothers' data and the server's own state (names, mobile numbers, SMS sent)
 User/Admin/Backend/data/

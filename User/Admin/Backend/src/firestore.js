@@ -152,7 +152,10 @@ const fromDoc = (doc) => Object.assign(decodeFields(doc.fields), { _id: idOf(doc
    precondition (optional): { exists: false }    only create it ('already-exists' if it is there)
                             { exists: true }     only change it if it is there ('not-found' if not)
                             { updateTime: '…' }  only replace that exact version ('failed-precondition' if it changed)
-   onlyFields (optional):   top-level field names; only those are written, every other field is kept */
+   onlyFields (optional):   field paths; only those are written, every other field is kept.
+                            A nested field is a dotted path ('services.milkStorage') with its
+                            value nested in data ({ services: { milkStorage: null } }); a path
+                            listed here but missing from data is deleted. */
 async function setDoc(collection, id, data, precondition, onlyFields) {
   const params = [];
   if (precondition && precondition.exists === false) params.push('currentDocument.exists=false');
