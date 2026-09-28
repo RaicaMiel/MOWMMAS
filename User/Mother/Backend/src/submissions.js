@@ -164,7 +164,7 @@ function validate(payload, facility, municipalities) {
 
   /* What the mother wants to do */
   const type = text(p.type).toLowerCase();
-  if (!isType(type)) bad('type', 'Please choose what you would like to do: donate breast milk, request breast milk, or ask a question.');
+  if (!isType(type)) bad('type', 'Please choose what you would like to send: a donation inquiry, a receiving inquiry, or a question.');
 
   /* Where. Any other facility takes all three forms: a health worker reviews it and gives
      information or a referral, so what the facility itself offers doesn't block a form. */
@@ -174,7 +174,7 @@ function validate(payload, facility, municipalities) {
   } else if (!facility || facility.id !== facilityId) {
     bad('facilityId', "We couldn't find that health facility. Please go back and choose it again from the list.");
   } else if (facility.infoOnly) {
-    bad('facilityId', `${facility.name} is listed for information only, so it can't receive forms through MOWMMAS. Please choose another facility.`);
+    bad('facilityId', `${facility.name} is listed for information only, so you can't send a form about it through MOWMMAS. Please choose another facility.`);
   }
 
   /* Who */
@@ -213,7 +213,7 @@ function validate(payload, facility, municipalities) {
     const age = typeof raw === 'number' ? raw : /^\d{1,3}$/.test(String(raw)) ? Number(raw) : NaN;
     if (!Number.isInteger(age)) { bad('age', 'Please enter your age as a whole number, like 28.'); return null; }
     if (age < 18 || age > 55) {
-      bad('age', 'Milk donors need to be between 18 and 55 years old. You can still send the facility a question.');
+      bad('age', 'Milk donors need to be between 18 and 55 years old. You can still send a question about this facility.');
       return null;
     }
     return age;
@@ -287,7 +287,7 @@ function validate(payload, facility, municipalities) {
 
   /* Agreement */
   if (p.consent !== true) {
-    bad('consent', 'Please tick the box to agree that the facility may contact you about this.');
+    bad('consent', 'Please tick the box to agree that MOWMMAS may contact you about this.');
   }
 
   if (Object.keys(fields).length) return { value: null, fields };

@@ -55,15 +55,15 @@ function use(sender, options, helpers) {
   if (options) limits = Object.assign({}, limits, options);
 }
 
-const KIND = { donate: 'donation inquiry', request: 'breast milk request', inquire: 'question' };
+const KIND = { donate: 'donation inquiry', request: 'receiving inquiry', inquire: 'question' };
 
 // What each status means for her, in one short sentence (Track Submission has the longer one)
 const MEANING = {
-  under_review: 'A health worker is reviewing your details.',
-  referral_needed: 'A health worker is finding the right facility for you.',
-  next_steps: 'A health worker has the next steps or a referral for your donation.',
+  under_review: 'A MOWMMAS administrator is reviewing your details.',
+  referral_needed: 'A MOWMMAS administrator is finding the right facility for you.',
+  next_steps: 'MOWMMAS has the next steps or a referral for your donation inquiry.',
   information_sent: '',   // the contact line says it
-  answered: 'A health worker answered your question.',
+  answered: 'MOWMMAS answered your question.',
   completed: 'All done. Thank you for using MOWMMAS.',
   closed: 'This is closed. You can send a new form anytime.'
 };
@@ -212,8 +212,8 @@ async function received(sub) {
   if (!sms || !sub) return null;
   const kind = KIND[sub.type] || 'form';
   const message = fit([
-    'MOWMMAS: We received your ' + kind + ' for ' + sub.facilityName + '. Ref: ' + sub.ref + '. A health worker will review it and text you the next steps.',
-    'MOWMMAS: We received your ' + kind + '. Ref: ' + sub.ref + '. A health worker will review it and text you the next steps.',
+    'MOWMMAS: We received your ' + kind + ' for ' + sub.facilityName + '. Ref: ' + sub.ref + '. MOWMMAS will review it and text you the next steps.',
+    'MOWMMAS: We received your ' + kind + '. Ref: ' + sub.ref + '. MOWMMAS will review it and text you the next steps.',
     'MOWMMAS: We received your form. Ref: ' + sub.ref + '.'
   ]);
   return text(sub, 'received', 'received|' + sub.ref, { message, type: 'received', event: 'Form received', facility: sub.facilityName || null });

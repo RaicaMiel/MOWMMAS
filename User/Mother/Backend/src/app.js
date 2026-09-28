@@ -23,8 +23,8 @@
 
    It texts mothers on its own (src/notify.js): her reference number when she
    sends a form, and each update the admin makes (status, referral, message).
-   MOWMMAS is not a milk bank: it only shares information and passes requests
-   on to the health facilities.
+   MOWMMAS is not a milk bank: it only shares information and gives referrals;
+   the mother contacts the facility herself.
    ══════════════════════════════════════════════════════════════════ */
 const config = require('./config');
 const cloud = require('./cloud');

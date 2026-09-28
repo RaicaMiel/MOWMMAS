@@ -15,8 +15,8 @@
 
    Every minute it also texts mothers any admin update not texted yet
    (src/notify.js), in case the admin page couldn't ask for it.
-   MOWMMAS is not a milk bank: it only shares information and passes requests
-   on to the health facilities.
+   MOWMMAS is not a milk bank: it only shares information and gives referrals;
+   the mother contacts the facility herself.
    ══════════════════════════════════════════════════════════════════ */
 const http = require('http');
 const os = require('os');

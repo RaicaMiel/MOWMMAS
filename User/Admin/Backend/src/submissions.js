@@ -8,7 +8,7 @@
    changedByAdminSince(after) only the submissions an admin changed after `after`
                              (their adminUpdatedAt, set by Firestore's clock), oldest first
 
-   Each document also carries readable labels (typeLabel, statusLabel, e.g. "New Request"),
+   Each document also carries readable labels (typeLabel, statusLabel, e.g. "New Receiving Inquiry"),
    so the Firestore console and the admin pages don't have to look them up. */
 const config = require('./config');
 const firestore = require('./firestore');

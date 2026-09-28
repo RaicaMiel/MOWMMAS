@@ -4,9 +4,9 @@
    is a medical decision. The Mother backend keeps an identical copy (User/Mother/Backend/src/statuses.js) — change both together. */
 
 const TYPES = {
-  donate:  { label: 'Donate Breast Milk',  short: 'Donation', refLetter: 'D' },
-  request: { label: 'Request Breast Milk', short: 'Request',  refLetter: 'R' },
-  inquire: { label: 'Inquiry',             short: 'Inquiry',  refLetter: 'I' }
+  donate:  { label: 'Donation Inquiry',  short: 'Donation',  refLetter: 'D' },
+  request: { label: 'Receiving Inquiry', short: 'Receiving', refLetter: 'R' },
+  inquire: { label: 'Inquiry',           short: 'Inquiry',   refLetter: 'I' }
 };
 
 const STATUS_LABELS = {
@@ -23,7 +23,7 @@ const STATUS_LABELS = {
 // "submitted" is named after what she sent
 const SUBMITTED_LABELS = {
   donate:  'New Donation Inquiry',
-  request: 'New Request',
+  request: 'New Receiving Inquiry',
   inquire: 'New Question'
 };
 
