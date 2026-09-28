@@ -15,6 +15,9 @@
   <link rel="stylesheet" href="../css/style.css" />
   <!-- Loaded in <head> on purpose: it sets the .js class before first paint -->
   <script src="../js/script.js"></script>
+  <!-- The hero's live facility preview: filled in after the page loads, never blocks it -->
+  <script src="../js/api.js" defer></script>
+  <script src="../js/landing.js" defer></script>
 </head>
 <body>
 
@@ -120,46 +123,59 @@
           </ul>
         </div>
 
-        <!-- Illustrative preview of the system (decorative) -->
-        <div class="hero__visual" aria-hidden="true">
+        <!-- Live preview: three real facilities. The names and towns below show even without
+             JavaScript; js/landing.js fills in the address, type and statuses from MOWMMAS.
+             If MOWMMAS can't be reached, each one says "Call the facility to confirm". -->
+        <div class="hero__visual">
           <div class="mock">
-            <div class="mock__bar">
+            <div class="mock__bar" aria-hidden="true">
               <span class="mock__dots"><i></i><i></i><i></i></span>
               <span class="mock__url"><svg class="icon icon--xs"><use href="#i-shield"/></svg> MOWMMAS</span>
             </div>
             <div class="mock__body">
               <p class="mock__title">Health Facilities Near Me</p>
-              <div class="mock__search"><svg class="icon icon--xs"><use href="#i-search"/></svg> Search health facilities</div>
+              <div class="mock__search" aria-hidden="true"><svg class="icon icon--xs"><use href="#i-search"/></svg> Search health facilities</div>
 
-              <div class="mock__row">
-                <span class="mock__ico"><svg class="icon icon--sm"><use href="#i-hospital"/></svg></span>
-                <span class="mock__info">
-                  <span class="mock__name">District Hospital</span>
-                  <span class="mock__pills"><em class="chip chip--amber">No Confirmed HMB</em><em class="chip chip--violet">Referral support</em></span>
-                </span>
-                <span class="mock__km">1.2 km</span>
-              </div>
-              <div class="mock__row">
-                <span class="mock__ico"><svg class="icon icon--sm"><use href="#i-hospital"/></svg></span>
-                <span class="mock__info">
-                  <span class="mock__name">Maternity &amp; Children's Clinic</span>
-                  <span class="mock__pills"><em class="chip chip--mint">Lactation support documented</em><em class="chip chip--amber">Not Verified</em></span>
-                </span>
-                <span class="mock__km">2.8 km</span>
-              </div>
-              <div class="mock__row">
-                <span class="mock__ico"><svg class="icon icon--sm"><use href="#i-hospital"/></svg></span>
-                <span class="mock__info">
-                  <span class="mock__name">Community Health Center</span>
-                  <span class="mock__pills"><em class="chip chip--grey">Lactation support</em></span>
-                </span>
-                <span class="mock__km">3.5 km</span>
-              </div>
-              <p class="mock__foot">View all facilities <svg class="icon icon--xs"><use href="#i-arrow-right"/></svg></p>
+              <ul class="mock__list" aria-label="Example facilities" data-preview>
+                <li class="mock__item" data-facility="osm-w290801272">
+                  <p class="mock__name" data-fill="name">Angel Salazar Memorial General Hospital</p>
+                  <p class="mock__line"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-pin"/></svg><span data-fill="address">San Jose de Buenavista, Antique</span></p>
+                  <p class="mock__line"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-hospital"/></svg><span data-fill="type">Hospital</span></p>
+                  <p class="mock__line mock__status"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-heart"/></svg><span>Breastfeeding/Lactation Support: <strong class="mock__value" data-fill="lactation">Checking…</strong></span></p>
+                  <div class="mock__end">
+                    <p class="mock__line mock__status"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-droplet"/></svg><span>HMB Status: <strong class="mock__value" data-fill="hmb">Checking…</strong></span></p>
+                    <p class="mock__line mock__note"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-phone"/></svg><span>Call the facility to confirm</span></p>
+                    <a class="mock__link" href="facility.html?id=osm-w290801272">View details<span class="mock__sr"> for <span data-fill="name">Angel Salazar Memorial General Hospital</span></span><svg class="icon icon--xs" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+                  </div>
+                </li>
+                <li class="mock__item" data-facility="osm-w246912651">
+                  <p class="mock__name" data-fill="name">Antique Medical Center</p>
+                  <p class="mock__line"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-pin"/></svg><span data-fill="address">San Jose de Buenavista, Antique</span></p>
+                  <p class="mock__line"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-hospital"/></svg><span data-fill="type">Hospital</span></p>
+                  <p class="mock__line mock__status"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-heart"/></svg><span>Breastfeeding/Lactation Support: <strong class="mock__value" data-fill="lactation">Checking…</strong></span></p>
+                  <div class="mock__end">
+                    <p class="mock__line mock__status"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-droplet"/></svg><span>HMB Status: <strong class="mock__value" data-fill="hmb">Checking…</strong></span></p>
+                    <p class="mock__line mock__note"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-phone"/></svg><span>Call the facility to confirm</span></p>
+                    <a class="mock__link" href="facility.html?id=osm-w246912651">View details<span class="mock__sr"> for <span data-fill="name">Antique Medical Center</span></span><svg class="icon icon--xs" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+                  </div>
+                </li>
+                <li class="mock__item" data-facility="osm-w314458340">
+                  <p class="mock__name" data-fill="name">Culasi District Hospital</p>
+                  <p class="mock__line"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-pin"/></svg><span data-fill="address">Culasi, Antique</span></p>
+                  <p class="mock__line"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-hospital"/></svg><span data-fill="type">Hospital</span></p>
+                  <p class="mock__line mock__status"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-heart"/></svg><span>Breastfeeding/Lactation Support: <strong class="mock__value" data-fill="lactation">Checking…</strong></span></p>
+                  <div class="mock__end">
+                    <p class="mock__line mock__status"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-droplet"/></svg><span>HMB Status: <strong class="mock__value" data-fill="hmb">Checking…</strong></span></p>
+                    <p class="mock__line mock__note"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-phone"/></svg><span>Call the facility to confirm</span></p>
+                    <a class="mock__link" href="facility.html?id=osm-w314458340">View details<span class="mock__sr"> for <span data-fill="name">Culasi District Hospital</span></span><svg class="icon icon--xs" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+                  </div>
+                </li>
+              </ul>
+              <p class="mock__foot"><a class="mock__link" href="hospitals.html">View all facilities <svg class="icon icon--xs" aria-hidden="true"><use href="#i-arrow-right"/></svg></a></p>
             </div>
           </div>
 
-          <div class="float float--status">
+          <div class="float float--status" aria-hidden="true">
             <span class="float__ico float__ico--rose"><svg class="icon icon--sm"><use href="#i-check"/></svg></span>
             <span>
               <span class="float__title">Inquiry received</span>
@@ -167,7 +183,7 @@
             </span>
           </div>
 
-          <div class="float float--sms">
+          <div class="float float--sms" aria-hidden="true">
             <span class="float__ico float__ico--mint"><svg class="icon icon--sm"><use href="#i-message"/></svg></span>
             <span>
               <span class="float__title">SMS from MOWMMAS</span>

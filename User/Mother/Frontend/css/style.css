@@ -362,7 +362,7 @@ strong { font-weight: 600; color: var(--ink-900); }
   .hero__scroll { display: grid; }
 }
 
-/* hero visual — illustrative preview */
+/* hero visual — live preview of three facilities (js/landing.js) */
 .hero__visual { position: relative; max-width: 480px; width: 100%; margin: 0 auto; padding: 18px 0 34px; }
 
 .mock {
@@ -402,29 +402,55 @@ strong { font-weight: 600; color: var(--ink-900); }
   font-size: 13px; color: var(--ink-400);
 }
 
-.mock__row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px; border-radius: var(--r-md);
+/* the three facilities: name, address, type, two statuses, "View details" */
+.mock__list { display: grid; gap: 8px; }
+.mock__item {
+  display: flex; flex-direction: column; gap: 3px; min-width: 0;
+  padding: 12px 14px; border-radius: var(--r-md);
   border: 1px solid var(--line);
   background: var(--surface);
 }
-.mock__row + .mock__row { margin-top: 8px; }
-.mock__ico {
-  flex: none; display: grid; place-items: center;
-  width: 38px; height: 38px; border-radius: 12px;
-  background: linear-gradient(140deg, var(--rose-100), var(--violet-100)); color: var(--rose-700);
-}
-.mock__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .mock__name {
-  font-family: var(--font-ui); font-size: 13.5px; font-weight: 700; color: var(--ink-900);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 2px;
+  font-family: var(--font-ui); font-size: 14px; font-weight: 800; line-height: 1.3; letter-spacing: -.01em;
+  color: var(--ink-900); overflow-wrap: anywhere;
 }
-.mock__pills { display: flex; flex-wrap: wrap; gap: 5px; }
-.mock__km { flex: none; font-family: var(--font-ui); font-size: 12.5px; font-weight: 700; color: var(--rose-700); }
-.mock__foot {
-  display: flex; align-items: center; justify-content: flex-end; gap: 5px;
-  margin-top: 14px;
-  font-family: var(--font-ui); font-size: 12.5px; font-weight: 700; color: var(--rose-600);
+.mock__line {
+  display: flex; align-items: flex-start; gap: 7px; min-width: 0;
+  font-size: 12.5px; line-height: 1.45; color: var(--ink-600);
+}
+.mock__line > span { min-width: 0; overflow-wrap: anywhere; }
+.mock__line .icon { margin-top: 2px; color: var(--rose-600); }
+/* "Checking…" until the API answers; a value never breaks in the middle ("Yes — documented") */
+.mock__value { font-weight: 600; color: var(--ink-500); white-space: nowrap; }
+.mock__value[data-tone="yes"]     { color: var(--mint-700); }
+.mock__value[data-tone="no"]      { color: var(--ink-700); }
+.mock__value[data-tone="unknown"] { color: var(--amber-600); }
+.mock__note { font-weight: 500; color: var(--ink-700); }
+
+/* Statuses show once js/landing.js runs (it adds .is-live to the list).
+   Without it, or when MOWMMAS can't be reached (.is-fallback), "Call the facility to confirm" shows instead. */
+.mock__status { display: none; }
+.mock__list.is-live .mock__item:not(.is-fallback) .mock__status { display: flex; }
+.mock__list.is-live .mock__item:not(.is-fallback) .mock__note { display: none; }
+
+/* last status (or the note) and "View details" share a row; the link wraps under it on narrow phones */
+.mock__end { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 12px; }
+.mock__link {
+  display: inline-flex; align-items: center; gap: 5px;
+  min-height: 32px; margin-left: auto; padding: 0 2px;
+  border-radius: 6px;
+  font-family: var(--font-ui); font-size: 13px; font-weight: 700; line-height: 1.2; color: var(--rose-600);
+}
+.mock__link:hover { color: var(--rose-700); }
+.mock__link .icon { transition: transform var(--t-fast) var(--ease); }
+.mock__link:hover .icon { transform: translateX(3px); }
+.mock__foot { display: flex; justify-content: flex-end; margin-top: 8px; }
+.mock__foot .mock__link { min-height: 36px; }
+/* link context for screen readers ("View details for …") */
+.mock__sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 
 .chip {
@@ -465,6 +491,8 @@ strong { font-weight: 600; color: var(--ink-900); }
 @media (max-width: 559px) {
   .hero__visual { display: grid; gap: 12px; padding: 0; }
   .float { position: static; max-width: none; animation: none; }
+  .mock__body { padding: 16px 12px 12px; }
+  .mock__item { padding: 11px 12px; }
 }
 @media (min-width: 960px) {
   .hero__visual { margin: 0 0 0 auto; padding-bottom: 40px; }
