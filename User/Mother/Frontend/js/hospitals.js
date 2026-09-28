@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   MOWMMAS · Mother side · Hospitals Near Me (flow step 3)
+   MOWMMAS · Mother side · Participating Health Facilities Near Me (flow step 3)
    - List + OpenStreetMap of every facility: address, contact number,
      hours, about, and its three statuses (breastfeeding/lactation support,
      HMB status, human milk-related information & referral)

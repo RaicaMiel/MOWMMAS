@@ -1037,7 +1037,7 @@
 
   function showBadType() {
     setHead('Choose a service first', 'This form needs to know whether you want to send a donation inquiry, a request or a question.');
-    setBack(FACILITY_ID ? facilityHref(FACILITY_ID) : 'hospitals.html', FACILITY_ID ? 'Back to facility details' : 'Back to Hospitals Near Me');
+    setBack(FACILITY_ID ? facilityHref(FACILITY_ID) : 'hospitals.html', FACILITY_ID ? 'Back to facility details' : 'Back to Participating Health Facilities Near Me');
     hideSide();
     els.root.innerHTML = stateHtml('i-list', 'Please choose a service',
       'Go back and choose Donate breast milk, Request breast milk or Inquire.',
@@ -1048,7 +1048,7 @@
 
   function showNoFacility() {
     setHead(T.title, 'We couldn\'t find the health facility for this form.');
-    setBack(hospitalsHref(), 'Back to Hospitals Near Me');
+    setBack(hospitalsHref(), 'Back to Participating Health Facilities Near Me');
     hideSide();
     els.root.innerHTML = stateHtml('i-hospital', 'Facility not found',
       'The link may be old or incomplete. Please choose the facility again from the list.',

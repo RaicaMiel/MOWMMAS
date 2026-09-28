@@ -32,6 +32,7 @@
     <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.2s7.2-6.4 7.2-11.2a7.2 7.2 0 1 0-14.4 0c0 4.8 7.2 11.2 7.2 11.2Z"/><circle cx="12" cy="9.8" r="2.7"/></symbol>
     <symbol id="i-hospital" viewBox="0 0 24 24"><path d="M2.8 21h18.4"/><path d="M5 21V7.4L12 3l7 4.4V21"/><path d="M12 8.6v4.8"/><path d="M9.6 11h4.8"/><path d="M9.6 21v-4.2h4.8V21"/></symbol>
     <symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 3.2c4 4.4 6.5 7.7 6.5 10.7a6.5 6.5 0 0 1-13 0c0-3 2.5-6.3 6.5-10.7Z"/></symbol>
+    <symbol id="i-bottle" viewBox="0 0 24 24"><path d="M9.6 2.8h4.8"/><path d="M10.2 2.8v2.6l-1.8 2.2v12.2a1.8 1.8 0 0 0 1.8 1.8h3.6a1.8 1.8 0 0 0 1.8-1.8V7.6l-1.8-2.2V2.8"/><path d="M8.4 11h3"/><path d="M8.4 14.4h3"/><path d="M8.4 17.8h3"/></symbol>
     <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.4 4.9 13.3a4.6 4.6 0 0 1 6.5-6.5l.6.6.6-.6a4.6 4.6 0 0 1 6.5 6.5Z"/></symbol>
     <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.8"/><path d="M9.4 9.5a2.7 2.7 0 1 1 3.7 2.5c-.7.3-1.1.9-1.1 1.7v.5"/><path d="M12 17.4h.01"/></symbol>
     <symbol id="i-message" viewBox="0 0 24 24"><path d="M20.8 11.8a8.4 8.4 0 0 1-12.2 7.5L3.4 20.8l1.5-5.1A8.4 8.4 0 1 1 20.8 11.8Z"/></symbol>
@@ -127,7 +128,7 @@
               <span class="mock__url"><svg class="icon icon--xs"><use href="#i-shield"/></svg> MOWMMAS</span>
             </div>
             <div class="mock__body">
-              <p class="mock__title">Hospitals Near Me</p>
+              <p class="mock__title">Participating Health Facilities Near Me</p>
               <div class="mock__search"><svg class="icon icon--xs"><use href="#i-search"/></svg> Search participating facilities</div>
 
               <div class="mock__row">
@@ -188,43 +189,60 @@
           <p class="eyebrow">What MOWMMAS offers</p>
           <h2 class="section-title" id="offersTitle">Choose the support you need</h2>
           <p class="section-lede">
-            Whether you have milk to share, need milk for your baby, or simply have questions,
-            MOWMMAS guides you to the right health facility.
+            Whether you need breastfeeding support, have milk to share, need milk for your baby, or simply
+            have questions, MOWMMAS guides you to the right health facility.
           </p>
         </header>
 
-        <div class="service-grid">
-          <article class="service service--rose reveal">
-            <span class="service__icon"><svg class="icon" aria-hidden="true"><use href="#i-droplet"/></svg></span>
-            <h3 class="service__title">Donate Breast Milk</h3>
+        <div class="service-grid service-grid--four">
+          <article class="service service--amber reveal">
+            <span class="service__icon"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></span>
+            <h3 class="service__title">Breastfeeding Information &amp; Support</h3>
             <p class="service__text">
-              Have breast milk to donate? Submit a donation inquiry to a participating health facility.
-              A health worker will provide information about the appropriate donation process or referral.
+              Need breastfeeding support? Learn about breastfeeding-related services and find participating
+              health facilities that can provide appropriate assistance.
             </p>
             <ul class="service__list">
-              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Find participating facilities</li>
-              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Submit a donation inquiry</li>
-              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Receive updates through SMS</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Learn about available breastfeeding support</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Find participating health facilities</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Ask about available services</li>
+            </ul>
+            <a class="service__link" href="hospitals.html?has=lactation">
+              Find breastfeeding support <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+            </a>
+          </article>
+
+          <article class="service service--rose reveal">
+            <span class="service__icon"><svg class="icon" aria-hidden="true"><use href="#i-droplet"/></svg></span>
+            <h3 class="service__title">Human Milk Donation Information</h3>
+            <p class="service__text">
+              Interested in donating breast milk? Find participating facilities and ask about donation
+              requirements and referral options.
+            </p>
+            <ul class="service__list">
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Find facilities that accept donations</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Ask about donation requirements</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Receive referral or facility information</li>
             </ul>
             <a class="service__link" href="hospitals.html?service=donate">
-              Send a donation inquiry <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+              Explore donation options <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
             </a>
           </article>
 
           <article class="service service--violet reveal">
-            <span class="service__icon"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></span>
-            <h3 class="service__title">Request Breast Milk</h3>
+            <span class="service__icon"><svg class="icon" aria-hidden="true"><use href="#i-bottle"/></svg></span>
+            <h3 class="service__title">Human Milk Receiving Information</h3>
             <p class="service__text">
-              Submit a request for donor milk. An authorized health worker will review your request and
-              provide information about the appropriate facility or next steps.
+              Need donor milk for your baby? Find participating facilities and ask about requirements
+              and referral options.
             </p>
             <ul class="service__list">
-              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Submit a request form</li>
-              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Receive referral/next-step information</li>
-              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Get updates through SMS</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Find facilities that may provide donor milk</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Ask about receiving requirements</li>
+              <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Receive referral or facility information</li>
             </ul>
             <a class="service__link" href="hospitals.html?service=request">
-              Send a request <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+              Explore receiving options <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
             </a>
           </article>
 
@@ -246,10 +264,10 @@
           </article>
         </div>
 
-        <!-- Hospitals Near Me — Find · Check · Contact -->
+        <!-- Participating Health Facilities Near Me — Find · Check · Contact -->
         <div class="finder reveal">
           <div class="finder__copy">
-            <p class="eyebrow eyebrow--light"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"/></svg> Hospitals Near Me</p>
+            <p class="eyebrow eyebrow--light"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"/></svg> Participating Health Facilities Near Me</p>
             <h3 class="finder__title">Find, check, and contact facilities near you</h3>
             <p class="finder__text">
               View a list of participating health facilities and their locations. Select one to see
@@ -260,8 +278,8 @@
               <li><span>2</span> Check its details</li>
               <li><span>3</span> Contact or inquire</li>
             </ol>
-            <a class="btn btn--light" href="hospitals.html">
-              Browse Hospitals Near Me
+            <a class="btn btn--light btn--wrap" href="hospitals.html">
+              Browse Participating Health Facilities Near Me
               <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
             </a>
           </div>
@@ -435,9 +453,9 @@
               Let's Get Started
               <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
             </a>
-            <a class="btn btn--ghost-light btn--lg" href="hospitals.html">
+            <a class="btn btn--ghost-light btn--lg btn--wrap" href="hospitals.html">
               <svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>
-              Hospitals Near Me
+              Participating Health Facilities Near Me
             </a>
           </div>
         </div>

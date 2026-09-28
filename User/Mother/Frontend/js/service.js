@@ -76,7 +76,7 @@
       els.backLabel.textContent = 'Back to facility details';
     } else {
       els.back.setAttribute('href', 'hospitals.html' + serviceQuery);
-      els.backLabel.textContent = 'Back to Hospitals Near Me';
+      els.backLabel.textContent = 'Back to Participating Health Facilities Near Me';
     }
   }
 
@@ -104,7 +104,7 @@
   function renderNoFacility() {
     // No valid facility → the way back is the facility list, not a broken details link
     els.back.setAttribute('href', 'hospitals.html' + serviceQuery);
-    els.backLabel.textContent = 'Back to Hospitals Near Me';
+    els.backLabel.textContent = 'Back to Participating Health Facilities Near Me';
     renderProblem(ui.emptyState(
       'We couldn\'t find that facility',
       'Choose a health facility first. Then you can send a donation inquiry, a request, or a question.',
