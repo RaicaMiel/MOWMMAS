@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Breast Milk Information | MOWMMAS</title>
+  <meta name="description" content="A short guide to breast milk support in Antique: donating and receiving, asking a facility, finding the right facility, referral support and SMS updates. MOWMMAS is an information and referral service, not a human milk bank." />
+  <meta name="theme-color" content="#FFF7FA" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="../img/mowmmas-icon.png" />
+
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/app.css" />
+  <link rel="stylesheet" href="../css/guide.css" />
+  <!-- Loaded in <head> on purpose: it sets the .js class before first paint -->
+  <script src="../js/script.js"></script>
+  <script src="../js/guide.js" defer></script>
+</head>
+<body class="app-page">
+
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- Icon set (same as img/icons.svg), embedded so icons also work in VS Code Live Server -->
+  <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.2s7.2-6.4 7.2-11.2a7.2 7.2 0 1 0-14.4 0c0 4.8 7.2 11.2 7.2 11.2Z"/><circle cx="12" cy="9.8" r="2.7"/></symbol>
+    <symbol id="i-hospital" viewBox="0 0 24 24"><path d="M2.8 21h18.4"/><path d="M5 21V7.4L12 3l7 4.4V21"/><path d="M12 8.6v4.8"/><path d="M9.6 11h4.8"/><path d="M9.6 21v-4.2h4.8V21"/></symbol>
+    <symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 3.2c4 4.4 6.5 7.7 6.5 10.7a6.5 6.5 0 0 1-13 0c0-3 2.5-6.3 6.5-10.7Z"/></symbol>
+    <symbol id="i-bottle" viewBox="0 0 24 24"><path d="M9.6 2.8h4.8"/><path d="M10.2 2.8v2.6l-1.8 2.2v12.2a1.8 1.8 0 0 0 1.8 1.8h3.6a1.8 1.8 0 0 0 1.8-1.8V7.6l-1.8-2.2V2.8"/><path d="M8.4 11h3"/><path d="M8.4 14.4h3"/><path d="M8.4 17.8h3"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.4 4.9 13.3a4.6 4.6 0 0 1 6.5-6.5l.6.6.6-.6a4.6 4.6 0 0 1 6.5 6.5Z"/></symbol>
+    <symbol id="i-hand-heart" viewBox="0 0 24 24"><path d="M11.2 12.6 7.6 9a2.6 2.6 0 0 1 3.7-3.7l.7.7.7-.7A2.6 2.6 0 0 1 16.4 9l-3.6 3.6a1.1 1.1 0 0 1-1.6 0Z"/><path d="M3 15.4h2.8l3.4 1.7h4.2a1.6 1.6 0 0 1 0 3.2H9.2"/><path d="M13.6 17.1l4.6-2.3a1.6 1.6 0 0 1 1.9 2.4l-3.3 2.9a3 3 0 0 1-2 .7H3"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20.8 11.8a8.4 8.4 0 0 1-12.2 7.5L3.4 20.8l1.5-5.1A8.4 8.4 0 1 1 20.8 11.8Z"/><path d="M8.6 11.9h.01"/><path d="M12 11.9h.01"/><path d="M15.4 11.9h.01"/></symbol>
+    <symbol id="i-message" viewBox="0 0 24 24"><path d="M20.8 11.8a8.4 8.4 0 0 1-12.2 7.5L3.4 20.8l1.5-5.1A8.4 8.4 0 1 1 20.8 11.8Z"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.8"/><path d="M9.4 9.5a2.7 2.7 0 1 1 3.7 2.5c-.7.3-1.1.9-1.1 1.7v.5"/><path d="M12 17.4h.01"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 15.6V11a6 6 0 1 0-12 0v4.6L4.4 18.2h15.2Z"/><path d="M9.8 21h4.4"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M21.4 16.9v2.8a2 2 0 0 1-2.2 2 19.6 19.6 0 0 1-8.5-3 19.2 19.2 0 0 1-5.9-5.9 19.6 19.6 0 0 1-3-8.6 2 2 0 0 1 2-2.2h2.8a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L7.6 10.5a15.8 15.8 0 0 0 5.9 5.9l1.9-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.1 1.5Z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.8"/><path d="M12 7.2V12l3.2 1.9"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.4" y="5" width="17.2" height="15.8" rx="3"/><path d="M3.4 10h17.2"/><path d="M8.2 3.2v3.6"/><path d="M15.8 3.2v3.6"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 19.6 6v5.4c0 4.6-3.2 8.4-7.6 9.6-4.4-1.2-7.6-5-7.6-9.6V6Z"/><path d="M9.2 12.1 11.3 14.2 15.2 10.3"/></symbol>
+    <symbol id="i-snowflake" viewBox="0 0 24 24"><path d="M12 2.8v18.4"/><path d="M4 7.4l16 9.2"/><path d="M20 7.4 4 16.6"/><path d="M9.6 4.4 12 6.8l2.4-2.4"/><path d="M9.6 19.6 12 17.2l2.4 2.4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.8 12.6 9.6 17.4 19.2 6.6"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><path d="M20.8 11.1V12a8.8 8.8 0 1 1-5.2-8"/><path d="M8.8 11.9l2.6 2.6 9-9"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.2 6.2 17.8 17.8"/><path d="M17.8 6.2 6.2 17.8"/></symbol>
+    <symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.8"/><path d="m9 9 6 6"/><path d="m15 9-6 6"/></symbol>
+    <symbol id="i-minus-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.8"/><path d="M8.4 12h7.2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.8"/><path d="M12 11.2v5"/><path d="M12 7.8h.01"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 4.2 2.7 17.5a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/><path d="M12 9.4v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4.2 12h15.2"/><path d="M13.2 5.8 19.4 12l-6.2 6.2"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19.8 12H4.6"/><path d="M10.8 5.8 4.6 12l6.2 6.2"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M9.2 4.8 16.4 12l-7.2 7.2"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M14.8 4.8 7.6 12l7.2 7.2"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M5.2 8.8 12 15.6l6.8-6.8"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3.8 6.8h16.4"/><path d="M3.8 12h16.4"/><path d="M3.8 17.2h16.4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.8"/><path d="M20.4 20.4 15.9 15.9"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M3.4 7.6h4"/><path d="M12.6 7.6h8"/><path d="M3.4 16.4h8"/><path d="M16.6 16.4h4"/><circle cx="10" cy="7.6" r="2.4"/><circle cx="14" cy="16.4" r="2.4"/></symbol>
+    <symbol id="i-locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.8"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2.6v2.6"/><path d="M12 18.8v2.6"/><path d="M2.6 12h2.6"/><path d="M18.8 12h2.6"/></symbol>
+    <symbol id="i-navigation" viewBox="0 0 24 24"><path d="M3.4 11.2 21 3.2l-8 17.6-1.9-7.7Z"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 3.6 3.4 6.2v14.2L9 17.8l6 2.6 5.6-2.6V3.6L15 6.2Z"/><path d="M9 3.6v14.2"/><path d="M15 6.2v14.2"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8.6 6.4h12"/><path d="M8.6 12h12"/><path d="M8.6 17.6h12"/><path d="M4 6.4h.01"/><path d="M4 12h.01"/><path d="M4 17.6h.01"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.2" r="4"/><path d="M4.4 20.4a7.6 7.6 0 0 1 15.2 0"/></symbol>
+    <symbol id="i-nurse" viewBox="0 0 24 24"><circle cx="12" cy="8.4" r="3.8"/><path d="M4.4 20.6a7.6 7.6 0 0 1 15.2 0"/><path d="M16.6 15.6v3.6"/><path d="M14.8 17.4h3.6"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3.2H7a2 2 0 0 0-2 2v13.6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.2Z"/><path d="M14 3.2v5h5"/><path d="M8.8 13h6.4"/><path d="M8.8 16.6h4.2"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.8 3.2 10.9 13.1"/><path d="M20.8 3.2 14.5 21 10.9 13.1 3 9.5Z"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20.4 12a8.4 8.4 0 0 1-14.6 5.7"/><path d="M3.6 12A8.4 8.4 0 0 1 18.2 6.3"/><path d="M18.4 2.8v3.7h-3.7"/><path d="M5.6 21.2v-3.7h3.7"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.4" y="8.4" width="12.4" height="12.4" rx="2.4"/><path d="M15.6 8.4V5.6a2.4 2.4 0 0 0-2.4-2.4H5.6a2.4 2.4 0 0 0-2.4 2.4v7.6a2.4 2.4 0 0 0 2.4 2.4h2.8"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 3.6h6.4V10"/><path d="M20.4 3.6 11.2 12.8"/><path d="M18.4 14v4.4a2 2 0 0 1-2 2H5.6a2 2 0 0 1-2-2V7.6a2 2 0 0 1 2-2H10"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.2 10.6 12 3.4l8.8 7.2"/><path d="M5.4 9.4V20a.8.8 0 0 0 .8.8h11.6a.8.8 0 0 0 .8-.8V9.4"/><path d="M9.6 20.8v-6h4.8v6"/></symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24"><path d="M3 12.2h4.2l2.6-7.4 4.4 14.4 2.6-7h4.2"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.2" y="10.2" width="15.6" height="10.6" rx="3"/><path d="M8 10.2V7.4a4 4 0 0 1 8 0v2.8"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M10 3.8H6.2a2 2 0 0 0-2 2v12.4a2 2 0 0 0 2 2H10"/><path d="M16 15.6 20 12l-4-3.6"/><path d="M20 12H9.6"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20.2h4.2L19.4 9a3 3 0 0 0-4.2-4.2L4 16Z"/><path d="M14.4 5.6 18.6 9.8"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.2v13.6"/><path d="M5.2 12h13.6"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="M20.4 7.6 12 3.2 3.6 7.6v8.8L12 20.8l8.4-4.4Z"/><path d="M3.6 7.6 12 12l8.4-4.4"/><path d="M12 12v8.8"/></symbol>
+    <symbol id="i-dashboard" viewBox="0 0 24 24"><rect x="3.4" y="3.4" width="7.4" height="9.2" rx="2"/><rect x="13.2" y="3.4" width="7.4" height="5.6" rx="2"/><rect x="13.2" y="11.4" width="7.4" height="9.2" rx="2"/><rect x="3.4" y="15" width="7.4" height="5.6" rx="2"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3.4 13.2h4.8l1.6 2.8h4.4l1.6-2.8h4.8"/><path d="M5.8 5.4h12.4l2.4 7.8v5.2a2 2 0 0 1-2 2H5.4a2 2 0 0 1-2-2v-5.2Z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9.4" cy="8.4" r="3.6"/><path d="M3 20.2a6.4 6.4 0 0 1 12.8 0"/><path d="M16.4 5.2a3.6 3.6 0 0 1 0 6.9"/><path d="M17.8 14.6a6.4 6.4 0 0 1 3.4 5.6"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.6 12S6 5.4 12 5.4 21.4 12 21.4 12 18 18.6 12 18.6 2.6 12 2.6 12Z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M10.6 5.5A9 9 0 0 1 12 5.4C18 5.4 21.4 12 21.4 12a17 17 0 0 1-2.6 3.4"/><path d="M6.6 6.6A16 16 0 0 0 2.6 12S6 18.6 12 18.6a9 9 0 0 0 5.4-1.7"/><path d="M3.4 3.4l17.2 17.2"/><path d="M9.9 9.9a2.8 2.8 0 0 0 4.2 4.2"/></symbol>
+  </svg>
+
+  <!-- Brand gradient used by the logo mark (icons come from ../img/icons.svg) -->
+  <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gradBrand" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#F8719B" />
+        <stop offset="55%" stop-color="#EC4A7B" />
+        <stop offset="100%" stop-color="#8B5CF6" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- ═════════════════════════ HEADER ═════════════════════════ -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header__inner">
+      <a class="brand" href="index.html" aria-label="MOWMMAS home">
+        <img class="brand__mark" src="../img/mowmmas-mark.png" alt="" width="32" height="44" />
+        <span class="brand__text">
+          <span class="brand__name">MOWMMAS</span>
+          <span class="brand__sub">Milk Management, Access &amp; Support</span>
+        </span>
+      </a>
+
+      <nav class="nav" id="siteNav" aria-label="Main">
+        <ul class="nav__list">
+          <li><a class="nav__link" href="home.html">Home</a></li>
+          <li><a class="nav__link" href="hospitals.html">Hospitals Near Me</a></li>
+          <li><a class="nav__link" href="inquire.html">Inquire</a></li>
+          <li><a class="nav__link" href="status.html">Track Submission</a></li>
+        </ul>
+      </nav>
+
+      <button class="menu-btn" type="button" id="menuBtn" aria-expanded="false" aria-controls="siteNav" aria-label="Open menu">
+        <svg class="icon menu-btn__open" aria-hidden="true"><use href="#i-menu"/></svg>
+        <svg class="icon menu-btn__close" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </div>
+  </header>
+
+
+  <main id="main" class="app-main gd-main">
+
+    <!-- ═════════════ Header band: what this guide is ═════════════ -->
+    <section class="gd-band" aria-labelledby="pageTitle">
+      <div class="container gd-hero">
+        <div class="gd-intro">
+          <p class="eyebrow"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-heart"/></svg> Breast Milk Information</p>
+          <h1 class="page-title" id="pageTitle">Your guide to breast milk support</h1>
+          <p class="page-lede">How MOWMMAS helps you donate, receive or ask about breast milk, one short step at a time.</p>
+          <ul class="gd-points">
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-list"/></svg> 6 short steps</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"/></svg> About 3 minutes</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check-circle"/></svg> Free to use</li>
+          </ul>
+        </div>
+        <aside class="gd-promise" aria-label="What MOWMMAS is">
+          <span class="gd-promise__icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span>
+          <div>
+            <p class="gd-promise__title">An information and referral service</p>
+            <p class="gd-promise__text">MOWMMAS is not a milk bank. Breast milk is collected, screened and given out only by authorized health facilities and Human Milk Banks.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ═════════════ The guide: steps on the left, the open step on the right ═════════════ -->
+    <div class="container gd-body">
+
+      <section class="gd-stage" aria-label="Guide">
+        <nav class="gd-rail" aria-label="Guide steps">
+          <ol class="gd-tabs" role="tablist" aria-label="Breast milk information steps">
+            <li role="presentation"><a class="gd-tab" id="tab-basics" href="#basics" role="tab" aria-controls="basics" aria-selected="false" aria-label="Step 1 of 6: Breast Milk Information">
+              <span class="gd-tab__num"><span>1</span><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg></span>
+              <span class="gd-tab__text"><span class="gd-tab__title">Breast Milk Information</span></span>
+              <span class="gd-tab__short" aria-hidden="true">Breast Milk Info</span></a></li>
+            <li role="presentation"><a class="gd-tab" id="tab-donation-receiving" href="#donation-receiving" role="tab" aria-controls="donation-receiving" aria-selected="false" aria-label="Step 2 of 6: Learn About Donation/Receiving">
+              <span class="gd-tab__num"><span>2</span><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg></span>
+              <span class="gd-tab__text"><span class="gd-tab__title">Learn About Donation/<wbr>Receiving</span></span>
+              <span class="gd-tab__short" aria-hidden="true">Donation/Receiving</span></a></li>
+            <li role="presentation"><a class="gd-tab" id="tab-inquire" href="#inquire" role="tab" aria-controls="inquire" aria-selected="false" aria-label="Step 3 of 6: Inquire About Services">
+              <span class="gd-tab__num"><span>3</span><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg></span>
+              <span class="gd-tab__text"><span class="gd-tab__title">Inquire About Services</span></span>
+              <span class="gd-tab__short" aria-hidden="true">Inquire</span></a></li>
+            <li role="presentation"><a class="gd-tab" id="tab-find-facility" href="#find-facility" role="tab" aria-controls="find-facility" aria-selected="false" aria-label="Step 4 of 6: Select/Find Appropriate Facility">
+              <span class="gd-tab__num"><span>4</span><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg></span>
+              <span class="gd-tab__text"><span class="gd-tab__title">Select/<wbr>Find Appropriate Facility</span></span>
+              <span class="gd-tab__short" aria-hidden="true">Select/Find Facility</span></a></li>
+            <li role="presentation"><a class="gd-tab" id="tab-referral" href="#referral" role="tab" aria-controls="referral" aria-selected="false" aria-label="Step 5 of 6: Referral/Communication Support">
+              <span class="gd-tab__num"><span>5</span><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg></span>
+              <span class="gd-tab__text"><span class="gd-tab__title">Referral/<wbr>Communication Support</span></span>
+              <span class="gd-tab__short" aria-hidden="true">Referral/Communication</span></a></li>
+            <li role="presentation"><a class="gd-tab" id="tab-sms" href="#sms" role="tab" aria-controls="sms" aria-selected="false" aria-label="Step 6 of 6: SMS Notification">
+              <span class="gd-tab__num"><span>6</span><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg></span>
+              <span class="gd-tab__text"><span class="gd-tab__title">SMS Notification</span></span>
+              <span class="gd-tab__short" aria-hidden="true">SMS Notification</span></a></li>
+          </ol>
+        </nav>
+        <div class="gd-progress" aria-hidden="true"><span class="gd-progress__fill" id="gdFill"></span></div>
+
+        <!-- 1 · Breast Milk Information -->
+        <article class="gd-panel" id="basics" role="tabpanel" aria-labelledby="tab-basics">
+          <p class="gd-panel__kicker"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-heart"/></svg> Step 1 of 6 · Breast Milk Information</p>
+          <h2 class="gd-panel__title" tabindex="-1">Breast milk support, made easier to find</h2>
+          <p class="gd-panel__lead">MOWMMAS connects mothers in Antique with participating health facilities, and passes your form to a health worker.</p>
+          <div class="gd-split">
+            <div class="gd-card gd-card--yes">
+              <p class="gd-card__title"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check-circle"/></svg> MOWMMAS helps you</p>
+              <ul class="gd-list">
+                <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Find participating facilities and their services</li>
+                <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Send a donation inquiry, a request or a question</li>
+                <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Get referral support from a health worker</li>
+                <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Receive updates by SMS</li>
+              </ul>
+            </div>
+            <div class="gd-card gd-card--no">
+              <p class="gd-card__title"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus-circle"/></svg> MOWMMAS does not</p>
+              <ul class="gd-list">
+                <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-x"/></svg> Collect, store or give out breast milk</li>
+                <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-x"/></svg> Decide who can donate or receive milk</li>
+                <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-x"/></svg> Promise that donor milk is available</li>
+                <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-x"/></svg> Replace advice from your doctor or health worker</li>
+              </ul>
+            </div>
+          </div>
+          <p class="gd-note"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-info"/></svg> <span>The next steps show what happens when you donate, receive or ask.</span></p>
+        </article>
+
+        <!-- 2 · Learn About Donation/Receiving -->
+        <article class="gd-panel" id="donation-receiving" role="tabpanel" aria-labelledby="tab-donation-receiving">
+          <p class="gd-panel__kicker"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-hand-heart"/></svg> Step 2 of 6 · Learn About Donation/Receiving</p>
+          <h2 class="gd-panel__title" tabindex="-1">Donating and receiving, step by step</h2>
+          <p class="gd-panel__lead">Both start with a short form. A health worker reviews it and tells you what to do next.</p>
+          <div class="gd-split">
+            <div class="gd-path gd-path--rose">
+              <div class="gd-path__head">
+                <span class="gd-path__icon"><svg class="icon" aria-hidden="true"><use href="#i-hand-heart"/></svg></span>
+                <div><p class="gd-path__title">Donating</p><p class="gd-path__who">For mothers with extra breast milk</p></div>
+              </div>
+              <ol class="gd-mini">
+                <li><span class="gd-mini__num">1</span> Send a donation inquiry</li>
+                <li><span class="gd-mini__num">2</span> A health worker gives the next steps or a referral</li>
+                <li><span class="gd-mini__num">3</span> Contact the referred facility to confirm requirements and schedule</li>
+              </ol>
+              <a class="gd-path__go" href="hospitals.html?service=donate">Find a facility to donate <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+            </div>
+            <div class="gd-path gd-path--violet">
+              <div class="gd-path__head">
+                <span class="gd-path__icon"><svg class="icon" aria-hidden="true"><use href="#i-bottle"/></svg></span>
+                <div><p class="gd-path__title">Receiving</p><p class="gd-path__who">For babies who need donor milk</p></div>
+              </div>
+              <ol class="gd-mini">
+                <li><span class="gd-mini__num">1</span> Send a request for donor milk</li>
+                <li><span class="gd-mini__num">2</span> A health worker reviews it and gives referral information</li>
+                <li><span class="gd-mini__num">3</span> Contact the referred facility to confirm availability and requirements</li>
+              </ol>
+              <a class="gd-path__go" href="hospitals.html?service=request">Request donor milk <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+            </div>
+          </div>
+          <p class="gd-note"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-info"/></svg> <span>Screening, collection and giving out of donor milk are done only by authorized facilities and milk banks.</span></p>
+        </article>
+
+        <!-- 3 · Inquire About Services -->
+        <article class="gd-panel" id="inquire" role="tabpanel" aria-labelledby="tab-inquire">
+          <p class="gd-panel__kicker"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-chat"/></svg> Step 3 of 6 · Inquire About Services</p>
+          <h2 class="gd-panel__title" tabindex="-1">Not sure yet? Ask first</h2>
+          <p class="gd-panel__lead">Send a question to a health worker through MOWMMAS. It&rsquo;s free, and they reply by SMS or a call.</p>
+          <p class="gd-label">You can ask about</p>
+          <ul class="gd-topics">
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-droplet"/></svg> Donor milk availability</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-file"/></svg> Requirements and documents</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-hand-heart"/></svg> How to donate milk</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-bottle"/></svg> How to request milk</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-heart"/></svg> Breastfeeding help</li>
+          </ul>
+          <ol class="gd-flow3">
+            <li><span class="gd-flow3__icon"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-hospital"/></svg></span><span><strong>Choose a facility</strong> the one you want to ask</span></li>
+            <li><span class="gd-flow3__icon"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-edit"/></svg></span><span><strong>Write your question</strong> in your own words</span></li>
+            <li><span class="gd-flow3__icon"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-message"/></svg></span><span><strong>Get your answer</strong> by SMS or a call</span></li>
+          </ol>
+          <div class="gd-actions">
+            <a class="btn btn--outline btn--sm" href="inquire.html"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-chat"/></svg> Ask a question</a>
+          </div>
+        </article>
+
+        <!-- 4 · Select/Find Appropriate Facility -->
+        <article class="gd-panel" id="find-facility" role="tabpanel" aria-labelledby="tab-find-facility">
+          <p class="gd-panel__kicker"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-hospital"/></svg> Step 4 of 6 · Select/Find Appropriate Facility</p>
+          <h2 class="gd-panel__title" tabindex="-1">Find the facility that fits your need</h2>
+          <p class="gd-panel__lead">Hospitals Near Me lists participating facilities in Antique with their location, contact number, hours and services.</p>
+          <p class="gd-label">What the labels mean</p>
+          <ul class="gd-legend">
+            <li><span class="yn yn--yes"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>Yes — documented</span><span>The service is documented for this facility.</span></li>
+            <li><span class="yn yn--unknown"><svg class="icon" aria-hidden="true"><use href="#i-help"/></svg>Not Verified</span><span>Not confirmed yet. Call the facility to ask.</span></li>
+            <li><span class="yn yn--yes"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>Verified HMB</span><span>A Human Milk Bank that has been verified.</span></li>
+            <li><span class="yn yn--unknown"><svg class="icon" aria-hidden="true"><use href="#i-help"/></svg>No Confirmed HMB</span><span>Not confirmed as a Human Milk Bank. Call to ask.</span></li>
+            <li><span class="yn yn--no"><svg class="icon" aria-hidden="true"><use href="#i-minus-circle"/></svg>N/A</span><span>Listed for information only. Contact the facility directly.</span></li>
+          </ul>
+          <div class="gd-actions">
+            <a class="btn btn--outline btn--sm" href="hospitals.html"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-search"/></svg> Browse participating facilities</a>
+            <p class="gd-actions__hint"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-locate"/></svg> Tip: use your location to see the nearest first.</p>
+          </div>
+        </article>
+
+        <!-- 5 · Referral/Communication Support -->
+        <article class="gd-panel" id="referral" role="tabpanel" aria-labelledby="tab-referral">
+          <p class="gd-panel__kicker"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-send"/></svg> Step 5 of 6 · Referral/Communication Support</p>
+          <h2 class="gd-panel__title" tabindex="-1">A health worker guides your next step</h2>
+          <p class="gd-panel__lead">A health worker reviews your form. If another facility fits your need better, you are referred there.</p>
+          <p class="gd-label">What a request&rsquo;s status shows</p>
+          <ol class="gd-track">
+            <li><span class="status-pill status-pill--new"><svg class="icon" aria-hidden="true"><use href="#i-send"/></svg><span>New Request</span></span><span class="gd-track__text">Your form is sent</span></li>
+            <li><span class="status-pill status-pill--review"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg><span>Under Review</span></span><span class="gd-track__text">A health worker checks it</span></li>
+            <li><span class="status-pill status-pill--action"><svg class="icon" aria-hidden="true"><use href="#i-navigation"/></svg><span>Referral Needed</span></span><span class="gd-track__text">Finding the right facility</span></li>
+            <li><span class="status-pill status-pill--good"><svg class="icon" aria-hidden="true"><use href="#i-message"/></svg><span>Information Sent</span></span><span class="gd-track__text">The details come to you</span></li>
+            <li><span class="status-pill status-pill--good"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg><span>Completed</span></span><span class="gd-track__text">All done</span></li>
+          </ol>
+          <p class="gd-note gd-note--tight"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-info"/></svg> <span>A donation inquiry starts as <strong>New Donation Inquiry</strong> and shows <strong>Referral/Next Steps Provided</strong> at the third step.</span></p>
+          <div class="gd-callout">
+            <span class="gd-callout__icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
+            <p><strong>Got a referral?</strong> Contact that facility to confirm current availability, requirements, and schedule.</p>
+          </div>
+        </article>
+
+        <!-- 6 · SMS Notification -->
+        <article class="gd-panel" id="sms" role="tabpanel" aria-labelledby="tab-sms">
+          <p class="gd-panel__kicker"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-message"/></svg> Step 6 of 6 · SMS Notification</p>
+          <h2 class="gd-panel__title" tabindex="-1">Updates come to your phone</h2>
+          <p class="gd-panel__lead">MOWMMAS texts the mobile number on your form at each important step. No app needed.</p>
+          <div class="gd-sms">
+            <div class="gd-phone" aria-label="Example text messages from MOWMMAS" role="img">
+              <p class="gd-phone__from"><svg class="icon icon--xs" aria-hidden="true"><use href="#i-message"/></svg> MOWMMAS</p>
+              <p class="gd-bubble">MOWMMAS: We received your breast milk request. Ref: MOW-R-2026-00012. A health worker will review it and text you the next steps.</p>
+              <p class="gd-bubble">MOWMMAS Update: Your breast milk request MOW-R-2026-00012 has been reviewed. Please contact [facility name] at [number] to confirm current availability, requirements, and schedule.</p>
+            </div>
+            <div class="gd-sms__side">
+              <p class="gd-label">You get a text when</p>
+              <ul class="gd-list gd-list--plain">
+                <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> Your form is received, with your reference number</li>
+                <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> A health worker updates your status</li>
+                <li><svg class="icon icon--xs" aria-hidden="true"><use href="#i-check"/></svg> You are referred to a facility</li>
+              </ul>
+              <a class="btn btn--outline btn--sm" href="status.html"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-activity"/></svg> Track a submission</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Back / Next through the steps (shown when JS runs) -->
+        <div class="gd-nav" id="gdNav">
+          <button class="btn btn--outline btn--sm gd-nav__back" type="button" id="gdBack">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-left"/></svg> <span class="gd-nav__label">Back</span>
+          </button>
+          <p class="gd-nav__count" id="gdCount" aria-live="polite">Step 1 of 6</p>
+          <button class="btn btn--primary btn--sm gd-nav__next" type="button" id="gdNext">
+            <span id="gdNextLabel">Next</span> <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+          </button>
+          <a class="btn btn--primary btn--sm gd-nav__done" id="gdDone" href="hospitals.html" hidden>
+            Find a facility <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+          </a>
+        </div>
+      </section>
+
+      <!-- ═════════════ Urgent: call the facility ═════════════ -->
+      <aside class="gd-help" aria-label="If you need an answer quickly">
+        <span class="gd-help__icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
+        <p class="gd-help__text"><strong>Need an answer today?</strong> Call or visit the facility directly. If MOWMMAS has its number, it&rsquo;s on its page in Hospitals Near Me.</p>
+        <a class="btn btn--outline btn--sm gd-help__btn" href="hospitals.html"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-search"/></svg> Find a facility</a>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ═════════════════════════ FOOTER ═════════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__brand">
+        <a class="brand brand--footer" href="index.html" aria-label="MOWMMAS home">
+          <img class="brand__mark" src="../img/mowmmas-mark.png" alt="" width="32" height="44" />
+          <span class="brand__name">MOWMMAS</span>
+        </a>
+        <p class="footer__text">
+          Mothers Online With Milk Management, Access, and Support. Information, communication,
+          referral support, and notifications for mothers.
+        </p>
+      </div>
+
+      <nav class="footer__nav" aria-label="Footer">
+        <p class="footer__head">Services</p>
+        <ul>
+          <li><a href="guide.html">Breast Milk Information</a></li>
+          <li><a href="inquire.html">Inquire About Services</a></li>
+          <li><a href="hospitals.html">Participating Health Facilities Near Me</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer__nav" aria-label="Learn more">
+        <p class="footer__head">Learn</p>
+        <ul>
+          <li><a href="index.html#offers">What We Offer</a></li>
+          <li><a href="index.html#about">About MOWMMAS</a></li>
+          <li><a href="index.html#faq">FAQ</a></li>
+          <li><a href="status.html">Track a Submission</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="container footer__bottom">
+      <p>&copy; <span id="year">2026</span> TechWizards. All rights reserved.</p>
+      <p class="footer__disclaimer">
+        <svg class="icon icon--xs" aria-hidden="true"><use href="#i-info"/></svg>
+        MOWMMAS is not a Human Milk Bank.
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

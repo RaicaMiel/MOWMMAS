@@ -1,0 +1,386 @@
+/* ══════════════════════════════════════════════════════════════════
+   MOWMMAS · Mother side · Breast Milk Information (guide.html)
+   Loaded after style.css and app.css (btn, eyebrow, page-title,
+   page-lede, yn, status-pill come from those files).
+   ──────────────────────────────────────────────────────────────────
+   01 Page frame & header band    04 What each step shows
+   02 The step list, help strip   05 Back / Next
+   03 The open step
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ──────────────── 01 · PAGE FRAME & HEADER BAND ──────────────── */
+/* The page sits on brand tints; white is only used for cards */
+.app-main.gd-main {
+  padding: 0;
+  background: linear-gradient(180deg, var(--bg-tint) 0%, var(--violet-50) 100%);
+}
+
+.gd-band {
+  padding: 24px 0 28px;
+  background:
+    radial-gradient(70% 130% at 0% 0%, var(--rose-100) 0%, transparent 62%),
+    radial-gradient(55% 130% at 100% 0%, var(--violet-100) 0%, transparent 64%),
+    linear-gradient(180deg, var(--rose-50) 0%, var(--bg-tint) 100%);
+  border-bottom: 1px solid var(--line);
+}
+.gd-hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: center; }
+@media (min-width: 960px) {
+  .gd-band { padding: 32px 0 36px; }
+  .gd-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 48px; }
+}
+
+.gd-intro .page-title { font-size: clamp(28px, 6vw, 42px); }
+.gd-intro .page-lede { max-width: 560px; }
+
+.gd-points { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.gd-points li {
+  display: inline-flex; align-items: center; gap: 7px;
+  min-height: 34px; padding: 0 13px; border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, .75); border: 1px solid var(--line);
+  font-family: var(--font-ui); font-size: 13.5px; font-weight: 700; color: var(--ink-700);
+}
+.gd-points .icon { color: var(--rose-600); }
+
+/* "Not a milk bank", beside the title */
+.gd-promise {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, .85);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-2);
+}
+.gd-promise__icon {
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px;
+  background: linear-gradient(140deg, var(--rose-100), var(--violet-100)); color: var(--violet-700);
+}
+.gd-promise__title { font-family: var(--font-ui); font-size: 16px; font-weight: 800; color: var(--ink-900); }
+.gd-promise__text { margin-top: 3px; font-size: 14.5px; line-height: 1.6; color: var(--text-soft); }
+
+/* ──────────────── 02 · THE STEP LIST ────────────────
+   The top of the guide card. Wide screens: the six steps side by side,
+   joined by a line. Phones and tablets: a strip that scrolls sideways. */
+.gd-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; padding-top: 20px; padding-bottom: 56px; }
+@media (min-width: 960px) { .gd-body { gap: 20px; padding-top: 32px; padding-bottom: 72px; } }
+
+.gd-rail { padding: 10px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+
+.gd-tabs {
+  display: flex; gap: 6px;
+  overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.gd-tabs::-webkit-scrollbar { display: none; }
+.gd-tabs > li { flex: none; display: flex; min-width: 0; scroll-snap-align: center; }
+/* the strip clips outside rings, so the focus ring sits inside the step */
+.gd-tab:focus-visible { outline-offset: -3px; }
+
+.gd-tab {
+  position: relative; flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: 8px;
+  min-height: 44px; padding: 6px 14px 6px 6px;
+  border: 1px solid transparent; border-radius: var(--r-pill);
+  color: var(--ink-700);
+  transition: background-color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.gd-tab:hover { background: var(--surface); color: var(--ink-900); }
+.gd-tab[aria-selected="true"] {
+  background: var(--surface);
+  border-color: var(--rose-200); color: var(--ink-900);
+  box-shadow: 0 6px 16px -10px rgba(214, 46, 99, .45);
+}
+
+.gd-tab__num {
+  position: relative; z-index: 1;
+  flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface); border: 1.5px solid var(--line-strong);
+  font-family: var(--font-ui); font-size: 14px; font-weight: 800; color: var(--ink-600);
+}
+.gd-tab__num .icon { display: none; }
+/* a step already opened: a check instead of its number */
+.gd-tab.is-done .gd-tab__num { background: var(--mint-50); border-color: var(--mint-100); color: var(--mint-700); }
+.gd-tab.is-done .gd-tab__num > span { display: none; }
+.gd-tab.is-done .gd-tab__num .icon { display: block; }
+.gd-tab[aria-selected="true"] .gd-tab__num {
+  background: linear-gradient(140deg, var(--rose-400), var(--rose-600) 55%, var(--violet-600));
+  border-color: transparent; color: var(--surface);
+  box-shadow: 0 0 0 4px var(--rose-50);
+}
+
+.gd-tab__text { display: none; min-width: 0; }
+.gd-tab__title { display: block; font-family: var(--font-ui); font-size: 14px; font-weight: 800; line-height: 1.3; text-wrap: balance; overflow-wrap: break-word; }
+.gd-tab__short { font-family: var(--font-ui); font-size: 13.5px; font-weight: 700; white-space: nowrap; }
+
+@media (min-width: 960px) {
+  .gd-rail { padding: 14px 16px; }
+  .gd-tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; overflow: visible; }
+  .gd-tab { flex-direction: column; align-items: flex-start; gap: 10px; min-height: 0; padding: 12px; border-radius: var(--r-md); }
+  .gd-tab:focus-visible { outline-offset: 3px; }
+  .gd-tab__num { width: 36px; height: 36px; }
+  .gd-tab__text { display: block; }
+  .gd-tab__short { display: none; }
+  /* the line from each number to the next one */
+  .gd-tabs > li:not(:last-child) .gd-tab::after {
+    content: ""; position: absolute; left: 58px; right: -10px; top: 29px; height: 2px;
+    border-radius: 2px; background: var(--rose-200);
+  }
+}
+
+/* Under the guide: when she can't wait for an answer */
+.gd-help {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px;
+  padding: 16px 20px;
+  border-radius: var(--r-xl);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--rose-50) 100%);
+  border: 1px solid var(--rose-100);
+}
+.gd-help__icon {
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px;
+  background: var(--mint-50); color: var(--mint-700); border: 1px solid var(--mint-100);
+}
+.gd-help__text { flex: 1 1 300px; min-width: 0; font-size: 15px; line-height: 1.55; color: var(--ink-700); }
+.gd-help__btn { flex: none; }
+.gd-help__btn .icon { color: var(--rose-600); }
+@media (max-width: 559px) { .gd-help__btn { width: 100%; } }
+
+/* ──────────────── 03 · THE OPEN STEP ──────────────── */
+.gd-stage {
+  display: flex; flex-direction: column; min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-2);
+  overflow: hidden;
+  scroll-margin-top: calc(var(--header-h) + 16px);
+}
+.gd-progress { height: 5px; background: var(--rose-100); }
+.gd-progress__fill {
+  display: block; width: 16.66%; height: 100%;
+  border-radius: 0 var(--r-pill) var(--r-pill) 0;
+  background: linear-gradient(90deg, var(--rose-500), var(--rose-600) 55%, var(--violet-600));
+  transition: width var(--t-slow) var(--ease);
+}
+
+.gd-panel { padding: 22px 20px 24px; }
+@media (min-width: 640px) { .gd-panel { padding: 28px 32px 30px; } }
+/* a link to a step (guide.html#sms) lands with the step list above it in view: the list and
+   the progress bar sit between the top of the card and the step */
+.gd-panel { scroll-margin-top: 76px; }
+@media (min-width: 960px) { .gd-panel { scroll-margin-top: 162px; } }
+/* without JS every step shows, one under the other (no progress bar, no Back / Next) */
+.no-js .gd-panel + .gd-panel { border-top: 1px solid var(--line); }
+.no-js .gd-progress { display: none; }
+/* while guide.js loads: the first step only */
+.js .gd-stage:not(.is-ready) .gd-panel:not(:first-of-type) { display: none; }
+.js .gd-stage:not(.is-ready) .gd-nav__back { visibility: hidden; }
+.gd-panel.is-entering { animation: gd-in var(--t) var(--ease) both; }
+@keyframes gd-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.gd-panel__kicker {
+  display: flex; align-items: center; gap: 7px; margin-bottom: 8px;
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--violet-600);
+}
+.gd-panel__kicker .icon { color: var(--rose-600); }
+.gd-panel__title { font-size: clamp(22px, 4.6vw, 28px); font-weight: 800; letter-spacing: -.025em; text-wrap: balance; }
+.gd-panel__title:focus { outline: none; }
+.gd-panel__lead { max-width: 640px; margin-top: 8px; font-size: 16px; line-height: 1.6; color: var(--text-soft); }
+
+.gd-label {
+  margin: 22px 0 10px;
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--text-mute);
+}
+
+.gd-note {
+  display: flex; align-items: flex-start; gap: 8px; margin-top: 18px;
+  font-size: 14px; line-height: 1.55; color: var(--text-soft);
+}
+.gd-note .icon { flex: none; margin-top: 2px; color: var(--violet-600); }
+.gd-note--tight { margin-top: 12px; }
+
+.gd-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 22px; }
+.gd-actions .btn .icon { color: var(--rose-600); }
+.gd-actions .btn, .gd-sms__side .btn { max-width: 100%; white-space: normal; text-align: center; line-height: 1.3; padding-block: 8px; }
+.gd-actions__hint { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--text-mute); }
+.gd-actions__hint .icon { color: var(--violet-600); }
+
+/* ──────────────── 04 · WHAT EACH STEP SHOWS ──────────────── */
+/* two cards side by side (does / does not · donating / receiving) */
+.gd-split { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 20px; }
+@media (min-width: 720px) { .gd-split { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.gd-card { padding: 18px 18px 16px; border-radius: var(--r-lg); border: 1px solid var(--line); }
+.gd-card--yes { background: var(--mint-50); border-color: var(--mint-100); }
+.gd-card--no { background: var(--surface-2); border-color: var(--line-strong); }
+.gd-card__title { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-family: var(--font-ui); font-size: 15px; font-weight: 800; }
+.gd-card--yes .gd-card__title { color: var(--mint-700); }
+.gd-card--no .gd-card__title { color: var(--ink-700); }
+
+.gd-list { display: grid; gap: 8px; }
+.gd-list li { display: flex; align-items: flex-start; gap: 9px; font-size: 14.5px; line-height: 1.5; color: var(--ink-800); }
+.gd-list .icon { flex: none; margin-top: 4px; }
+.gd-card--yes .gd-list .icon { color: var(--mint-500); }
+.gd-card--no .gd-list .icon { color: var(--ink-400); }
+.gd-list--plain .icon { color: var(--rose-600); }
+
+/* donating / receiving */
+.gd-path {
+  display: flex; flex-direction: column;
+  padding: 18px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(160deg, var(--surface) 0%, var(--rose-50) 100%);
+  border: 1px solid var(--rose-100);
+  --path-soft: var(--rose-100); --path-ink: var(--rose-700); --path-line: var(--rose-300);
+}
+.gd-path--violet {
+  background: linear-gradient(160deg, var(--surface) 0%, var(--violet-50) 100%);
+  border-color: var(--violet-100);
+  --path-soft: var(--violet-100); --path-ink: var(--violet-700); --path-line: var(--violet-200);
+}
+.gd-path__head { display: flex; align-items: center; gap: 12px; }
+.gd-path__icon {
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px;
+  background: var(--path-soft); color: var(--path-ink);
+}
+.gd-path__title { font-family: var(--font-ui); font-size: 17px; font-weight: 800; color: var(--ink-900); }
+.gd-path__who { font-size: 13.5px; color: var(--text-mute); }
+
+.gd-mini { display: grid; gap: 10px; margin: 16px 0 10px; }
+.gd-mini li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 10px; font-size: 14.5px; line-height: 1.45; color: var(--ink-800); }
+.gd-mini__num {
+  display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--surface); border: 1.5px solid var(--path-line);
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 800; color: var(--path-ink);
+}
+.gd-path__go {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px; margin: auto 0 -6px -10px; padding: 0 10px; border-radius: var(--r-pill);
+  font-family: var(--font-ui); font-size: 14.5px; font-weight: 700; color: var(--path-ink);
+  transition: background-color var(--t-fast) var(--ease);
+}
+.gd-path__go:hover { background: var(--surface); color: var(--path-ink); }
+.gd-path__go .icon { transition: transform var(--t-fast) var(--ease); }
+.gd-path__go:hover .icon { transform: translateX(3px); }
+
+/* inquire: what you can ask + three steps */
+.gd-topics { display: flex; flex-wrap: wrap; gap: 8px; }
+.gd-topics li {
+  display: inline-flex; align-items: center; gap: 7px;
+  min-height: 36px; padding: 0 13px; border-radius: var(--r-pill);
+  background: var(--rose-50); border: 1px solid var(--rose-100);
+  font-family: var(--font-ui); font-size: 13.5px; font-weight: 700; color: var(--ink-800);
+}
+.gd-topics .icon { color: var(--rose-600); }
+
+.gd-flow3 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; margin-top: 18px; }
+.gd-flow3 li {
+  position: relative; display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: var(--r-md);
+  background: var(--surface-2); border: 1px solid var(--line);
+  font-size: 14px; line-height: 1.4; color: var(--text-soft);
+}
+.gd-flow3 strong { display: block; font-family: var(--font-ui); font-size: 14.5px; font-weight: 800; color: var(--ink-900); }
+.gd-flow3__icon {
+  flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px;
+  background: linear-gradient(140deg, var(--rose-100), var(--violet-100)); color: var(--rose-700);
+}
+@media (min-width: 720px) {
+  .gd-flow3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  /* a small arrow from one step to the next */
+  .gd-flow3 li:not(:last-child)::after {
+    content: ""; position: absolute; top: 50%; right: -12px; z-index: 1;
+    width: 8px; height: 8px; margin-top: -4px;
+    border-top: 2px solid var(--rose-300); border-right: 2px solid var(--rose-300);
+    transform: rotate(45deg);
+  }
+}
+
+/* facility labels and what they mean */
+.gd-legend { display: grid; gap: 8px; }
+.gd-legend li {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; align-items: center; justify-items: start;
+  padding: 10px 12px; border-radius: var(--r-md);
+  background: var(--surface-2); border: 1px solid var(--line);
+  font-size: 14.5px; line-height: 1.45; color: var(--ink-700);
+}
+@media (min-width: 560px) { .gd-legend li { grid-template-columns: 190px minmax(0, 1fr); gap: 12px; } }
+
+/* the status steps of a request */
+.gd-track { display: grid; gap: 10px; }
+.gd-track li { position: relative; display: flex; align-items: center; gap: 12px; }
+.gd-track__text { font-size: 14px; line-height: 1.4; color: var(--text-soft); }
+@media (min-width: 820px) {
+  .gd-track { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; }
+  .gd-track li { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .gd-track li:not(:last-child)::after {
+    content: ""; position: absolute; top: 12px; right: -13px;
+    width: 8px; height: 8px;
+    border-top: 2px solid var(--rose-300); border-right: 2px solid var(--rose-300);
+    transform: rotate(45deg);
+  }
+}
+
+.gd-callout {
+  display: flex; align-items: center; gap: 12px; margin-top: 18px;
+  padding: 14px 16px; border-radius: var(--r-md);
+  background: var(--violet-50); border: 1px solid var(--violet-100);
+  font-size: 14.5px; line-height: 1.55; color: var(--ink-700);
+}
+.gd-callout__icon {
+  flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px;
+  background: var(--mint-50); color: var(--mint-700); border: 1px solid var(--mint-100);
+}
+
+/* SMS: two example texts beside what they are for */
+.gd-sms { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; margin-top: 20px; }
+@media (min-width: 720px) { .gd-sms { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; gap: 24px; } }
+.gd-phone {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 16px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, var(--violet-50) 0%, var(--rose-50) 100%);
+  border: 1px solid var(--violet-100);
+}
+.gd-phone__from { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-ui); font-size: 12.5px; font-weight: 800; color: var(--violet-700); }
+.gd-bubble {
+  align-self: flex-start; max-width: 94%;
+  padding: 10px 13px;
+  border-radius: 16px 16px 16px 4px;
+  background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-1);
+  font-size: 13.5px; line-height: 1.5; color: var(--ink-800);
+}
+.gd-sms__side { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.gd-sms__side .gd-label { margin: 0; }
+.gd-sms__side .btn .icon { color: var(--rose-600); }
+
+/* ──────────────── 05 · BACK / NEXT ──────────────── */
+.gd-nav {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: auto;
+  padding: 14px 20px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--line);
+}
+@media (min-width: 640px) { .gd-nav { padding: 16px 32px; } }
+.no-js .gd-nav { display: none; }
+.gd-nav__count { font-family: var(--font-ui); font-size: 13.5px; font-weight: 700; color: var(--text-mute); white-space: nowrap; }
+.gd-nav__back.is-first { visibility: hidden; }
+/* .btn sets display, so hidden needs saying: Next until the last step, then "Find a facility" */
+.gd-nav .btn[hidden] { display: none; }
+.gd-nav__back .icon { color: var(--rose-600); }
+.gd-nav__to { display: none; }
+@media (min-width: 640px) { .gd-nav__to { display: inline; } }
+@media (max-width: 479px) {
+  .gd-nav { gap: 10px; padding: 12px 16px; }
+  .gd-nav__count { display: none; }
+  .gd-nav__back { flex: none; width: 44px; padding: 0; }
+  .gd-nav__back .gd-nav__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .gd-nav__back.is-first { display: none; }
+  .gd-nav__next, .gd-nav__done { flex: 1 1 auto; min-width: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gd-panel.is-entering { animation: none; }
+  .gd-progress__fill { transition: none; }
+}
