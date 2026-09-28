@@ -166,7 +166,8 @@ function validate(payload, facility, municipalities) {
   const type = text(p.type).toLowerCase();
   if (!isType(type)) bad('type', 'Please choose what you would like to do: donate breast milk, request breast milk, or ask a question.');
 
-  /* Where */
+  /* Where. Any other facility takes all three forms: a health worker reviews it and gives
+     information or a referral, so what the facility itself offers doesn't block a form. */
   const facilityId = text(p.facilityId);
   if (!facilityId) {
     bad('facilityId', 'Please choose a health facility first.');
@@ -174,10 +175,6 @@ function validate(payload, facility, municipalities) {
     bad('facilityId', "We couldn't find that health facility. Please go back and choose it again from the list.");
   } else if (facility.infoOnly) {
     bad('facilityId', `${facility.name} is listed for information only, so it can't receive forms through MOWMMAS. Please choose another facility.`);
-  } else if (type === 'donate' && facility.services && facility.services.acceptsDonations === false) {
-    bad('facilityId', `${facility.name} does not accept breast milk donations. Please choose another facility, or send them a question instead.`);
-  } else if (type === 'request' && facility.services && facility.services.providesDonorMilk === false) {
-    bad('facilityId', `${facility.name} does not give out donor milk. Please choose another facility, or send them a question instead.`);
   }
 
   /* Who */
@@ -314,7 +311,7 @@ function summary(sub) {
     type: sub.type,
     typeLabel: isType(sub.type) ? TYPES[sub.type].label : sub.type,
     status: sub.status,
-    statusLabel: statusLabel(sub.status),
+    statusLabel: statusLabel(sub.status, sub.type),
     facilityId: sub.facilityId,
     facilityName: sub.facilityName,
     createdAt: sub.createdAt
@@ -406,7 +403,7 @@ function publicView(submission, notifications, facility) {
     type: s.type,
     typeLabel: isType(s.type) ? TYPES[s.type].label : s.type,
     status: s.status,
-    statusLabel: statusLabel(s.status),
+    statusLabel: statusLabel(s.status, s.type),
     isFinal: FINAL.includes(s.status),
     facility: {
       id: referral ? referral.facilityId : s.facilityId,
@@ -418,7 +415,7 @@ function publicView(submission, notifications, facility) {
     },
     statusHistory: history.map((h) => ({
       status: h.status,
-      statusLabel: statusLabel(h.status),
+      statusLabel: statusLabel(h.status, s.type),
       at: h.at,
       note: h.note || null
     })),

@@ -22,47 +22,34 @@
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   var desktop = window.matchMedia('(min-width: 1024px)');
 
-  /* URL key → what the chip checks. A chip only matches a confirmed value. */
+  /* URL key → what the chip checks. A chip only matches a confirmed value;
+     a milk bank counts only when MOWMMAS verified it. Old keys in the URL are ignored. */
   var CHIPS = {
-    bank:      { key: 'milkBank' },
+    bank:      { test: function (f) { return M.isVerifiedHmb(f); } },
     storage:   { key: 'milkStorage' },
     lactation: { key: 'lactationServices' },
-    donations: { key: 'acceptsDonations' },
-    donormilk: { key: 'providesDonorMilk' },
-    available: { availability: 'available' }
+    referral:  { key: 'milkReferral' }
   };
   var CHIP_ORDER = Object.keys(CHIPS);
 
+  /* Every facility is shown in every mode: a health worker reviews the form and refers */
   var CONTEXT = {
     donate: {
       tone: 'rose',
       lead: 'You want to donate breast milk',
-      first: 'Facilities that confirmed they accept donations are shown first.',
-      hidden: function (n) {
-        return n === 1 ? '1 facility that said it doesn\'t accept donations is hidden.'
-          : n + ' facilities that said they don\'t accept donations are hidden.';
-      },
-      matchLabel: 'Accepts donations', matchIcon: 'i-hand-heart'
+      first: 'Choose a facility to send your donation inquiry to. A health worker will review it and give you the next steps.'
     },
     request: {
       tone: 'violet',
       lead: 'You want to request breast milk',
-      first: 'Facilities that confirmed they provide donor milk are shown first.',
-      hidden: function (n) {
-        return n === 1 ? '1 facility that said it doesn\'t provide donor milk is hidden.'
-          : n + ' facilities that said they don\'t provide donor milk are hidden.';
-      },
-      matchLabel: 'Provides donor milk', matchIcon: 'i-bottle'
+      first: 'Choose a facility to send your request to. A health worker will review it and give you referral or next-step information.'
     },
     inquire: {
       tone: 'mint',
       lead: 'You want to ask a question',
-      first: 'You can ask any facility. Facilities that shared their services are shown first.',
-      hidden: null
+      first: 'You can ask any facility. Facilities that shared their services are shown first.'
     }
   };
-
-  var AVAIL_RANK = { available: 0, limited: 1, none: 2 };
 
   /* Antique plus its islands (Caluya lies west of the mainland) */
   var NEAR_ANTIQUE = { south: 10.25, north: 12.10, west: 121.35, east: 122.40 };
@@ -113,10 +100,6 @@
     if (MAP) return MAP.hasReported(f);
     var s = f && f.services;
     return Boolean(s && Object.keys(s).some(function (k) { return s[k] !== null; }));
-  }
-  function needsKey() {
-    var t = state.service && M.SERVICE_TYPES[state.service];
-    return t ? t.needs : null;
   }
   function facilityHref(f) {
     return 'facility.html?id=' + encodeURIComponent(f.id) +
@@ -203,8 +186,7 @@
     var s = f.services || {};
     for (var i = 0; i < state.chips.length; i++) {
       var chip = CHIPS[state.chips[i]];
-      if (chip.availability) { if (f.donorMilkAvailability !== chip.availability) return false; }
-      else if (s[chip.key] !== true) return false;
+      if (chip.test ? !chip.test(f) : s[chip.key] !== true) return false;
     }
     if (state.shared && !reported(f)) return false;
     if (state.q) {
@@ -219,13 +201,7 @@
 
   function compute() {
     var all = data.facilities;
-    var needs = needsKey();
-    var hidden = 0;
-    var base = [];
-    all.forEach(function (f) {
-      if (needs && f.services && f.services[needs] === false) { hidden++; return; }
-      if (passes(f)) base.push(f);
-    });
+    var base = all.filter(passes);
 
     var list = base;
     var origin = state.user;
@@ -250,32 +226,23 @@
       if (fallbackTown) return a.km - b.km;
       if (state.sort === 'near' && a.km != null && b.km != null) return (a.km - b.km) || byName(a, b);
       if (state.sort === 'name') return byName(a, b);
-      if (needs) {
-        var ma = a.f.services[needs] === true ? 0 : 1;
-        var mb = b.f.services[needs] === true ? 0 : 1;
-        if (ma !== mb) return ma - mb;
-      }
       var ra = reported(a.f) ? 0 : 1, rb = reported(b.f) ? 0 : 1;
       if (ra !== rb) return ra - rb;
-      var va = a.f.donorMilkAvailability in AVAIL_RANK ? AVAIL_RANK[a.f.donorMilkAvailability] : 3;
-      var vb = b.f.donorMilkAvailability in AVAIL_RANK ? AVAIL_RANK[b.f.donorMilkAvailability] : 3;
-      if (state.service === 'request' && va !== vb) return va - vb;
       return byName(a, b);
     });
     if (fallbackTown) out = out.slice(0, 5);
 
-    return { rows: out, hidden: hidden, fallbackTown: fallbackTown, total: all.length, pool: base.length };
+    return { rows: out, fallbackTown: fallbackTown, total: all.length, pool: base.length };
   }
 
   /* ───────────── rendering: banner, count, list ───────────── */
-  function renderBanner(hidden) {
+  function renderBanner() {
     var copy = state.service && CONTEXT[state.service];
     if (!copy) { els.banner.hidden = true; return; }
     var type = M.SERVICE_TYPES[state.service];
     els.banner.className = 'context-banner context-banner--' + copy.tone;
     els.bannerIcon.innerHTML = ui.icon(type.icon);
-    els.bannerText.innerHTML = '<strong>' + esc(copy.lead) + '.</strong> ' + esc(copy.first) +
-      (hidden && copy.hidden ? ' ' + esc(copy.hidden(hidden)) : '');
+    els.bannerText.innerHTML = '<strong>' + esc(copy.lead) + '.</strong> ' + esc(copy.first);
     els.showAll.setAttribute('href', queryString(false));
     els.banner.hidden = false;
   }
@@ -298,19 +265,9 @@
 
   function cardHtml(row, res) {
     var f = row.f;
-    var s = f.services || {};
     var name = esc(f.name);
     var isReported = reported(f);
-    var needs = needsKey();
-    var copy = state.service && CONTEXT[state.service];
     var dist = distanceText(row.km, res.fallbackTown);
-
-    var match = '';
-    if (needs && copy && copy.matchLabel) {
-      match = '<div class="fcard__match' + (copy.tone === 'violet' ? ' fcard__match--violet' : '') + '">' +
-        '<span class="fact__label">' + ui.icon(copy.matchIcon, 'icon--sm') + esc(copy.matchLabel) + '</span>' +
-        ui.yesNo(s[needs]) + '</div>';
-    }
 
     var statuses = M.facilityStatuses(f).map(function (st) {
       return '<div class="fact fact--wide fact--status"><span class="fact__label">' + ui.icon(st.icon, 'icon--sm') + esc(st.label) + '</span>' +
@@ -345,7 +302,6 @@
           '</p>' +
         '</div>' +
       '</div>' +
-      match +
       '<ul class="fcard__lines">' + lines + '</ul>' +
       (f.about ? '<p class="fcard__about"><strong>About:</strong> ' + esc(f.about) + '</p>' : '') +
       '<div class="fcard__facts">' + statuses + '</div>' +
@@ -571,7 +527,7 @@
     lastResult = res;
     rows = res.rows;
     if (state.selected && !rows.some(function (r) { return r.f.id === state.selected; })) state.selected = null;
-    renderBanner(res.hidden);
+    renderBanner();
     renderCount(res);
     renderList(res);
     drawMarkers(fit);
@@ -784,7 +740,7 @@
   state.user = loadLocation();
   if (state.user) setLocStatus('ok', 'Using the location you shared earlier.');
   syncControls();
-  renderBanner(0);
+  renderBanner();
   setView('list', false);
   load();
 })();

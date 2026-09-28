@@ -205,16 +205,19 @@ function rememberSms(record) {
 
 /* ───────────── templates ───────────── */
 
-// The SMS page's four templates, with the wording they start with
+/* The SMS page's four templates, with the wording they start with. MOWMMAS isn't a
+   milk bank: each one sends her to the facility, which confirms availability,
+   requirements and schedule. The keys are fixed (the server accepts only these:
+   User/Mother/Backend/src/app.js), and the first one is the Referral template. */
 export var SMS_TEMPLATES = [
   { key: "referral", name: "Referral details", event: "Referral sent", tone: "brand", type: "referral",
-    text: "Hi {name}, this is MOWMMAS. Please contact {facility} at {facility phone} to confirm requirements and schedule. - MOWMMAS" },
-  { key: "availability", name: "Availability update", event: "Availability update", tone: "info", type: "update",
-    text: "Update: The facility you inquired about has a new availability of donor milk. Please contact the facility for details." },
+    text: "Hi {name}, this is MOWMMAS. Please contact {facility} at {facility phone} to confirm availability, requirements and schedule." },
+  { key: "availability", name: "Review update", event: "Review update", tone: "info", type: "update",
+    text: "MOWMMAS Update: Your form was reviewed. Please contact {facility} to confirm availability, requirements and schedule." },
   { key: "visit_reminder", name: "Visit reminder", event: "Reminder", tone: "warning", type: "reminder",
-    text: "Reminder: Please contact {facility} before your visit. - MOWMMAS" },
+    text: "Reminder: Please contact {facility} before your visit to confirm requirements and schedule. - MOWMMAS" },
   { key: "followup_reminder", name: "Follow-up reminder", event: "Reminder", tone: "warning", type: "reminder",
-    text: "Reminder: Please contact the referred facility to confirm requirements and schedule. - MOWMMAS" }
+    text: "Reminder: Please contact the referred facility to confirm availability, requirements and schedule. - MOWMMAS" }
 ];
 
 var templatesRead = null;

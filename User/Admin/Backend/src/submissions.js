@@ -8,8 +8,8 @@
    changedByAdminSince(after) only the submissions an admin changed after `after`
                              (their adminUpdatedAt, set by Firestore's clock), oldest first
 
-   Each document also carries readable labels (typeLabel, statusLabel), so the
-   Firestore console and the admin pages don't have to look them up. */
+   Each document also carries readable labels (typeLabel, statusLabel, e.g. "New Request"),
+   so the Firestore console and the admin pages don't have to look them up. */
 const config = require('./config');
 const firestore = require('./firestore');
 const { FirebaseError } = require('./auth');
@@ -48,13 +48,13 @@ function toRecord(sub) {
     facilityId: text(sub.facilityId),
     facilityName: text(sub.facilityName),
     status,
-    statusLabel: statusLabel(status),
+    statusLabel: statusLabel(status, type),
     isFinal: FINAL.includes(status),
     statusHistory: (Array.isArray(sub.statusHistory) ? sub.statusHistory : [])
       .filter((h) => h && typeof h === 'object')
       .map((h) => ({
         status: text(h.status),
-        statusLabel: h.status ? statusLabel(h.status) : null,
+        statusLabel: h.status ? statusLabel(h.status, type) : null,
         at: when(h.at),
         by: text(h.by),
         note: text(h.note)

@@ -2,15 +2,17 @@
    MOWMMAS Admin · Milk requests
 
    Rows       submissions/* with type "request", newest first
-   Refer list facilities (facilities/*):
-                milk banks and donor milk providers, with the donor milk
-                they last reported
-                breastfeeding support
-                services not reported yet
+   Refer list public facilities (facilities/*), never one listed for
+              information only:
+                verified milk banks (HMB), with the donor milk they last reported
+                breastfeeding support documented
+                other facilities
               the facility the request was sent to (or referred to) pre-selected
-   Refer      saves the referral in Firestore (admin-refer.js); not offered once
-              a request is completed, closed or declined
-   View       everything the mother or family sent, and the status
+   Send referral
+              saves the referral in Firestore (admin-refer.js); an earlier
+              status moves on to Information Sent. Not offered once a
+              request is completed or closed
+   Review     everything the mother or family sent, and the status
               (admin-submission.js); ?ref=<reference> (the bell) opens it for
               that request
 
@@ -28,6 +30,7 @@ import {
   TYPES,
   submissionChip,
   isFinalStatus,
+  isVerifiedHmb,
   DONOR_MILK,
   donorMilk,
   facilityUpdatedAt,
@@ -74,20 +77,14 @@ function servicesOf(f) {
   return (f && f.services) || {};
 }
 
-// Milk banks and facilities that give donor milk
-function givesDonorMilk(f) {
-  var s = servicesOf(f);
-  return f.participating === true && (s.milkBank === true || s.providesDonorMilk === true);
+// A public facility that can get forms (not one listed for information only)
+function canRefer(f) {
+  return f.participating === true && f.infoOnly !== true;
 }
 
+// Documented breastfeeding support, and not a verified milk bank
 function givesSupport(f) {
-  return f.participating === true && servicesOf(f).lactationServices === true && !givesDonorMilk(f);
-}
-
-// Hasn't reported its services yet (every facility, until it shares them)
-function notReported(f) {
-  var s = servicesOf(f);
-  return s.milkBank == null && s.providesDonorMilk == null && s.lactationServices == null;
+  return servicesOf(f).lactationServices === true && !isVerifiedHmb(f);
 }
 
 function hasDonorMilkReport(f) {
@@ -145,9 +142,10 @@ function relationshipText(d) {
   return d.relationship && d.relationship !== "mother" ? (RELATIONSHIP[d.relationship] || "") : "";
 }
 
+// Donor milk is shown only for a verified milk bank
 function facilityNote(s, id) {
   var f = state.facilities[id || s.facilityId];
-  if (!f || !givesDonorMilk(f)) return "";
+  if (!f || !isVerifiedHmb(f)) return "";
   if (!hasDonorMilkReport(f)) return "Donor milk not reported yet";
   return "Last reported donor milk: " + lastReported(f);
 }
@@ -166,9 +164,9 @@ function smsFor(s) {
     return fillTemplateToFit(referralTemplate, { name: name, firstName: first, facility: facility, phone: f && (f.contactNumber || f.smsNumber) });
   }
   return fitSms([
-    (name ? "Hi " + name + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your request for donor milk. We'll text you the facility to contact. - MOWMMAS",
-    (first ? "Hi " + first + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your request for donor milk. We'll text you the facility to contact. - MOWMMAS",
-    "MOWMMAS: We received your request for donor milk. We'll text you the facility to contact."
+    (name ? "Hi " + name + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your request for donor milk. A health worker will review it and text you the next steps. - MOWMMAS",
+    (first ? "Hi " + first + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your request for donor milk. A health worker will review it and text you the next steps. - MOWMMAS",
+    "MOWMMAS: We received your request for donor milk. A health worker will review it and text you the next steps."
   ]);
 }
 
@@ -220,12 +218,12 @@ function rowHtml(s) {
   var referTo = state.referIds[wanted] ? wanted : "";
   var context = esc(name ? name + " · " + s.ref : s.ref);
   var actions =
-    '<button class="mw-link" type="button" data-modal-open="submission_modal" data-modal-context="' + context + '">View<span class="mw-visually-hidden"> request from ' + esc(label) + "</span></button>";
-  // A finished request (completed, closed or declined) can't be referred
+    '<button class="mw-link" type="button" data-modal-open="submission_modal" data-modal-context="' + context + '">Review<span class="mw-visually-hidden"> request from ' + esc(label) + "</span></button>";
+  // A finished request (completed or closed) can't be referred
   if (!isFinalStatus(s.status)) {
     actions +=
       '<button class="mw-link" type="button" data-modal-open="refer_modal" data-modal-context="' + context + '"' +
-      ' data-modal-field-refer_facility="' + esc(referTo) + '">Refer to facility<span class="mw-visually-hidden"> for ' + esc(label) + "</span></button>";
+      ' data-modal-field-refer_facility="' + esc(referTo) + '">Send referral<span class="mw-visually-hidden"> for ' + esc(label) + "</span></button>";
   }
   if (mobileKey(c.mobile)) {
     actions +=
@@ -287,40 +285,40 @@ function fillReferList(facilities) {
   state.facilities = {};
   facilities.forEach(function (f) { state.facilities[f.id] = f; });
 
-  var milk = facilities.filter(givesDonorMilk);
-  var support = facilities.filter(givesSupport);
-  var unknown = facilities.filter(function (f) { return !givesDonorMilk(f) && !givesSupport(f) && notReported(f); });
+  var listed = facilities.filter(canRefer);
+  var banks = listed.filter(isVerifiedHmb);
+  var support = listed.filter(givesSupport);
+  var others = listed.filter(function (f) { return !isVerifiedHmb(f) && !givesSupport(f); });
   state.referIds = {};
-  milk.concat(support, unknown).forEach(function (f) { state.referIds[f.id] = f; });
+  banks.concat(support, others).forEach(function (f) { state.referIds[f.id] = f; });
 
   var placeholder = page.referSelect.querySelector('option[value=""]');
   page.referSelect.innerHTML = "";
   page.referSelect.appendChild(placeholder);
   var where = function (f) { return f.name + (f.municipality ? " · " + f.municipality : ""); };
-  addGroup("Milk banks and donor milk providers", milk, function (f) {
+  addGroup("Verified milk banks (HMB)", banks, function (f) {
     return f.name + " (donor milk: " + donorMilkWord(f) + ")";
   });
-  addGroup("Breastfeeding support", support, where);
-  addGroup("Services not reported yet", unknown, where);
+  addGroup("Breastfeeding support documented", support, where);
+  addGroup("Other facilities", others, where);
 
-  REFER_HINT = milk.length || support.length
-    ? "Donor milk shows what each facility last reported. The facility confirms it with the mother."
-    : "No facility has reported its services yet. Call the facility to check before referring.";
-  if (!milk.length && !support.length && !unknown.length) REFER_HINT = "No facility can take referrals right now. Update a facility's services on the Facilities page.";
+  REFER_HINT = banks.length
+    ? "Verified milk banks are listed first. The facility confirms availability, requirements and schedule with the mother."
+    : "No verified milk bank is listed yet. Call the facility to check before referring.";
+  if (!listed.length) REFER_HINT = "No facility can take referrals right now. Make a facility public on the Facilities page.";
   page.referHint.textContent = REFER_HINT;
 }
 
-// What the chosen facility last reported, under the list
+// What MOWMMAS knows about the chosen facility, under the list
 function referHintFor(id) {
   var f = state.referIds[id];
   if (!f) return REFER_HINT;
-  if (notReported(f) && !givesDonorMilk(f)) return f.name + " hasn't reported its services yet. Call the facility to check before referring.";
-  if (givesDonorMilk(f)) {
-    if (!hasDonorMilkReport(f)) return f.name + " hasn't reported its donor milk yet. The facility confirms it with the mother.";
-    return f.name + " last reported donor milk as " + lastReported(f) + ". The facility confirms it with the mother.";
+  if (isVerifiedHmb(f)) {
+    if (!hasDonorMilkReport(f)) return f.name + " is a verified milk bank. It hasn't reported its donor milk yet. The facility confirms it with the mother.";
+    return f.name + " is a verified milk bank. It last reported donor milk as " + lastReported(f) + ". The facility confirms it with the mother.";
   }
-  return f.name + " gives breastfeeding support" +
-    (servicesOf(f).providesDonorMilk === false ? " and doesn't give donor milk." : ". It hasn't reported giving donor milk.");
+  if (givesSupport(f)) return f.name + " has documented breastfeeding support. It is not a verified milk bank.";
+  return f.name + "'s services are not verified yet. Call the facility to check before referring.";
 }
 
 // Every mother's number once. The one chosen stays chosen (new data can arrive while Send SMS is open).

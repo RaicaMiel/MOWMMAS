@@ -102,10 +102,10 @@
       } catch (e) { /* storage unavailable */ }
     },
 
-    /* What a saved submission is, in words she knows: "Donation offer", "Donor milk request", "Question" */
+    /* What a saved submission is, in words she knows: "Donation inquiry", "Donor milk request", "Question" */
     submissionTitle: function (s) {
       var type = s && (s.type || { D: 'donate', R: 'request', I: 'inquire' }[String(s.ref || '').charAt(4)]);
-      return { donate: 'Donation offer', request: 'Donor milk request', inquire: 'Question' }[type] || 'Submission';
+      return { donate: 'Donation inquiry', request: 'Donor milk request', inquire: 'Question' }[type] || 'Submission';
     },
 
     /* Reference numbers as mothers type them ("mow d 2026 7", "mow-d-2026-00007")
@@ -196,33 +196,36 @@
   };
 
   /* ───────────── labels ───────────── */
-  var SERVICES = [
-    { key: 'milkBank',          label: 'Milk bank',           icon: 'i-droplet' },
-    { key: 'milkStorage',       label: 'Milk storage',        icon: 'i-snowflake' },
-    { key: 'acceptsDonations',  label: 'Accepts donations',   icon: 'i-hand-heart' },
-    { key: 'providesDonorMilk', label: 'Provides donor milk', icon: 'i-bottle' },
-    { key: 'lactationServices', label: 'Lactation services',  icon: 'i-heart' }
-  ];
+  /* A Human Milk Bank MOWMMAS can show as one: the facility has a milk bank
+     and its details were verified */
+  function isVerifiedHmb(f) {
+    return Boolean(f && f.services && f.services.milkBank === true && f.dataStatus && f.dataStatus.verified);
+  }
 
   /* The three statuses shown for every facility, in this order, worded as MOWMMAS
-     lists them: tone 'yes' (documented), 'no' (not there / N/A) or 'unknown' (not verified) */
-  function facilityStatuses(f) {
+     lists them: tone 'yes' (documented), 'no' (not there / N/A) or 'unknown' (not verified).
+     Only a verified milk bank is called an HMB. options.withStorage (the facility page)
+     adds Milk Storage as a 4th row, after HMB Status. */
+  function facilityStatuses(f, options) {
     var s = (f && f.services) || {};
-    var verified = Boolean(f && f.dataStatus && f.dataStatus.verified);
     var tri = function (value) {
       if (value === true) return { text: 'Yes — documented', tone: 'yes' };
       if (value === false) return { text: 'No', tone: 'no' };
       return { text: 'Not Verified', tone: 'unknown' };
     };
-    var hmb = s.milkBank === true ? (verified ? { text: 'Verified HMB', tone: 'yes' } : { text: 'HMB, not verified', tone: 'unknown' })
+    var hmb = isVerifiedHmb(f) ? { text: 'Verified HMB', tone: 'yes' }
       : s.milkBank === false ? { text: 'No HMB', tone: 'no' }
       : { text: 'No Confirmed HMB', tone: 'unknown' };
-    return [
+    var list = [
       Object.assign({ key: 'lactation', label: 'Breastfeeding/Lactation Support', icon: 'i-heart' },
         f && f.infoOnly ? { text: 'N/A', tone: 'no' } : tri(s.lactationServices)),
-      Object.assign({ key: 'hmb', label: 'HMB Status', icon: 'i-droplet' }, hmb),
-      Object.assign({ key: 'referral', label: 'Human Milk-Related Information & Referral', icon: 'i-send' }, tri(s.milkReferral))
+      Object.assign({ key: 'hmb', label: 'HMB Status', icon: 'i-droplet' }, hmb)
     ];
+    if (options && options.withStorage) {
+      list.push(Object.assign({ key: 'storage', label: 'Milk Storage', icon: 'i-snowflake' }, tri(s.milkStorage)));
+    }
+    list.push(Object.assign({ key: 'referral', label: 'Human Milk-Related Information & Referral', icon: 'i-send' }, tri(s.milkReferral)));
+    return list;
   }
 
   var AVAILABILITY = {
@@ -232,25 +235,25 @@
     unknown:   { label: 'Availability not reported', tone: 'unknown',  icon: 'i-help' }
   };
 
+  /* The three forms. Any facility that takes forms can get any of them:
+     a health worker reviews each one and gives information or a referral. */
   var SERVICE_TYPES = {
-    donate:  { label: 'Donate Breast Milk',  short: 'Donation', icon: 'i-hand-heart', needs: 'acceptsDonations' },
-    request: { label: 'Request Breast Milk', short: 'Request',  icon: 'i-bottle',     needs: 'providesDonorMilk' },
-    inquire: { label: 'Inquire',             short: 'Inquiry',  icon: 'i-chat',       needs: null }
+    donate:  { label: 'Donate Breast Milk',  short: 'Donation', icon: 'i-hand-heart' },
+    request: { label: 'Request Breast Milk', short: 'Request',  icon: 'i-bottle' },
+    inquire: { label: 'Inquire',             short: 'Inquiry',  icon: 'i-chat' }
   };
 
   /* Submission statuses → pill colour + icon (the word is always shown too).
      Same status keys as User/Mother/Backend/src/statuses.js */
   var STATUS_STYLE = {
-    submitted:           { tone: 'new',    icon: 'i-send' },
-    under_review:        { tone: 'review', icon: 'i-clock' },
-    screening_scheduled: { tone: 'action', icon: 'i-calendar' },
-    accepted:            { tone: 'good',   icon: 'i-check-circle' },
-    approved:            { tone: 'good',   icon: 'i-check-circle' },
-    ready_for_pickup:    { tone: 'good',   icon: 'i-box' },
-    answered:            { tone: 'good',   icon: 'i-chat' },
-    completed:           { tone: 'good',   icon: 'i-check-circle' },
-    closed:              { tone: 'closed', icon: 'i-check' },
-    declined:            { tone: 'closed', icon: 'i-x-circle' }
+    submitted:        { tone: 'new',    icon: 'i-send' },
+    under_review:     { tone: 'review', icon: 'i-clock' },
+    referral_needed:  { tone: 'action', icon: 'i-navigation' },
+    next_steps:       { tone: 'action', icon: 'i-navigation' },
+    information_sent: { tone: 'good',   icon: 'i-message' },
+    answered:         { tone: 'good',   icon: 'i-chat' },
+    completed:        { tone: 'good',   icon: 'i-check-circle' },
+    closed:           { tone: 'closed', icon: 'i-check' }
   };
 
 
@@ -332,7 +335,7 @@
           '<span><strong>Please call to confirm before you go.</strong> Details can change, and anything marked Not Verified hasn\'t been confirmed with the facility yet.</span></p>';
       }
       return '<p class="data-note data-note--info">' + ui.icon('i-shield') +
-        '<span><strong>Confirmed by facility staff' + (ds.updatedAt ? ' ' + util.esc(util.timeAgo(ds.updatedAt)) : '') + '.</strong> Stock changes quickly, so please call before you travel.</span></p>';
+        '<span><strong>Confirmed by facility staff' + (ds.updatedAt ? ' ' + util.esc(util.timeAgo(ds.updatedAt)) : '') + '.</strong> Details can change, so please call before you travel.</span></p>';
     },
 
     toast: function (message, kind) {
@@ -357,8 +360,8 @@
     api: api,
     ui: ui,
     util: util,
-    SERVICES: SERVICES,
     facilityStatuses: facilityStatuses,
+    isVerifiedHmb: isVerifiedHmb,
     AVAILABILITY: AVAILABILITY,
     SERVICE_TYPES: SERVICE_TYPES,
     STATUS_STYLE: STATUS_STYLE,

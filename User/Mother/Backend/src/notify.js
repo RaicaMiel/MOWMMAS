@@ -5,10 +5,11 @@
    use(sms, limits)          the SMS sender (null: texting is off) and the caps
    received(sub)             right after she sends a form: her reference number
    updated(sub, deadline)    the admin moved her submission on: the new status,
-                             where she was referred, the admin's message. The
-                             admin pages ask for this right after saving
-                             (POST /api/admin/notify), and sweep() catches any
-                             update that wasn't asked for
+                             where she was referred (the facility to contact to
+                             confirm availability, requirements and schedule),
+                             the admin's message. The admin pages ask for this
+                             right after saving (POST /api/admin/notify), and
+                             sweep() catches any update that wasn't asked for
    sweep(deadline)           texts every admin update of the last day not texted yet
    copy(sub, record)         a copy of an SMS an admin sent her from the admin pages
    submission(ref)           her submission (Firestore), or null
@@ -54,20 +55,22 @@ function use(sender, options, helpers) {
   if (options) limits = Object.assign({}, limits, options);
 }
 
-const KIND = { donate: 'donation offer', request: 'donor milk request', inquire: 'question' };
+const KIND = { donate: 'donation inquiry', request: 'breast milk request', inquire: 'question' };
 
 // What each status means for her, in one short sentence (Track Submission has the longer one)
 const MEANING = {
-  under_review: 'A health worker is checking your details.',
-  screening_scheduled: 'The facility will tell you the date and time of your screening.',
-  accepted: 'The facility will tell you how to bring or send your milk.',
-  approved: 'The facility will tell you how to get the milk.',
-  ready_for_pickup: 'The donor milk is ready. Please go to the facility, and call first if you can.',
+  under_review: 'A health worker is reviewing your details.',
+  referral_needed: 'A health worker is finding the right facility for you.',
+  next_steps: 'A health worker has the next steps or a referral for your donation.',
+  information_sent: '',   // the contact line says it
   answered: 'A health worker answered your question.',
   completed: 'All done. Thank you for using MOWMMAS.',
-  closed: 'This question is closed. You can send a new one anytime.',
-  declined: 'The facility could not go ahead this time. Please call the facility to ask why.'
+  closed: 'This is closed. You can send a new form anytime.'
 };
+
+// Moving to one of these tells her whom to contact, even when the admin wrote a message
+const CONTACT_STATUSES = ['next_steps', 'information_sent'];
+const CONFIRM = ' to confirm current availability, requirements, and schedule.';
 
 function submission(ref) {
   return cloud.getSubmission(ref);
@@ -85,6 +88,26 @@ async function facilityPhone(id) {
 // The first wording that fits in one SMS (else the last, shortest one)
 function fit(options) {
   return options.find((text) => text.length <= SMS_ONE) || options[options.length - 1];
+}
+
+// The first wording that fits in that many SMS (else the last, shortest one)
+function fitParts(options, parts) {
+  return options.find((text) => sms.segments(text) <= parts) || options[options.length - 1];
+}
+
+// Only characters from the SMS alphabet: a facility name or number copied with an odd
+// character (a middle dot, a special hyphen) would otherwise make the text unicode (70 an SMS)
+function plain(text) {
+  return Array.from(sms.clean(text)).filter((c) => sms.isGsm(c)).join('').replace(/ {2,}/g, ' ').trim();
+}
+
+// "Please contact <facility> at <phone> to confirm …": the facility she was referred to, else
+// "the facility" (no referral saved yet: the admin's message names it)
+async function contactLine(sub) {
+  const r = sub.referral && sub.referral.facilityId && sub.referral.facilityName ? sub.referral : null;
+  if (!r) return 'Please contact the facility' + CONFIRM;
+  const phone = await facilityPhone(r.facilityId);
+  return plain('Please contact ' + r.facilityName + (phone ? ' at ' + phone : '') + CONFIRM);
 }
 
 // A referral line (Refer on the admin pages). Older lines have no kind: their wording tells.
@@ -189,8 +212,8 @@ async function received(sub) {
   if (!sms || !sub) return null;
   const kind = KIND[sub.type] || 'form';
   const message = fit([
-    'MOWMMAS: We received your ' + kind + ' for ' + sub.facilityName + '. Ref: ' + sub.ref + ". We'll text you when it's updated.",
-    'MOWMMAS: We received your ' + kind + '. Ref: ' + sub.ref + ". We'll text you when it's updated.",
+    'MOWMMAS: We received your ' + kind + ' for ' + sub.facilityName + '. Ref: ' + sub.ref + '. A health worker will review it and text you the next steps.',
+    'MOWMMAS: We received your ' + kind + '. Ref: ' + sub.ref + '. A health worker will review it and text you the next steps.',
     'MOWMMAS: We received your form. Ref: ' + sub.ref + '.'
   ]);
   return text(sub, 'received', 'received|' + sub.ref, { message, type: 'received', event: 'Form received', facility: sub.facilityName || null });
@@ -208,28 +231,39 @@ async function updateText(sub, entry, previous) {
     const facility = named || (r && r.facilityName) || 'a health facility';
     const facilityId = entry.facilityId || (r && r.facilityName === facility ? r.facilityId : null);
     const phone = facilityId ? await facilityPhone(facilityId) : null;
-    const message = fit([
-      'MOWMMAS: Your ' + kind + ' ' + sub.ref + ' was referred to ' + facility + '. Please contact them' + (phone ? ' at ' + phone : '') + ' to confirm the next steps.',
-      'MOWMMAS: Your ' + kind + ' ' + sub.ref + ' was referred to ' + facility + (phone ? '. Call ' + phone : '') + '.'
-    ]);
+    const at = phone ? ' at ' + plain(phone) : '';
+    const place = plain(facility);
+    // Up to 2 SMS, so the whole contact line always fits
+    const message = fitParts([
+      'MOWMMAS Update: Your ' + kind + ' ' + sub.ref + ' has been reviewed. Please contact ' + place + at + CONFIRM,
+      'MOWMMAS Update: Please contact ' + place + at + CONFIRM + ' Ref: ' + sub.ref
+    ], 2);
     return { message, type: 'referral', event: 'Referred to ' + facility, facility };
   }
-  const label = statusLabel(entry.status);
+  const label = statusLabel(entry.status, sub.type);
   const changed = !previous || previous.status !== entry.status;
   const head = changed
-    ? 'MOWMMAS: Your ' + kind + ' ' + sub.ref + ' is now ' + label + '.'
-    : 'MOWMMAS: A message about your ' + kind + ' ' + sub.ref + ':';
+    ? 'MOWMMAS Update: Your ' + kind + ' ' + sub.ref + ' is now ' + label + '.'
+    : 'MOWMMAS Update: A message about your ' + kind + ' ' + sub.ref + ':';
   let body = noteText || (changed ? MEANING[entry.status] || '' : '');
+  // Referral or next steps given: whom to contact, after the admin's message (cleaned too, for its length)
+  const contact = changed && CONTACT_STATUSES.includes(entry.status) ? await contactLine(sub) : '';
+  const whole = () => [head, body, contact].filter(Boolean).join(' ');
   // At most 3 SMS: 459 characters, or 201 when a character outside the SMS alphabet
-  // (e.g. an emoji) makes it a unicode text
-  if (sms.segments(head + ' ' + body) > 3) {
-    const max = sms.isGsm(head + ' ' + body) ? sms.MAX_LENGTH : 201;
+  // (e.g. an emoji) makes it a unicode text. Only the admin's message is shortened, so the
+  // head and the contact line are always sent whole: first such characters are left out of
+  // it, then it is cut from its end.
+  if (noteText && sms.segments(whole()) > 3 && !sms.isGsm(whole())) body = plain(body);
+  if (noteText && sms.segments(whole()) > 3) {
     const more = ' ... The full message is on MOWMMAS Track Submission.';
-    const room = max - head.length - 1 - more.length;
-    body = Array.from(body).slice(0, Math.max(0, room)).join('').trim() + more;
+    const kept = Array.from(body);
+    while (kept.length && sms.segments(whole()) > 3) {
+      kept.pop();
+      body = (kept.join('').trim() + more).trim();
+    }
   }
   return {
-    message: (head + ' ' + body).trim(),
+    message: whole(),
     type: 'status',
     event: changed ? 'Status: ' + label : 'Message',
     facility: (sub.referral && sub.referral.facilityName) || sub.facilityName || null

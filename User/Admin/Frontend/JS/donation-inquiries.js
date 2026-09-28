@@ -2,13 +2,15 @@
    MOWMMAS Admin · Donation inquiries
 
    Rows       submissions/* with type "donate", newest first
-   Refer list facilities (facilities/*): those that accept milk donations
-              first, then those that haven't reported their services yet;
-              the facility the mother chose (or referred to) pre-selected
-   Refer      saves the referral in Firestore (admin-refer.js); not offered once
-              a donation is completed, closed or declined
-   View       everything the mother sent, and the status (admin-submission.js);
-              ?ref=<reference> (the bell) opens it for that donation
+   Refer list public facilities (facilities/*), never one listed for
+              information only: verified milk banks (HMB) first, then the
+              others; the facility the mother chose (or referred to) pre-selected
+   Send referral
+              saves the referral in Firestore (admin-refer.js); an earlier
+              status moves on to Information Sent. Not offered once a
+              donation inquiry is completed or closed
+   Review     everything the mother sent, and the status (admin-submission.js);
+              ?ref=<reference> (the bell) opens it for that donation inquiry
 
    mowmmas.js opens the dialogs from the rows and fills in their fields.
    Send SMS   texts her through PhilSMS (admin-sms.js); the message starts from
@@ -23,6 +25,7 @@ import {
   cachedSubmissions,
   submissionChip,
   isFinalStatus,
+  isVerifiedHmb,
   formatDate,
   isoDay
 } from "./admin-data.js";
@@ -102,9 +105,9 @@ function smsFor(s) {
     return fillTemplateToFit(referralTemplate, { name: name, firstName: first, facility: facility, phone: f && (f.contactNumber || f.smsNumber) });
   }
   return fitSms([
-    (name ? "Hi " + name + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your milk donation inquiry. We'll text you the facility to contact. - MOWMMAS",
-    (first ? "Hi " + first + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your milk donation inquiry. We'll text you the facility to contact. - MOWMMAS",
-    "MOWMMAS: We received your milk donation inquiry. We'll text you the facility to contact."
+    (name ? "Hi " + name + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your milk donation inquiry. A health worker will review it and text you the next steps. - MOWMMAS",
+    (first ? "Hi " + first + ", this is MOWMMAS. " : "Hi, this is MOWMMAS. ") + "We received your milk donation inquiry. A health worker will review it and text you the next steps. - MOWMMAS",
+    "MOWMMAS: We received your milk donation inquiry. A health worker will review it and text you the next steps."
   ]);
 }
 
@@ -152,12 +155,12 @@ function rowHtml(s) {
   var referTo = state.referIds[wanted] ? wanted : "";
   var context = esc(name ? name + " · " + s.ref : s.ref);
   var actions =
-    '<button class="mw-link" type="button" data-modal-open="submission_modal" data-modal-context="' + context + '">View<span class="mw-visually-hidden"> inquiry from ' + esc(label) + "</span></button>";
-  // A finished donation (completed, closed or declined) can't be referred
+    '<button class="mw-link" type="button" data-modal-open="submission_modal" data-modal-context="' + context + '">Review<span class="mw-visually-hidden"> inquiry from ' + esc(label) + "</span></button>";
+  // A finished donation inquiry (completed or closed) can't be referred
   if (!isFinalStatus(s.status)) {
     actions +=
       '<button class="mw-link" type="button" data-modal-open="refer_modal" data-modal-context="' + context + '"' +
-      ' data-modal-field-refer_facility="' + esc(referTo) + '">Refer<span class="mw-visually-hidden"> ' + esc(label) + "</span></button>";
+      ' data-modal-field-refer_facility="' + esc(referTo) + '">Send referral<span class="mw-visually-hidden"> to ' + esc(label) + "</span></button>";
   }
   if (mobileKey(c.mobile)) {
     actions +=
@@ -201,13 +204,9 @@ function render() {
 
 /* ───────────── refer and send lists ───────────── */
 
-function acceptsDonations(f) {
-  return f.participating === true && !!f.services && f.services.acceptsDonations === true;
-}
-
-// Hasn't said either way yet (no facility has reported until it shares its services)
-function notReported(f) {
-  return !f.services || f.services.acceptsDonations == null;
+// A public facility that can get forms (not one listed for information only)
+function canRefer(f) {
+  return f.participating === true && f.infoOnly !== true;
 }
 
 function addGroup(label, list) {
@@ -224,19 +223,20 @@ function addGroup(label, list) {
 }
 
 function fillReferList(facilities) {
-  var accepts = facilities.filter(acceptsDonations);
-  var unknown = facilities.filter(function (f) { return !acceptsDonations(f) && notReported(f); });
+  var listed = facilities.filter(canRefer);
+  var banks = listed.filter(isVerifiedHmb);
+  var others = listed.filter(function (f) { return !isVerifiedHmb(f); });
   state.referIds = {};
-  accepts.concat(unknown).forEach(function (f) { state.referIds[f.id] = f; });
+  banks.concat(others).forEach(function (f) { state.referIds[f.id] = f; });
   var placeholder = page.referSelect.querySelector('option[value=""]');
   page.referSelect.innerHTML = "";
   page.referSelect.appendChild(placeholder);
-  addGroup("Accepts milk donations", accepts);
-  addGroup("Services not reported yet", unknown);
-  REFER_HINT = accepts.length
-    ? "Facilities that accept milk donations come first. Call the others to check before referring."
-    : "No facility has reported accepting milk donations yet. Call the facility to check before referring.";
-  if (!accepts.length && !unknown.length) REFER_HINT = "No facility can take donations right now. Update a facility's services on the Facilities page.";
+  addGroup("Verified milk banks (HMB)", banks);
+  addGroup("Other facilities", others);
+  REFER_HINT = banks.length
+    ? "Verified milk banks are listed first. The facility confirms availability, requirements and schedule with the mother."
+    : "No verified milk bank is listed yet. Call the facility to check before referring.";
+  if (!listed.length) REFER_HINT = "No facility can take referrals right now. Make a facility public on the Facilities page.";
   page.referHint.textContent = REFER_HINT;
 }
 

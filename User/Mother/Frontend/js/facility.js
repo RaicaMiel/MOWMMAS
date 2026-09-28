@@ -4,10 +4,11 @@
 
    Shows everything the mother needs before she calls, visits or sends
    a form: name, address, contact number, operating hours, about, the
-   three statuses (breastfeeding/lactation support, HMB status, human
-   milk-related information & referral), donor-milk availability when
-   reported, a small OpenStreetMap map, and the next step (none for a
-   facility listed for information only).
+   facility statuses (breastfeeding/lactation support, HMB status, milk
+   storage, human milk-related information & referral), donor-milk
+   availability (only a verified milk bank reports it; otherwise a link to
+   request donor milk), a small OpenStreetMap map, and the next step (none
+   for a facility listed for information only).
    Needs: api.js (window.MOWMMAS), Leaflet + map.js (optional — the
    page still works without the map).
    ══════════════════════════════════════════════════════════════════ */
@@ -130,25 +131,6 @@
     document.title = f.name + ' | MOWMMAS';
   }
 
-  /* What the facility says about the service the mother came for */
-  function contextHtml(f) {
-    if (!service || service === 'inquire') return '';
-    var t = M.SERVICE_TYPES[service];
-    var value = f.services ? f.services[t.needs] : null;
-    var what = service === 'donate' ? 'accepts donations' : 'gives donor milk';
-    if (value === true) {
-      return '<p class="fac-context fac-context--yes">' + ui.icon('i-check-circle', 'icon--sm') +
-        '<span>Good news: this facility ' + what + '.</span></p>';
-    }
-    if (value === false) {
-      return '<p class="fac-context fac-context--no">' + ui.icon('i-x-circle', 'icon--sm') +
-        '<span>This facility doesn\'t ' + (service === 'donate' ? 'accept donations' : 'give donor milk') + '. ' +
-        '<a href="hospitals.html?service=' + service + '">Find a facility that does</a></span></p>';
-    }
-    return '<p class="fac-context fac-context--unknown">' + ui.icon('i-help', 'icon--sm') +
-      '<span>Not confirmed if this facility ' + what + '. You can still ask.</span></p>';
-  }
-
   /* ───────────── panels ───────────── */
   function kv(label, valueHtml) {
     return '<div class="kv"><dt class="kv__k">' + esc(label) + '</dt><dd class="kv__v">' + valueHtml + '</dd></div>';
@@ -210,28 +192,40 @@
   }
 
   function servicesPanel(f) {
-    var facts = M.facilityStatuses(f).map(function (st) {
+    var facts = M.facilityStatuses(f, { withStorage: true }).map(function (st) {
       return '<li class="service-fact">' +
         '<span class="service-fact__name">' + ui.icon(st.icon) + esc(st.label) + '</span>' +
         ui.statusChip(st) +
       '</li>';
     }).join('');
 
-    // Donor milk only when the facility reported it (a milk bank's stock)
+    // Donor milk availability only for a verified milk bank ("Availability not reported"
+    // until it reports it); anywhere else the mother can send a request and a health
+    // worker refers her
     var stock = stockText(f.milkStock);
     var updated = f.dataStatus && f.dataStatus.updatedAt;
     var known = f.donorMilkAvailability === 'available' || f.donorMilkAvailability === 'limited' || f.donorMilkAvailability === 'none';
-    var avail = known || stock
-      ? '<div class="fac-avail">' +
+    var avail;
+    if (M.isVerifiedHmb(f)) {
+      avail = '<div class="fac-avail">' +
           '<p class="fac-avail__label">Donor milk availability</p>' +
           '<div class="fac-avail__row">' + ui.availability(f.donorMilkAvailability) +
             (stock ? '<span class="fac-avail__stock">' + ui.icon('i-box', 'icon--sm') + esc(stock) + '</span>' : '') +
           '</div>' +
           (known && updated
             ? '<p class="fac-avail__updated">' + ui.icon('i-clock', 'icon--xs') + 'Updated ' + esc(util.timeAgo(updated)) + '</p>'
-            : '<p class="fac-avail__updated">' + ui.icon('i-phone', 'icon--xs') + 'Call the facility to ask about donor milk today.</p>') +
-        '</div>'
-      : '';
+            : '') +
+          '<p class="fac-avail__updated">' + ui.icon('i-phone', 'icon--xs') + 'Call the facility to confirm before you go.</p>' +
+        '</div>';
+    } else {
+      var requestHref = f.infoOnly ? 'hospitals.html?service=request' : formHref('request');
+      avail = '<div class="fac-avail">' +
+          '<p class="fac-avail__label">Donor milk</p>' +
+          '<div class="fac-avail__row">' + ui.statusChip({ text: 'Not available locally', tone: 'no' }) + '</div>' +
+          '<p class="fac-avail__updated">' + ui.icon('i-send', 'icon--xs') +
+            '<span>Need donor milk? <a href="' + esc(requestHref) + '">Submit a request</a> to ask about referral options.</span></p>' +
+        '</div>';
+    }
 
     return '<section class="panel fac-panel fac-panel--grow" aria-labelledby="svcTitle">' +
       '<div class="panel__head"><span class="panel__icon">' + ui.icon('i-droplet') + '</span>' +
@@ -268,27 +262,24 @@
   }
 
   /* The two main actions, right at the end of the facility details:
-     Donate / Request go straight to the form; a service the facility
-     says it does not offer is shown, but can't be chosen. */
+     Donate / Request go straight to the form. A health worker reviews it
+     and gives next steps or a referral, so neither is ever blocked here. */
   function formHref(type) {
     return 'form.html?type=' + type + '&facility=' + encodeURIComponent(id);
   }
 
-  function choiceHtml(f, type) {
+  var CHOICE_SUB = {
+    donate: 'Submit a donation inquiry. A health worker will review your information and provide the appropriate next steps.',
+    request: 'Submit a request for donor milk. A health worker will review your request and provide referral or next-step information.'
+  };
+
+  function choiceHtml(type) {
     var t = M.SERVICE_TYPES[type];
-    var offered = f.services ? f.services[t.needs] : null;
     var suggested = service === type ? ' is-suggested' : '';
-    if (offered === false) {
-      return '<div class="fac-choice is-off" aria-disabled="true">' +
-        '<span class="fac-choice__icon">' + ui.icon(t.icon) + '</span>' +
-        '<span class="fac-choice__text"><span class="fac-choice__label">' + esc(t.label) + '</span>' +
-          '<span class="fac-choice__sub">Not offered here · <a href="hospitals.html?service=' + type + '">Find a facility that does</a></span></span>' +
-      '</div>';
-    }
     return '<a class="fac-choice' + suggested + '" href="' + esc(formHref(type)) + '">' +
       '<span class="fac-choice__icon">' + ui.icon(t.icon) + '</span>' +
       '<span class="fac-choice__text"><span class="fac-choice__label">' + esc(t.label) + '</span>' +
-        '<span class="fac-choice__sub">' + (offered === true ? 'Offered here · fill in a short form' : 'Not confirmed yet · the facility will tell you') + '</span></span>' +
+        '<span class="fac-choice__sub">' + esc(CHOICE_SUB[type]) + '</span></span>' +
       ui.icon('i-arrow-right', 'fac-choice__go') +
     '</a>';
   }
@@ -309,13 +300,13 @@
     return '<section class="fac-choose" id="nextStep" aria-labelledby="chooseTitle">' +
       '<div class="fac-choose__copy">' +
         '<h2 class="fac-choose__title" id="chooseTitle">What would you like to do here?</h2>' +
-        '<p class="fac-choose__text">Your form goes straight to the health workers of ' + esc(f.name) +
-          '. They provide the service; MOWMMAS is not a milk bank.</p>' +
-        contextHtml(f) +
+        '<p class="fac-choose__text">Your form goes to the health workers of the selected facility. ' +
+          'They will review your inquiry and provide the appropriate information or referral. ' +
+          '<strong>MOWMMAS is not a milk bank.</strong></p>' +
       '</div>' +
       '<div class="fac-choose__actions">' +
-        choiceHtml(f, 'donate') +
-        choiceHtml(f, 'request') +
+        choiceHtml('donate') +
+        choiceHtml('request') +
         '<a class="fac-choose__ask" href="' + esc(formHref('inquire')) + '">' + ui.icon('i-chat', 'icon--sm') +
           'Not sure yet? Ask About a Service</a>' +
       '</div>' +

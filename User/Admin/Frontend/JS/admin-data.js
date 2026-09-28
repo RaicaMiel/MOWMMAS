@@ -220,8 +220,15 @@ export function isOverdue(facility) {
   return days === null || days > STALE_AFTER_DAYS;
 }
 
-// Statuses after which nothing more happens (same as the mother backend's statuses.js)
-export var FINAL_STATUSES = ["completed", "closed", "declined"];
+/* A verified Human Milk Bank: the only kind of facility shown as a milk bank,
+   with the donor milk it last reported (same test as the mother site) */
+export function isVerifiedHmb(facility) {
+  var s = facility && facility.services;
+  return !!s && s.milkBank === true && !!facility.dataStatus && facility.dataStatus.verified === true;
+}
+
+// Statuses after which nothing more happens (same as the backends' statuses.js)
+export var FINAL_STATUSES = ["completed", "closed"];
 
 export function isFinalStatus(status) {
   return FINAL_STATUSES.indexOf(status) !== -1;
@@ -229,23 +236,37 @@ export function isFinalStatus(status) {
 
 /* ───────────── referrals (write) ───────────── */
 
-// The status names the mother sees (same as the mother backend's statuses.js)
+/* The status names the mother sees, and the admin pages too (same as the
+   backends' statuses.js). Only "submitted" depends on the type:
+   "New Donation Inquiry", "New Request" or "New Question" ("New" without one). */
 var MOTHER_STATUS_LABELS = {
-  submitted: "Submitted", under_review: "Under review", screening_scheduled: "Screening scheduled",
-  accepted: "Donation accepted", approved: "Approved", ready_for_pickup: "Ready for pick-up",
-  answered: "Answered", completed: "Completed", closed: "Closed", declined: "Declined"
+  submitted: "New",
+  under_review: "Under Review",
+  referral_needed: "Referral Needed",
+  next_steps: "Referral/Next Steps Provided",
+  information_sent: "Information Sent",
+  answered: "Answered",
+  completed: "Completed",
+  closed: "Closed"
 };
 
-export function motherStatusLabel(status) {
+var SUBMITTED_LABELS = { donate: "New Donation Inquiry", request: "New Request", inquire: "New Question" };
+
+// type: the submission's type ("donate" | "request" | "inquire")
+export function motherStatusLabel(status, type) {
+  if (status === "submitted" && SUBMITTED_LABELS[type]) return SUBMITTED_LABELS[type];
   return MOTHER_STATUS_LABELS[status] || status || "Unknown";
 }
 
 // The statuses each kind of submission moves through, in order (same as the backends' statuses.js)
 export var STATUS_FLOW = {
-  donate: ["submitted", "under_review", "screening_scheduled", "accepted", "completed", "declined"],
-  request: ["submitted", "under_review", "approved", "ready_for_pickup", "completed", "declined"],
+  donate: ["submitted", "under_review", "next_steps", "information_sent", "completed", "closed"],
+  request: ["submitted", "under_review", "referral_needed", "information_sent", "completed", "closed"],
   inquire: ["submitted", "answered", "closed"]
 };
+
+// Refer moves these on to "information_sent"; any other status is kept
+var BEFORE_REFERRAL = ["submitted", "under_review", "referral_needed", "next_steps"];
 
 function refused(code, detail, current) {
   var error = new Error(code);
@@ -273,12 +294,16 @@ function alreadySaved(raw, id) {
    submission as it is in Firestore right now and decides from that, never
    from the page's copy, so it can't undo a newer status.
      referral        { facilityId, facilityName, note, referredAt, referredBy }
-     status          "Submitted" moves to "Under review" (a later status is kept)
-     statusHistory   + "Referred to <facility>"; the mother sees this line, not the note
+     status          New, Under Review, Referral Needed or Referral/Next Steps
+                     Provided moves to "Information Sent" (information_sent);
+                     any other status is kept
+     statusHistory   + "Referred to <facility>"; the mother sees this line, not the
+                     note (the mother backend's notify.js and submissions.js match
+                     this exact wording, so keep it)
      adminUpdatedAt  when an admin last changed it (Firestore's clock); the mother
                      backend's sync reads only submissions with a newer one
    Refused, with error.code:
-     "final"          already completed, closed or declined (error.detail: the status)
+     "final"          already completed or closed (error.detail: the status)
      "same-facility"  already referred to that facility (error.detail: its name)
      "not-found"      no longer in Firestore
    Resolves with the submission as it is now (plain values), and updates the
@@ -297,8 +322,9 @@ export function referSubmission(ref, facility, note, adminEmail) {
       if (current.referral && current.referral.facilityId === facility.id) throw refused("same-facility", facility.name);
 
       var now = Timestamp.now();
-      var moveOn = current.status === "submitted";
-      var status = moveOn ? "under_review" : current.status;
+      var moveOn = BEFORE_REFERRAL.indexOf(current.status) !== -1;
+      var status = moveOn ? "information_sent" : current.status;
+      var label = motherStatusLabel(status, current.type);
       var referral = {
         facilityId: facility.id,
         facilityName: facility.name,
@@ -310,7 +336,7 @@ export function referSubmission(ref, facility, note, adminEmail) {
         id: id,
         kind: "referral",
         status: status,
-        statusLabel: MOTHER_STATUS_LABELS[status] || status,
+        statusLabel: label,
         at: now,
         by: "admin",
         note: "Referred to " + facility.name,
@@ -325,7 +351,7 @@ export function referSubmission(ref, facility, note, adminEmail) {
       };
       if (moveOn) {
         patch.status = status;
-        patch.statusLabel = MOTHER_STATUS_LABELS[status];
+        patch.statusLabel = label;
         patch.isFinal = false;
       }
       tx.update(target, patch);
@@ -334,7 +360,7 @@ export function referSubmission(ref, facility, note, adminEmail) {
       return Object.assign({}, current, {
         ref: current.ref || ref,
         status: status,
-        statusLabel: MOTHER_STATUS_LABELS[status] || current.statusLabel,
+        statusLabel: moveOn ? label : current.statusLabel,
         isFinal: moveOn ? false : current.isFinal,
         referral: plain(referral),
         statusHistory: (Array.isArray(current.statusHistory) ? current.statusHistory : []).concat([plain(entry)]),
@@ -392,7 +418,7 @@ export function updateSubmissionStatus(ref, change) {
         id: id,
         kind: "status",
         status: status,
-        statusLabel: motherStatusLabel(status),
+        statusLabel: motherStatusLabel(status, current.type),
         at: now,
         by: "admin",
         byEmail: change.adminEmail || null,
@@ -400,7 +426,7 @@ export function updateSubmissionStatus(ref, change) {
       };
       tx.update(target, {
         status: status,
-        statusLabel: motherStatusLabel(status),
+        statusLabel: motherStatusLabel(status, current.type),
         isFinal: isFinalStatus(status),
         statusHistory: (Array.isArray(raw.statusHistory) ? raw.statusHistory : []).concat([entry]),
         updatedAt: serverTimestamp(),
@@ -410,7 +436,7 @@ export function updateSubmissionStatus(ref, change) {
       var at = now.toDate().toISOString();
       return Object.assign({}, current, {
         status: status,
-        statusLabel: motherStatusLabel(status),
+        statusLabel: motherStatusLabel(status, current.type),
         isFinal: isFinalStatus(status),
         statusHistory: (Array.isArray(current.statusHistory) ? current.statusHistory : []).concat([plain(entry)]),
         updatedAt: at,
@@ -438,44 +464,32 @@ export var TYPES = {
 var STATUS_TONE = {
   submitted: "warning",
   under_review: "info",
-  screening_scheduled: "info",
-  accepted: "brand",
-  approved: "brand",
-  ready_for_pickup: "brand",
+  referral_needed: "brand",
+  next_steps: "brand",
+  information_sent: "success",
   answered: "success",
   completed: "success",
-  closed: "",
-  declined: "danger"
+  closed: ""
 };
 
-var STATUS_LABEL = {
-  submitted: "New",
-  under_review: "Under review",
-  screening_scheduled: "Screening scheduled",
-  accepted: "Donation accepted",
-  approved: "Approved",
-  ready_for_pickup: "Ready for pick-up",
-  answered: "Answered",
-  completed: "Completed",
-  closed: "Closed",
-  declined: "Declined"
-};
-
-export function statusLabel(status) {
-  return STATUS_LABEL[status] || status || "Unknown";
+/* The admin pages name a status as the mother sees it (MOTHER_STATUS_LABELS above).
+   type: the submission's type, for "New Donation Inquiry" / "New Request" / "New Question" */
+export function statusLabel(status, type) {
+  return motherStatusLabel(status, type);
 }
 
-export function statusChip(status) {
+export function statusChip(status, type) {
   var tone = STATUS_TONE[status];
-  return '<span class="mw-chip' + (tone ? " mw-chip--" + tone : "") + '">' + escText(statusLabel(status)) + "</span>";
+  return '<span class="mw-chip' + (tone ? " mw-chip--" + tone : "") + '">' + escText(statusLabel(status, type)) + "</span>";
 }
 
-/* A submission's chip: "Referred" while a referred one is under review, else its status */
+/* A submission's chip: its status, named for its type. One referred while
+   Refer still kept "Under Review" (before "Information Sent") shows "Referred". */
 export function submissionChip(submission) {
   if (submission && submission.referral && submission.status === "under_review") {
     return '<span class="mw-chip mw-chip--brand">Referred</span>';
   }
-  return statusChip(submission && submission.status);
+  return statusChip(submission && submission.status, submission && submission.type);
 }
 
 /* Human milk bank status of a facility */

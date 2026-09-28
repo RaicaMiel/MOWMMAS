@@ -8,11 +8,12 @@
      onSaved     (submission as it is now) → the page redraws it
      reveal      optional: ref → the page draws that row (e.g. turns to its table page)
 
-   View (a row's [data-modal-open="submission_modal"]) opens the dialog with
+   Review (a row's [data-modal-open="submission_modal"]) opens the dialog with
    everything the mother sent: her contact details, her answers, her
    question or notes, where she was referred, and the status history. Below
    that the admin sets the status and can leave her a message, which she
-   sees on Track Submission.
+   sees on Track Submission. No status is a medical decision: the admin
+   reviews it and gives her information, next steps or a referral.
 
    Saving: admin-data.js updateSubmissionStatus (a Firestore transaction).
    While it runs the dialog stays open. If Firebase is slow to answer, after
@@ -91,19 +92,19 @@ export var ANSWERS = {
   }
 };
 
-var TITLES = { donate: "Donation inquiry", request: "Milk request", inquire: "Question" };
+// The dialog's title, and what the saved message calls it
+var TITLES = { donate: "Review donation inquiry", request: "Review request", inquire: "Review question" };
+var NOUNS = { donate: "donation inquiry", request: "milk request", inquire: "question" };
 
 // What the mother reads on Track Submission for each status (User/Mother/Frontend/js/status.js)
 var MOTHER_SEES = {
-  under_review: "A health worker is checking your details.",
-  screening_scheduled: "Your health screening has a date. Watch for an SMS with the details.",
-  accepted: "Your donation was accepted. The facility will tell you how to bring or send your milk.",
-  approved: "Your request was approved. The facility will tell you how to get the milk.",
-  ready_for_pickup: "The donor milk is ready. Please go to the facility to collect it, and call first if you can.",
+  under_review: "A health worker is reviewing your details.",
+  referral_needed: "A health worker is finding the right facility for you. You will get the referral details by SMS.",
+  next_steps: "A health worker has worked out the next steps or a referral for your donation. You will get the details by SMS.",
+  information_sent: "The referral or next-step information was sent to you. Please contact the referred facility to confirm current availability, requirements, and schedule.",
   answered: "A health worker answered your question. See the messages below or your SMS.",
   completed: "All done. Thank you for using MOWMMAS.",
-  closed: "This question is closed. You can send a new question anytime.",
-  declined: "The facility could not go ahead this time. Check the messages below, or call the facility to ask why."
+  closed: "This is closed. You can send a new form anytime."
 };
 
 /* ───────────── what she sent, as rows ───────────── */
@@ -198,7 +199,7 @@ function historyHtml(s) {
   var list = Array.isArray(s.statusHistory) ? s.statusHistory.slice().reverse() : [];
   return list.map(function (h) {
     var by = h.by === "mother" ? "by the mother" : h.byEmail ? "by " + h.byEmail : h.by === "admin" ? "by an admin" : "";
-    return '<li class="mw-list__item"><p class="mw-list__title">' + esc(h.status === "submitted" ? "Sent" : motherStatusLabel(h.status)) + "</p>" +
+    return '<li class="mw-list__item"><p class="mw-list__title">' + esc(h.status === "submitted" ? "Sent" : motherStatusLabel(h.status, s.type)) + "</p>" +
       '<p class="mw-list__meta">' + esc([formatDateTime(h.at), by].filter(Boolean).join(" · ")) + "</p>" +
       (h.note ? '<p class="mw-list__meta">' + lines(h.status === "submitted" || h.by !== "admin" ? h.note : "Message: " + h.note) + "</p>" : "") +
       "</li>";
@@ -207,9 +208,10 @@ function historyHtml(s) {
 
 /* ───────────── the dialog ───────────── */
 
-function statusError(error) {
+// type: the submission's type, for the name of its status
+function statusError(error, type) {
   var code = (error && error.code) || "";
-  if (code === "changed") return "Someone else changed it to " + statusLabel(error.detail) + " since you opened it. Check it, then save again.";
+  if (code === "changed") return "Someone else changed it to " + statusLabel(error.detail, type) + " since you opened it. Check it, then save again.";
   if (code === "no-change") return "Choose a new status, or write a message for the mother.";
   if (code === "bad-status") return "Choose a status from the list.";
   if (code === "not-found") return "This submission is no longer in Firebase. Refresh the page.";
@@ -291,7 +293,7 @@ export function setUpSubmissionView(options) {
     flow.forEach(function (status) {
       var option = document.createElement("option");
       option.value = status;
-      option.textContent = statusLabel(status) + (status === s.status ? " (now)" : "");
+      option.textContent = statusLabel(status, s.type) + (status === s.status ? " (now)" : "");
       select.appendChild(option);
     });
     select.value = flow.indexOf(s.status) !== -1 ? s.status : flow[0] || "";
@@ -299,7 +301,7 @@ export function setUpSubmissionView(options) {
     button.disabled = !flow.length;
   }
 
-  // The View button of ref's row (the rows are redrawn after a save). A
+  // The Review button (or name) of ref's row (the rows are redrawn after a save). A
   // submission can be in more than one tab: the one on screen wins, else the first.
   function triggerFor(ref) {
     var buttons = Array.prototype.filter.call(document.querySelectorAll("[data-ref]"), function (el) {
@@ -391,7 +393,7 @@ export function setUpSubmissionView(options) {
         options.onSaved(updated);
         var done = status === s.status
           ? "Message saved for " + who + ". She sees it on Track Submission."
-          : who + "'s " + (TITLES[s.type] || "submission").toLowerCase() + " is now " + statusLabel(status) + ". Saved in Firebase.";
+          : who + "'s " + (NOUNS[s.type] || "submission") + " is now " + statusLabel(status, s.type) + ". Saved in Firebase.";
         if (ownDialog()) {
           hold.release();
           modal.returnFocusTo = triggerFor(updated.ref) || modal.returnFocusTo;
@@ -406,7 +408,7 @@ export function setUpSubmissionView(options) {
         clearTimeout(slowTimer);
         saving = false;
         if (error && error.current) options.onSaved(error.current);
-        var text = statusError(error);
+        var text = statusError(error, s.type);
         if (ownDialog()) {
           hold.release();
           setLoading(false);

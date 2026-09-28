@@ -3,11 +3,9 @@
    service.html?facility=<facility id>(&service=donate|request|inquire)
 
    Three big choices for the chosen facility — Donate Breast Milk,
-   Request Breast Milk, Inquire — each with an honest status line taken
-   from the facility's data (Yes / Not confirmed / No). A service the
-   facility says it does NOT offer is shown disabled with a link to
-   facilities that do. The choice the mother came with (?service=) is
-   highlighted and receives focus.
+   Request Breast Milk, Inquire. None is ever disabled: a health worker
+   reviews the form and gives next steps or a referral. The choice the
+   mother came with (?service=) is highlighted and receives focus.
    Needs: api.js (window.MOWMMAS).
    ══════════════════════════════════════════════════════════════════ */
 (function () {
@@ -23,25 +21,20 @@
     {
       type: 'donate', tone: 'rose', icon: 'i-hand-heart',
       title: 'Donate Breast Milk',
-      text: 'Have extra breast milk? Offer it to this facility. Its health workers will guide you through screening and drop-off.',
-      go: 'Start donation form',
-      yes: 'This facility accepts donations',
-      no: 'This facility doesn\'t accept donations'
+      text: 'Have breast milk to donate? Submit a donation inquiry to a participating health facility. A health worker will provide information about the appropriate donation process or referral.',
+      go: 'Start donation inquiry'
     },
     {
       type: 'request', tone: 'violet', icon: 'i-bottle',
       title: 'Request Breast Milk',
       text: 'Need donor milk for your baby? Send a request. A health worker will review it and tell you the next steps.',
-      go: 'Start request form',
-      yes: 'This facility gives donor milk',
-      no: 'This facility doesn\'t give donor milk'
+      go: 'Start request form'
     },
     {
       type: 'inquire', tone: 'mint', icon: 'i-chat',
       title: 'Inquire',
       text: 'Have a question? Ask about services, requirements, or whether donor milk is available right now.',
-      go: 'Ask a question',
-      yes: 'You can ask any facility'
+      go: 'Ask a question'
     }
   ];
 
@@ -114,7 +107,7 @@
     els.backLabel.textContent = 'Back to Hospitals Near Me';
     renderProblem(ui.emptyState(
       'We couldn\'t find that facility',
-      'Choose a health facility first. Then you can donate, request milk, or ask a question there.',
+      'Choose a health facility first. Then you can send a donation inquiry, a request, or a question.',
       '<a class="btn btn--primary btn--sm" href="hospitals.html' + serviceQuery + '">' +
         ui.icon('i-pin', 'icon--sm') + 'Find a facility</a>'
     ), 'We couldn\'t find that facility.');
@@ -166,52 +159,21 @@
   }
 
   /* ───────────── option cards ───────────── */
-  function statusFor(card, f) {
-    if (card.type === 'inquire') return true;
-    var key = M.SERVICE_TYPES[card.type].needs;
-    var value = f.services ? f.services[key] : null;
-    return value === true || value === false ? value : null;
-  }
-
-  function cardHtml(card, f) {
-    var state = statusFor(card, f);
-    var disabled = state === false;
+  function cardHtml(card) {
     var suggested = service === card.type;
-    var classes = 'service service--' + card.tone + ' svc-card' +
-      (disabled ? ' is-disabled' : '') + (suggested ? ' is-suggested' : '');
+    var classes = 'service service--' + card.tone + ' svc-card' + (suggested ? ' is-suggested' : '');
 
     var badge = suggested
-      ? '<span class="svc-card__badge">' + ui.icon(disabled ? 'i-info' : 'i-heart', 'icon--xs') +
-          (disabled ? 'You picked this' : 'Suggested for you') + '</span>'
+      ? '<span class="svc-card__badge">' + ui.icon('i-heart', 'icon--xs') + 'Suggested for you</span>'
       : '';
 
-    var status;
-    if (state === true) {
-      status = '<p class="svc-status svc-status--yes">' + ui.icon('i-check-circle', 'icon--sm') + '<span>' + esc(card.yes) + '</span></p>';
-    } else if (state === false) {
-      status = '<p class="svc-status svc-status--no">' + ui.icon('i-x-circle', 'icon--sm') + '<span>' + esc(card.no) + '</span></p>';
-    } else {
-      status = '<p class="svc-status svc-status--unknown">' + ui.icon('i-help', 'icon--sm') + '<span>Not confirmed yet. The facility will tell you.</span></p>';
-    }
-    // Requests also show today's reported donor-milk availability, when known
-    if (card.type === 'request' && state !== false && f.donorMilkAvailability) {
-      status += '<p class="svc-card__avail">' + ui.availability(f.donorMilkAvailability) + '</p>';
-    }
-
-    var action = disabled
-      ? '<a class="svc-card__alt" href="hospitals.html?service=' + card.type + '">Find a facility that does' +
-          ui.icon('i-arrow-right', 'icon--sm') + '</a>'
-      : '<a class="service__link svc-card__go" href="' + esc(formHref(card.type)) + '">' + esc(card.go) +
-          ui.icon('i-arrow-right', 'icon--sm') + '</a>';
-
-    return '<article class="' + classes + '" data-type="' + card.type + '"' +
-        (disabled ? ' aria-disabled="true"' : '') + ' aria-labelledby="card-' + card.type + '">' +
+    return '<article class="' + classes + '" data-type="' + card.type + '" aria-labelledby="card-' + card.type + '">' +
       badge +
       '<span class="service__icon">' + ui.icon(card.icon) + '</span>' +
       '<h2 class="service__title" id="card-' + card.type + '">' + esc(card.title) + '</h2>' +
       '<p class="service__text">' + esc(card.text) + '</p>' +
-      '<div class="svc-card__status">' + status + '</div>' +
-      action +
+      '<a class="service__link svc-card__go" href="' + esc(formHref(card.type)) + '">' + esc(card.go) +
+        ui.icon('i-arrow-right', 'icon--sm') + '</a>' +
     '</article>';
   }
 
@@ -227,7 +189,7 @@
           '<strong>You get updates</strong><span>Check anytime on <a href="status.html">Track Submission</a> with your reference number.</span></span></li>' +
       '</ol>' +
       '<p class="svc-foot">' + ui.icon('i-shield', 'icon--sm') +
-        '<span>MOWMMAS sends your form to the facility\'s health workers. The facility provides the actual service. <strong>MOWMMAS is not a milk bank.</strong></span></p>' +
+        '<span>MOWMMAS sends your form to a health worker, who gives you information or a referral. <strong>MOWMMAS is not a milk bank.</strong></span></p>' +
     '</section>';
   }
 
@@ -235,7 +197,7 @@
     if (!service) return;
     var card = els.body.querySelector('.svc-card.is-suggested');
     if (!card) return;
-    var target = card.querySelector('.svc-card__go, .svc-card__alt');
+    var target = card.querySelector('.svc-card__go');
     if (!target) return;
     try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); }
     var box = card.getBoundingClientRect();
@@ -257,7 +219,7 @@
       return;
     }
     els.body.innerHTML =
-      '<div class="svc-grid">' + CARDS.map(function (c) { return cardHtml(c, f); }).join('') + '</div>' +
+      '<div class="svc-grid">' + CARDS.map(cardHtml).join('') + '</div>' +
       nextHtml(f);
     els.body.setAttribute('aria-busy', 'false');
     announce('Services at ' + f.name + ' loaded. Choose Donate, Request, or Inquire.');

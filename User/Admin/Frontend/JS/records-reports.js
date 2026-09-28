@@ -3,7 +3,7 @@
 
    Everything on this page comes from Firestore:
      facilities/<id>     facility updates, the HMB chart
-     submissions/<ref>   inquiries (donation offers, milk requests, questions)
+     submissions/<ref>   inquiries (donation inquiries, milk requests, questions)
                          and referrals (submission.referral, saved by Refer)
    and from the MOWMMAS server: every SMS sent through PhilSMS (admin-sms.js getSmsLog)
 
@@ -106,9 +106,10 @@ function plural(n, one, many) {
   return n + " " + (n === 1 ? one : many);
 }
 
+// A status as text, named for the submission's type (e.g. "New Request")
 var chipText = document.createElement("span");
-function statusText(status) {
-  chipText.innerHTML = statusChip(status);
+function statusText(status, type) {
+  chipText.innerHTML = statusChip(status, type);
   return chipText.textContent;
 }
 
@@ -419,7 +420,7 @@ function dateCell(iso) {
 function viewButton(s) {
   var name = (s.contact && s.contact.name) || "";
   return '<button class="mw-link" type="button" data-modal-open="submission_modal" data-modal-context="' + esc(name ? name + " · " + s.ref : s.ref) + '">' +
-    esc(name || "Name not given") + '<span class="mw-visually-hidden"> (view)</span></button>';
+    esc(name || "Name not given") + '<span class="mw-visually-hidden"> (review)</span></button>';
 }
 
 function renderHistory(day) {
@@ -539,13 +540,13 @@ function buildCsv(day) {
   inquiries(day).forEach(function (s) {
     var contact = s.contact || {};
     var type = TYPES[s.type];
-    rows.push(["Inquiry", stamp(s.createdAt), contact.name || "", type ? capitalize(type.verb) : (s.typeLabel || ""), s.facilityName || "", statusText(s.status), s.ref || ""]);
+    rows.push(["Inquiry", stamp(s.createdAt), contact.name || "", type ? capitalize(type.verb) : (s.typeLabel || ""), s.facilityName || "", statusText(s.status, s.type), s.ref || ""]);
   });
 
   referrals(day).forEach(function (s) {
     var contact = s.contact || {};
     rows.push(["Referral", stamp(s.referral.referredAt), contact.name || "", s.referral.referredBy ? "Referred by " + s.referral.referredBy : "Referred",
-      s.referral.facilityName || "", statusText(s.status), s.ref || ""]);
+      s.referral.facilityName || "", statusText(s.status, s.type), s.ref || ""]);
   });
 
   // When only the newest SMS were loaded, the file says so in its SMS section (not counted as a record)

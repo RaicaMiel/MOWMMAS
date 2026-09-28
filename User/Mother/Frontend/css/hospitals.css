@@ -330,15 +330,6 @@
 .fcard__flag { display: none; background: var(--violet-600); color: #fff; border-color: var(--violet-600); }
 .fcard.is-selected .fcard__flag { display: inline-flex; }
 
-/* the service the mother came for, shown first */
-.fcard__match {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  margin-top: 14px; padding: 10px 12px;
-  border-radius: var(--r-md);
-  background: var(--rose-50); border: 1px solid var(--rose-200);
-}
-.fcard__match--violet { background: var(--violet-50); border-color: var(--violet-200); }
-
 /* service facts: rows on phones, a 2 × 2 grid when the card is wide */
 .fcard__facts {
   display: grid; gap: 1px;
@@ -347,7 +338,6 @@
   background: var(--line);
   overflow: hidden;
 }
-.fcard__match + .fcard__facts { margin-top: 8px; }
 .fact {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px;
   min-width: 0; padding: 8px 12px;
@@ -358,8 +348,8 @@
   font-family: var(--font-ui); font-size: 14px; font-weight: 700; color: var(--ink-700);
 }
 .fact__label .icon { color: var(--rose-600); }
-.fact .yn, .fact .avail, .fcard__match .yn { flex: none; }
-/* wide cards: three services side by side, donor milk as a full row */
+.fact .yn, .fact .avail { flex: none; }
+/* wide cards: three services side by side, a wide fact as a full row */
 @container fcard (min-width: 480px) {
   .fcard__facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .fact { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; gap: 6px; padding: 10px 11px 11px; }

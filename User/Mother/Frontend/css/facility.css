@@ -52,19 +52,6 @@
 .fac-head__note { max-width: 680px; margin-top: 16px; }
 .fac-head__note:empty { display: none; }
 
-/* "You came here to donate / request" context line */
-.fac-context {
-  display: flex; align-items: flex-start; gap: 8px;
-  margin-top: 12px; padding: 8px 12px; border-radius: var(--r-md);
-  font-size: 13.5px; line-height: 1.5; border: 1px solid transparent;
-}
-.fac-context .icon { margin-top: 1px; }
-.fac-context a { font-weight: 700; text-decoration: underline; }
-.fac-context--yes     { background: var(--mint-50);  border-color: var(--mint-100);  color: var(--mint-700); }
-.fac-context--no      { background: var(--surface-2); border-color: var(--line-strong); color: var(--ink-700); }
-.fac-context--unknown { background: var(--amber-50); border-color: var(--amber-100); color: var(--ink-700); }
-.fac-context--unknown .icon { color: var(--amber-600); }
-
 @media (min-width: 960px) {
   .fac-band { padding: 18px 0 30px; }
   .fac-band__grid { grid-template-columns: minmax(0, 1fr); }
@@ -126,7 +113,7 @@
 .fac-contact__btn { flex: 1 1 140px; }
 .fac-contact .fac-hint { margin-top: 10px; }
 
-/* Breast-milk services: the three statuses (long names wrap; the chip goes under when it doesn't fit) */
+/* Breast-milk services: the facility statuses (long names wrap; the chip goes under when it doesn't fit) */
 .fac-panel .service-fact { flex-wrap: wrap; }
 .fac-panel .service-fact__name { font-size: 15.5px; line-height: 1.4; }
 .fac-panel .service-fact__name .icon { flex: none; }
@@ -159,6 +146,9 @@
   display: flex; align-items: center; gap: 6px; margin-top: 10px;
   font-size: 13.5px; color: var(--text-mute);
 }
+/* "Need donor milk? Submit a request …" (facilities without verified donor milk) */
+.fac-avail__updated .icon { flex: none; }
+.fac-avail__updated a { font-weight: 700; text-decoration: underline; }
 
 /* Location */
 .fac-map { min-height: 320px; }
@@ -201,7 +191,7 @@
 .fac-choose__copy, .fac-choose__actions { position: relative; min-width: 0; }
 .fac-choose__title { color: var(--surface); font-size: clamp(21px, 4.6vw, 26px); font-weight: 800; letter-spacing: -.02em; }
 .fac-choose__text { max-width: 520px; margin-top: 6px; font-size: 15px; line-height: 1.6; color: rgba(255, 255, 255, .92); }
-.fac-choose .fac-context { max-width: 520px; margin-top: 14px; background: rgba(255, 255, 255, .95); }
+.fac-choose__text strong { color: var(--surface); font-weight: 700; }
 
 .fac-choose__actions { display: grid; gap: 10px; }
 .fac-choice {
@@ -224,11 +214,6 @@ a.fac-choice:active { transform: translateY(0) scale(.99); }
 .fac-choice__sub { font-size: 13.5px; line-height: 1.45; color: var(--text-mute); }
 .fac-choice__go { flex: none; color: var(--rose-600); transition: transform var(--t-fast) var(--ease); }
 a.fac-choice:hover .fac-choice__go { transform: translateX(3px); }
-/* a service this facility says it does not offer: visible, not clickable */
-.fac-choice.is-off { background: rgba(255, 255, 255, .78); box-shadow: none; }
-.fac-choice.is-off .fac-choice__icon { background: var(--surface-2); color: var(--ink-400); }
-.fac-choice.is-off .fac-choice__label { color: var(--ink-500); }
-.fac-choice.is-off a { color: var(--rose-700); font-weight: 700; text-decoration: underline; }
 
 .fac-choose__ask {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;

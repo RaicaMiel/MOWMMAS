@@ -19,21 +19,22 @@
 
   var TYPES = {
     donate: {
-      title: 'Your donation offer has been submitted.', eyebrow: 'Donation offer sent', noun: 'donation offer',
-      label: 'Donation offer', icon: 'i-hand-heart', example: 'Screening scheduled',
-      note: 'The facility does all screening, collection and sharing of breast milk. MOWMMAS only passes your details on and keeps you updated.'
+      title: 'Your donation inquiry has been submitted.', eyebrow: 'Donation inquiry sent', noun: 'donation inquiry',
+      label: 'Donation inquiry', icon: 'i-hand-heart', example: 'Information Sent', referred: true,
+      note: 'A health worker reviews your inquiry and gives you the next steps or a referral. Screening, collection and sharing of breast milk are done only by authorized facilities.'
     },
     request: {
       title: 'Your request has been submitted.', eyebrow: 'Request sent', noun: 'request',
-      label: 'Donor milk request', icon: 'i-bottle', example: 'Approved',
-      note: 'The facility decides on every request and gives out the milk. MOWMMAS only passes your details on and keeps you updated.'
+      label: 'Donor milk request', icon: 'i-bottle', example: 'Information Sent', referred: true,
+      note: 'A health worker reviews your request and gives you referral or next-step information. Donor milk is given out only by authorized facilities and Human Milk Banks.'
     },
     inquire: {
       title: 'Your question has been submitted.', eyebrow: 'Question sent', noun: 'question',
       label: 'Question', icon: 'i-chat', example: 'Answered',
-      note: 'The facility\'s health workers answer your question. MOWMMAS only passes it on and keeps you updated.'
+      note: 'A health worker answers your question. MOWMMAS only passes it on and keeps you updated.'
     }
   };
+  var LEDE = 'A health worker will review it and update you by SMS.'; // under the title, after "Thank you."
   var LETTER = { D: 'donate', R: 'request', I: 'inquire' };
 
   var ref = util.normalizeRef(util.param('ref'));
@@ -105,21 +106,23 @@
   });
 
   /* ───────────── what happens next ───────────── */
-  function renderSteps(facilityName, mobile) {
-    var who = facilityName ? 'The health workers of ' + esc(facilityName) : 'The facility\'s health workers';
+  // A health worker reviews it and gives information or a referral; a donation
+  // inquiry or request then ends with her contacting the referred facility
+  function renderSteps(mobile) {
     var sms = mobile
       ? 'You receive an SMS on <strong>' + esc(util.formatMobile(mobile)) + '</strong>.'
       : 'You receive an SMS on the mobile number you gave.';
+    var then = T.referred ? ' Then contact the referred facility to confirm availability, requirements and schedule.' : '';
     els.steps.innerHTML =
       '<li class="cf-step"><span class="cf-step__num" aria-hidden="true">1</span><div>' +
-        '<p class="cf-step__title">They review it</p>' +
-        '<p class="cf-step__text">' + who + ' look at your ' + esc(T.noun) + '.</p></div></li>' +
+        '<p class="cf-step__title">A health worker reviews it</p>' +
+        '<p class="cf-step__text">They look at your ' + esc(T.noun) + '.</p></div></li>' +
       '<li class="cf-step"><span class="cf-step__num" aria-hidden="true">2</span><div>' +
-        '<p class="cf-step__title">They update your status</p>' +
-        '<p class="cf-step__text">For example to “' + esc(T.example) + '”, with a short note.</p></div></li>' +
+        '<p class="cf-step__title">They send information or a referral</p>' +
+        '<p class="cf-step__text">For example your status changes to “' + esc(T.example) + '”, with a short note.</p></div></li>' +
       '<li class="cf-step"><span class="cf-step__num" aria-hidden="true">3</span><div>' +
         '<p class="cf-step__title">You get a message</p>' +
-        '<p class="cf-step__text">' + sms + ' You can also <a href="status.html?ref=' + encodeURIComponent(ref) + '">check here anytime</a>.</p></div></li>';
+        '<p class="cf-step__text">' + sms + then + ' You can also <a href="status.html?ref=' + encodeURIComponent(ref) + '">check here anytime</a>.</p></div></li>';
   }
 
   /* ───────────── status panel ───────────── */
@@ -171,8 +174,8 @@
     els.status.innerHTML = '<div class="skeleton cf-skel" aria-hidden="true"></div><p class="sr-only">Loading the status…</p>';
     api.status(ref, mine.mobile).then(function (view) {
       renderStatus(view);
-      renderSteps(view.facility && view.facility.name, mine.mobile);
-      if (view.contactName) els.lede.textContent = 'Thank you, ' + view.contactName + '. ' + ledeFor(view.facility && view.facility.name);
+      renderSteps(mine.mobile);
+      if (view.contactName) els.lede.textContent = 'Thank you, ' + view.contactName + '. ' + LEDE;
     }).catch(function (err) {
       if (err && err.status === 404) {
         renderPrompt('We couldn\'t load the status right now. You can still look it up on the tracking page with your mobile number.');
@@ -187,12 +190,6 @@
     if (e.target.closest('[data-retry]')) loadStatus();
   });
 
-  function ledeFor(facilityName) {
-    return facilityName
-      ? 'The health workers of ' + facilityName + ' will review it and update you by SMS.'
-      : 'The facility\'s health workers will review it and update you by SMS.';
-  }
-
   /* ───────────── start ───────────── */
   if (!ref || !T) {
     showMissing();
@@ -202,12 +199,12 @@
   document.title = T.eyebrow + ' | MOWMMAS';
   els.eyebrow.innerHTML = ui.icon(T.icon, 'icon--sm') + esc(T.eyebrow);
   els.title.textContent = T.title;
-  els.lede.textContent = mine ? 'Thank you. ' + ledeFor(mine.facilityName) : 'Keep your reference number so you can check the status anytime.';
+  els.lede.textContent = mine ? 'Thank you. ' + LEDE : 'Keep your reference number so you can check the status anytime.';
   els.refNum.textContent = ref;
   els.track.href = 'status.html?ref=' + encodeURIComponent(ref);
   els.note.querySelector('span').innerHTML = '<strong>MOWMMAS is not a milk bank.</strong> ' + esc(T.note);
 
-  renderSteps(mine && mine.facilityName, mine && mine.mobile);
+  renderSteps(mine && mine.mobile);
 
   if (mine && mine.mobile) loadStatus();
   else renderPrompt();

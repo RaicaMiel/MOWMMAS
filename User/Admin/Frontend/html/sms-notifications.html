@@ -191,19 +191,19 @@
                         <span class="mw-table__sub">Default wording</span>
                       </td>
                       <td><span class="mw-chip mw-chip--brand">Referral sent</span></td>
-                      <td>Hi {name}, this is MOWMMAS. Please contact {facility} at {facility phone} to confirm requirements and schedule. - MOWMMAS</td>
-                      <td class="mw-table__nowrap">121 / 160</td>
-                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Referral details" data-modal-value="Hi {name}, this is MOWMMAS. Please contact {facility} at {facility phone} to confirm requirements and schedule. - MOWMMAS" hidden>Edit<span class="mw-visually-hidden"> Referral details</span></button></td>
+                      <td>Hi {name}, this is MOWMMAS. Please contact {facility} at {facility phone} to confirm availability, requirements and schedule.</td>
+                      <td class="mw-table__nowrap">125 / 160</td>
+                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Referral details" data-modal-value="Hi {name}, this is MOWMMAS. Please contact {facility} at {facility phone} to confirm availability, requirements and schedule." hidden>Edit<span class="mw-visually-hidden"> Referral details</span></button></td>
                     </tr>
                     <tr>
                       <td>
-                        <span class="mw-table__name">Availability update</span>
+                        <span class="mw-table__name">Review update</span>
                         <span class="mw-table__sub">Default wording</span>
                       </td>
-                      <td><span class="mw-chip mw-chip--info">Availability update</span></td>
-                      <td>Update: The facility you inquired about has a new availability of donor milk. Please contact the facility for details.</td>
-                      <td class="mw-table__nowrap">118 / 160</td>
-                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Availability update" data-modal-value="Update: The facility you inquired about has a new availability of donor milk. Please contact the facility for details." hidden>Edit<span class="mw-visually-hidden"> Availability update</span></button></td>
+                      <td><span class="mw-chip mw-chip--info">Review update</span></td>
+                      <td>MOWMMAS Update: Your form was reviewed. Please contact {facility} to confirm availability, requirements and schedule.</td>
+                      <td class="mw-table__nowrap">117 / 160</td>
+                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Review update" data-modal-value="MOWMMAS Update: Your form was reviewed. Please contact {facility} to confirm availability, requirements and schedule." hidden>Edit<span class="mw-visually-hidden"> Review update</span></button></td>
                     </tr>
                     <tr>
                       <td>
@@ -211,9 +211,9 @@
                         <span class="mw-table__sub">Default wording</span>
                       </td>
                       <td><span class="mw-chip mw-chip--warning">Reminder</span></td>
-                      <td>Reminder: Please contact {facility} before your visit. - MOWMMAS</td>
-                      <td class="mw-table__nowrap">64 / 160</td>
-                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Visit reminder" data-modal-value="Reminder: Please contact {facility} before your visit. - MOWMMAS" hidden>Edit<span class="mw-visually-hidden"> Visit reminder</span></button></td>
+                      <td>Reminder: Please contact {facility} before your visit to confirm requirements and schedule. - MOWMMAS</td>
+                      <td class="mw-table__nowrap">101 / 160</td>
+                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Visit reminder" data-modal-value="Reminder: Please contact {facility} before your visit to confirm requirements and schedule. - MOWMMAS" hidden>Edit<span class="mw-visually-hidden"> Visit reminder</span></button></td>
                     </tr>
                     <tr>
                       <td>
@@ -221,9 +221,9 @@
                         <span class="mw-table__sub">Default wording</span>
                       </td>
                       <td><span class="mw-chip mw-chip--warning">Reminder</span></td>
-                      <td>Reminder: Please contact the referred facility to confirm requirements and schedule. - MOWMMAS</td>
-                      <td class="mw-table__nowrap">94 / 160</td>
-                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Follow-up reminder" data-modal-value="Reminder: Please contact the referred facility to confirm requirements and schedule. - MOWMMAS" hidden>Edit<span class="mw-visually-hidden"> Follow-up reminder</span></button></td>
+                      <td>Reminder: Please contact the referred facility to confirm availability, requirements and schedule. - MOWMMAS</td>
+                      <td class="mw-table__nowrap">108 / 160</td>
+                      <td class="mw-table__js"><button class="mw-link" type="button" data-modal-open="template_modal" data-modal-context="Follow-up reminder" data-modal-value="Reminder: Please contact the referred facility to confirm availability, requirements and schedule. - MOWMMAS" hidden>Edit<span class="mw-visually-hidden"> Follow-up reminder</span></button></td>
                     </tr>
                   </tbody>
                 </table>
@@ -258,7 +258,7 @@
               </div>
               <div class="mw-empty" hidden>
                 <p class="mw-empty__title">No registered contacts yet</p>
-                <p class="mw-empty__text">Mothers show up here after they send a donation offer, milk request or question through MOWMMAS.</p>
+                <p class="mw-empty__text">Mothers show up here after they send a donation inquiry, milk request or question through MOWMMAS.</p>
                 <a class="mw-btn mw-btn--secondary mw-btn--sm" href="donation-inquiries.html">Go to donation inquiries</a>
               </div>
             </section>
@@ -321,12 +321,12 @@
         </div>
         <div class="mw-field">
           <label class="mw-field__label" for="send_message">Message</label>
-          <textarea class="mw-input" id="send_message" name="send_message" rows="5" maxlength="160" aria-describedby="send_message_count">Update: The facility you inquired about has a new availability of donor milk. Please contact the facility for details.</textarea>
-          <p class="mw-field__count" id="send_message_count" data-count-for="send_message">118 / 160</p>
+          <textarea class="mw-input" id="send_message" name="send_message" rows="5" maxlength="160" aria-describedby="send_message_count">MOWMMAS Update: Your form was reviewed. Please contact the facility to confirm availability, requirements and schedule.</textarea>
+          <p class="mw-field__count" id="send_message_count" data-count-for="send_message">119 / 160</p>
         </div>
         <div class="mw-preview">
           <p class="mw-preview__title">SMS preview</p>
-          <p class="mw-preview__text" data-preview-for="send_message">Update: The facility you inquired about has a new availability of donor milk. Please contact the facility for details.</p>
+          <p class="mw-preview__text" data-preview-for="send_message">MOWMMAS Update: Your form was reviewed. Please contact the facility to confirm availability, requirements and schedule.</p>
         </div>
       </div>
       <div class="mw-modal__footer">

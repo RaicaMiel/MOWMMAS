@@ -23,7 +23,9 @@
 
    A profile value always wins over OSM. Anything neither source knows is
    returned as null, and the website shows it as "Not reported yet" — it is
-   never guessed. */
+   never guessed. Donor milk availability and stock are given only for a verified
+   milk bank (HMB): MOWMMAS is not a milk bank, and any other facility's figures
+   would read like an offer. */
 const osm = require('./osm');
 const store = require('./store');
 const firestore = require('../../../Admin/Backend/src/firestore');
@@ -34,6 +36,9 @@ const SERVICE_KEYS = ['milkBank', 'milkStorage', 'acceptsDonations', 'providesDo
 const AVAILABILITY = ['available', 'limited', 'none'];
 
 const triState = (v) => (v === true || v === false ? v : null);
+
+// A verified milk bank (HMB) in the public directory: the only kind whose donor milk is shown
+const verifiedHmb = (shown, services, verified) => shown && services.milkBank === true && verified;
 
 /* Only real photos of the facility itself, each with its credit. A local file
    (data/photos/NAME.jpg) is served by the API at photos/NAME.jpg; the website
@@ -61,6 +66,8 @@ function merge(base, profile, photo) {
   const lon = base.lon;
   const services = {};
   for (const key of SERVICE_KEYS) services[key] = triState(p[key]);
+  const participating = Boolean(profile && p.participating !== false);
+  const hmb = verifiedHmb(participating, services, Boolean(p.verified));
 
   return {
     id: base.id,
@@ -80,10 +87,10 @@ function merge(base, profile, photo) {
     operator: base.operator || null,
     about: p.about || null,
     infoOnly: Boolean(p.infoOnly),
-    participating: Boolean(profile && p.participating !== false),
+    participating,
     services,
-    donorMilkAvailability: AVAILABILITY.includes(p.donorMilkAvailability) ? p.donorMilkAvailability : null,
-    milkStock: p.milkStock && Number.isFinite(p.milkStock.bottles)
+    donorMilkAvailability: hmb && AVAILABILITY.includes(p.donorMilkAvailability) ? p.donorMilkAvailability : null,
+    milkStock: hmb && p.milkStock && Number.isFinite(p.milkStock.bottles)
       ? { bottles: p.milkStock.bottles, volumeMl: Number(p.milkStock.volumeMl) || 0 }
       : null,
     requirements: Array.isArray(p.requirements) ? p.requirements : [],
@@ -114,6 +121,8 @@ function fromFirestore(base, doc, photo) {
   const s = doc.services && typeof doc.services === 'object' ? doc.services : {};
   const services = {};
   for (const key of SERVICE_KEYS) services[key] = shared ? triState(s[key]) : null;
+  const verified = shared && Boolean(doc.dataStatus && doc.dataStatus.verified);
+  const hmb = verifiedHmb(shared, services, verified);
   const stock = doc.milkStock;
   return {
     id: doc.id || b.id,
@@ -137,15 +146,15 @@ function fromFirestore(base, doc, photo) {
     infoOnly: doc.infoOnly === true,
     participating: shared,
     services,
-    donorMilkAvailability: shared && AVAILABILITY.includes(doc.donorMilkAvailability) ? doc.donorMilkAvailability : null,
-    milkStock: shared && stock && Number.isFinite(stock.bottles) ? { bottles: stock.bottles, volumeMl: Number(stock.volumeMl) || 0 } : null,
+    donorMilkAvailability: hmb && AVAILABILITY.includes(doc.donorMilkAvailability) ? doc.donorMilkAvailability : null,
+    milkStock: hmb && stock && Number.isFinite(stock.bottles) ? { bottles: stock.bottles, volumeMl: Number(stock.volumeMl) || 0 } : null,
     requirements: shared && Array.isArray(doc.requirements) ? doc.requirements.filter((r) => typeof r === 'string') : [],
     notes: shared ? value('notes') : null,
     photo: photoOf(photo),
     dataStatus: {
       hasProfile: shared,
       sample: false,
-      verified: shared && Boolean(doc.dataStatus && doc.dataStatus.verified),
+      verified,
       updatedAt: (doc.dataStatus && doc.dataStatus.updatedAt) || null,
       updatedBy: null   // the admin's email stays private
     },

@@ -19,28 +19,27 @@
   function $(id) { return document.getElementById(id); }
 
   var TYPE_INFO = {
-    donate:  { label: 'Donation offer',     icon: 'i-hand-heart' },
+    donate:  { label: 'Donation inquiry',   icon: 'i-hand-heart' },
     request: { label: 'Donor milk request', icon: 'i-bottle' },
     inquire: { label: 'Question',           icon: 'i-chat' }
   };
   var LETTER = { D: 'donate', R: 'request', I: 'inquire' };
 
-  /* What each status means for the mother, in plain words */
+  /* What each status means for the mother, in plain words
+     (the admin hint "She'll see: …" in admin-submission.js uses the same words) */
   var MEANING = {
     submitted: {
-      donate: 'Your offer reached the facility. A health worker will review it soon.',
-      request: 'Your request reached the facility. A health worker will review it soon.',
-      inquire: 'Your question reached the facility. A health worker will reply soon.'
+      donate: 'Your donation inquiry was sent. A health worker will review it and give you the next steps.',
+      request: 'Your request was sent. A health worker will review it and give you referral or next-step information.',
+      inquire: 'Your question was sent. A health worker will reply soon.'
     },
-    under_review: 'A health worker is checking your details.',
-    screening_scheduled: 'Your health screening has a date. Watch for an SMS with the details.',
-    accepted: 'Your donation was accepted. The facility will tell you how to bring or send your milk.',
-    approved: 'Your request was approved. The facility will tell you how to get the milk.',
-    ready_for_pickup: 'The donor milk is ready. Please go to the facility to collect it, and call first if you can.',
+    under_review: 'A health worker is reviewing your details.',
+    referral_needed: 'A health worker is finding the right facility for you. You will get the referral details by SMS.',
+    next_steps: 'A health worker has worked out the next steps or a referral for your donation. You will get the details by SMS.',
+    information_sent: 'The referral or next-step information was sent to you. Please contact the referred facility to confirm current availability, requirements, and schedule.',
     answered: 'A health worker answered your question. See the messages below or your SMS.',
     completed: 'All done. Thank you for using MOWMMAS.',
-    closed: 'This question is closed. You can send a new question anytime.',
-    declined: 'The facility could not go ahead this time. Check the messages below, or call the facility to ask why.'
+    closed: 'This is closed. You can send a new form anytime.'
   };
 
   var els = {

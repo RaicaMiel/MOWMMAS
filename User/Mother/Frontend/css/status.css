@@ -323,7 +323,7 @@
 
 /* One row per type. Each row is a connected path of statuses:
    dot ── dot ── dot (left to right on wide screens, top to bottom on phones),
-   with "Declined" on its own line at the end because it is not a normal step. */
+   with "Closed" on its own line at the end because it is not a normal step. */
 .trk-guide__list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
 
 .guide-row {
@@ -344,7 +344,7 @@
 
 /* the path — phones: a vertical line on the left */
 .guide-path { display: grid; gap: 14px; }
-.guide-path__step { position: relative; display: grid; gap: 6px; justify-items: start; padding-left: 24px; }
+.guide-path__step { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; justify-items: start; padding-left: 24px; }
 .guide-path__step::before {
   content: ""; position: absolute; left: 0; top: 9px;
   width: 12px; height: 12px; border-radius: 50%;
@@ -365,7 +365,7 @@
   .guide-path__step:not(:last-child)::after { left: 18px; right: -12px; top: 5px; bottom: auto; width: auto; height: 2px; }
 }
 
-/* "Or: Declined …" and the quick-help line close each row */
+/* "Or: Closed …" and the quick-help line close each row */
 .guide-row__alt {
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
   margin-top: 16px; padding-top: 14px;

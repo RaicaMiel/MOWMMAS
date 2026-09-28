@@ -281,12 +281,14 @@
    Built by MOWMMAS.ui.statusPill(status, label, 'lg'?) — icon + word, never colour alone.
    Used on confirm.html and status.html. */
 .status-pill {
-  display: inline-flex; align-items: center; gap: 7px;
+  display: inline-flex; align-items: center; gap: 7px; max-width: 100%;
   padding: 5px 13px 5px 9px; border-radius: var(--r-pill);
   font-family: var(--font-ui); font-size: 13.5px; font-weight: 800; line-height: 1.3; white-space: nowrap;
   border: 1px solid transparent;
 }
 .status-pill .icon { width: 16px; height: 16px; stroke-width: 2.2; }
+/* a long name ("Referral/Next Steps Provided") wraps inside the pill instead of spilling out */
+.status-pill > span { min-width: 0; white-space: normal; }
 .status-pill--lg { gap: 9px; padding: 8px 18px 8px 12px; font-size: 16.5px; }
 .status-pill--lg .icon { width: 20px; height: 20px; }
 .status-pill--new    { background: var(--violet-50); color: var(--violet-700); border-color: var(--violet-200); }

@@ -1,5 +1,10 @@
 /* ==========================================================================
-   MOWMMAS Admin · The Refer dialog (Donation inquiries and Milk requests)
+   MOWMMAS Admin · The Send referral dialog (Donation inquiries and Milk requests)
+
+   The admin sends the mother information or a referral: the facility to
+   contact, which confirms availability, requirements and schedule with her.
+   Saving moves a New, Under Review, Referral Needed or Referral/Next Steps
+   Provided one to Information Sent, and the server texts her the facility.
 
    setUpRefer({ modal, select, note, noun, submission, facility, onOpen, onSaved })
      modal       the <dialog> (#refer_modal)
@@ -23,9 +28,10 @@ import { textUpdate } from "./admin-sms.js";
 
 var SLOW_SAVE_MS = 12000;
 
-function referError(error, noun) {
+// type: the submission's type, for the name of its status ("This milk request is already completed, …")
+function referError(error, noun, type) {
   var code = (error && error.code) || "";
-  if (code === "final") return "This " + noun + " is already " + statusLabel(error.detail).toLowerCase() + ", so it can't be referred.";
+  if (code === "final") return "This " + noun + " is already " + statusLabel(error.detail, type).toLowerCase() + ", so it can't be referred.";
   if (code === "same-facility") return "It's already referred to " + error.detail + ". Choose a different facility.";
   if (code === "not-found") return "This " + noun + " is no longer in Firebase. Refresh the page.";
   if (code === "permission-denied") return "Firebase didn't allow saving the referral. Sign out and sign in again, then try again.";
@@ -116,7 +122,7 @@ export function setUpRefer(options) {
       })
       .catch(function (error) {
         clearTimeout(slowTimer);
-        var message = referError(error, options.noun);
+        var message = referError(error, options.noun, s.type);
         if (ownDialog() && (mine() || slow)) show("error", message);
         else showPageError("The referral for " + who + " wasn't saved. " + message);
         release();

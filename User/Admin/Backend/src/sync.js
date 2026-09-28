@@ -7,7 +7,7 @@
 
    It works both ways:
      mother → Firestore   new submissions, and what the mother sent
-     Firestore → mother   the status the admin set (e.g. "Under review" after a
+     Firestore → mother   the status the admin set (e.g. "Information Sent" after a
                           referral), its history and where she was referred, so
                           her Track Submission page shows it. applyRemote(ref, patch)
                           writes that into the mother backend's data.

@@ -34,21 +34,15 @@
   var TYPES = {
     donate: {
       title: 'Donate breast milk', eyebrow: 'Donate Breast Milk', icon: 'i-hand-heart',
-      submit: 'Submit donation offer', minutes: 4,
-      needs: 'acceptsDonations', needsLabel: 'Accepts donations',
-      notOffered: 'does not accept breast milk donations',
-      otherFacilities: 'Find a facility that accepts donations'
+      submit: 'Submit donation inquiry', minutes: 4
     },
     request: {
       title: 'Request donor breast milk', eyebrow: 'Request Breast Milk', icon: 'i-bottle',
-      submit: 'Submit request', minutes: 3,
-      needs: 'providesDonorMilk', needsLabel: 'Provides donor milk',
-      notOffered: 'does not give out donor milk',
-      otherFacilities: 'Find a facility with donor milk'
+      submit: 'Submit request', minutes: 3
     },
     inquire: {
       title: 'Ask a question', eyebrow: 'Inquire', icon: 'i-chat',
-      submit: 'Send my question', minutes: 2, needs: null
+      submit: 'Send my question', minutes: 2
     }
   };
   var T = TYPES[TYPE] || null;
@@ -185,15 +179,12 @@
   /* ═════════════════════════ facility summary chip ═════════════════════════ */
 
   /* "Sending to" bar at the top of the form panel:
-     facility · does it offer this service · phone · change facility */
+     facility · donor milk right now (a verified milk bank, on a request) · phone · change facility */
   function chipHtml(f) {
     var facts = '';
-    if (T && T.needs) {
-      var value = f.services ? f.services[T.needs] : null;
-      facts += '<span class="send-to__fact">' + esc(T.needsLabel) + ui.yesNo(value) + '</span>';
-      if (TYPE === 'request' && value !== false && f.donorMilkAvailability) {
-        facts += '<span class="send-to__fact">Right now' + ui.availability(f.donorMilkAvailability) + '</span>';
-      }
+    // Only a verified milk bank's reported donor milk is shown (the server sends no other)
+    if (TYPE === 'request' && f.donorMilkAvailability && M.isVerifiedHmb(f)) {
+      facts += '<span class="send-to__fact">Right now' + ui.availability(f.donorMilkAvailability) + '</span>';
     }
     var firstPhone = util.phones(f.contactNumber)[0] || f.contactNumber;
     var phone = f.contactNumber
@@ -304,7 +295,7 @@
 
     var about = {
       key: 'about', title: 'About you', short: 'About you',
-      desc: 'So the health workers at ' + f.name + ' can contact you.',
+      desc: 'So a health worker can contact you.',
       tip: { icon: 'i-message', text: 'Updates about this form are sent by SMS to your mobile number.' },
       fields: [
         ['name', { kind: 'text', label: 'Your full name', span: 'full',
@@ -324,7 +315,7 @@
     var byType = {
       donate: [
         { key: 'donor', title: 'You and your baby', short: 'Your baby',
-          desc: 'A few details help the facility plan for your donation.',
+          desc: 'A few details help the health worker give you the right next steps.',
           tip: { icon: 'i-info', text: 'Milk donors need to be 18 to 55 years old.' },
           fields: [
             ['age', { kind: 'text', label: 'Your age', help: 'In years, for example 28.',
@@ -355,7 +346,7 @@
       request: [
         { key: 'baby', title: 'About the baby', short: 'The baby',
           desc: 'Tell us who the donor milk is for.',
-          tip: { icon: 'i-shield', text: 'Only the health workers of ' + f.name + ' see these details.' },
+          tip: { icon: 'i-shield', text: 'Only the health workers handling your form see these details.' },
           fields: [
             ['babyName', { kind: 'text', label: 'Baby\'s name or initials', help: 'Initials are fine, for example “Baby J.D.”',
               attrs: { maxlength: 60 } }],
@@ -365,7 +356,7 @@
           ] },
         { key: 'need', title: 'What the baby needs', short: 'Needs',
           desc: 'This helps the health workers understand how soon to respond.',
-          tip: { icon: 'i-info', text: 'Donor milk is limited, so facilities may give it first to babies with the greatest medical need.' },
+          tip: { icon: 'i-info', text: 'Donor milk is limited. Authorized facilities and Human Milk Banks decide how it is given out.' },
           fields: [
             ['reasons', { kind: 'checks', label: 'Why does the baby need donor milk?', help: 'Choose all that apply.',
               span: 'full', options: OPT.reasons, cols: 2 }],
@@ -406,25 +397,28 @@
   }
 
   function sendSectionHtml(n, f) {
+    // A donation inquiry or request ends with her contacting the referred facility
+    var then = TYPE === 'inquire' ? '' : ' Then contact the referred facility to confirm availability, requirements and schedule.';
     return '<fieldset class="form-card form-card--send" id="sec-send" aria-describedby="desc-send">' +
       '<legend class="form-card__legend"><span class="form-card__num" aria-hidden="true">' + n + '</span>' +
         '<h2 class="form-card__title">Agree and send</h2></legend>' +
       '<p class="form-card__desc" id="desc-send">What happens after you send it:</p>' +
       '<ol class="form-next">' +
-        '<li><span class="form-next__num" aria-hidden="true">1</span><span>The facility&#39;s health workers review your details.</span></li>' +
-        '<li><span class="form-next__num" aria-hidden="true">2</span><span>They update your status.</span></li>' +
-        '<li><span class="form-next__num" aria-hidden="true">3</span><span>You get an SMS, and can check anytime on Track Submission.</span></li>' +
+        '<li><span class="form-next__num" aria-hidden="true">1</span><span>A health worker reviews your details.</span></li>' +
+        '<li><span class="form-next__num" aria-hidden="true">2</span><span>They send you information or a referral to the right facility.</span></li>' +
+        '<li><span class="form-next__num" aria-hidden="true">3</span><span>You get an SMS, and can check anytime on Track Submission.' + then + '</span></li>' +
       '</ol>' +
       '<div class="form-card__body">' +
         '<div class="field" data-field="consent">' +
           '<label class="choice form-consent" for="f-consent">' +
             '<input type="checkbox" id="f-consent" name="consent" value="yes" required />' +
             '<span class="choice__text">I agree that MOWMMAS may share these details with ' + esc(f.name) +
-            ' and send me SMS updates about this submission</span></label>' +
+            ' and, if needed, with the facility I am referred to, and send me SMS updates about this submission</span></label>' +
           errorHtml('consent') +
         '</div>' +
         '<p class="form-send__note">' + ui.icon('i-info', 'icon--sm') + '<span><strong>MOWMMAS is not a milk bank.</strong> ' +
-          esc(f.name) + ' does all screening, collection and sharing of breast milk. MOWMMAS only passes your details on.</span></p>' +
+          'A health worker reviews your form and gives you information or a referral. Screening, collection and giving out of breast milk ' +
+          'are done only by authorized health facilities and Human Milk Banks.</span></p>' +
         '<div class="form-send__error" id="sendError"></div>' +
         '<p class="form-send__draft">' + ui.icon('i-lock', 'icon--xs') + 'Your answers stay on this device until you send them.</p>' +
       '</div></fieldset>';
@@ -1042,7 +1036,7 @@
   /* ═════════════════════════ loading ═════════════════════════ */
 
   function showBadType() {
-    setHead('Choose a service first', 'This form needs to know whether you want to donate milk, request milk or ask a question.');
+    setHead('Choose a service first', 'This form needs to know whether you want to send a donation inquiry, a request or a question.');
     setBack(FACILITY_ID ? facilityHref(FACILITY_ID) : 'hospitals.html', FACILITY_ID ? 'Back to facility details' : 'Back to Hospitals Near Me');
     hideSide();
     els.root.innerHTML = stateHtml('i-list', 'Please choose a service',
@@ -1062,22 +1056,12 @@
     doneLoading();
   }
 
-  function showNotOffered(f) {
-    setHead(T.title, f.name + ' ' + T.notOffered + ', according to the information shared with MOWMMAS.');
-    els.side.innerHTML = chipHtml(f);
-    els.root.innerHTML = stateHtml('i-info', 'This facility can\'t take this form',
-      'You can ask ' + f.name + ' a question instead, or choose another facility.',
-      linkBtn(hospitalsHref(), T.otherFacilities, 'primary', 'i-search') +
-      linkBtn('form.html?type=inquire&facility=' + encodeURIComponent(f.id), 'Ask this facility a question', 'outline', 'i-chat'));
-    doneLoading();
-  }
-
   function showInfoOnly(f) {
     setHead(T.title, f.name + ' is listed on MOWMMAS for information only.');
     els.side.innerHTML = chipHtml(f);
     els.root.innerHTML = stateHtml('i-info', 'This facility can\'t receive forms',
       'Please contact ' + f.name + ' directly, or choose another facility.',
-      linkBtn(hospitalsHref(), T.otherFacilities || 'Find another facility', 'primary', 'i-search'));
+      linkBtn(hospitalsHref(), 'Find another facility', 'primary', 'i-search'));
     doneLoading();
   }
 
@@ -1095,9 +1079,8 @@
 
       setBack(facilityHref(facility.id), 'Back to facility details');
       if (facility.infoOnly) return showInfoOnly(facility);
-      if (T.needs && facility.services && facility.services[T.needs] === false) return showNotOffered(facility);
 
-      setHead(T.title, 'Your details will be sent to the health workers of ' + facility.name + '.');
+      setHead(T.title, 'A health worker will review your details and give you information or a referral.');
       els.meta.innerHTML = '<span>' + ui.icon('i-clock', 'icon--xs') + 'Takes about ' + T.minutes + ' minutes</span>' +
         '<span>' + ui.icon('i-edit', 'icon--xs') + 'Questions marked (optional) can be skipped</span>';
       els.meta.hidden = false;
