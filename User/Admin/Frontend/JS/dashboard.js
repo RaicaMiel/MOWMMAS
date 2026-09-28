@@ -15,9 +15,8 @@ import {
   cachedSubmissions,
   smsStatusChip,
   isParticipating,
-  hasDonorMilk,
+  hasMilkServices,
   isOverdue,
-  TYPES,
   submissionChip,
   hmbStatus,
   facilityUpdatedAt,
@@ -28,7 +27,10 @@ import { getSmsLog, cachedSmsLog } from "./admin-sms.js";
 
 var LIST_SIZE = 3;
 
-/* The rules every page shares (public, donor milk, needs updating) are in admin-data.js. */
+// "Recent inquiries & referrals": what each kind of submission is called
+var ACTIVITY_TYPES = { donate: "Donation Inquiry", request: "Receiving Inquiry", inquire: "Question" };
+
+/* The rules every page shares (published, human milk-related services, needs updating) are in admin-data.js. */
 
 /* ───────────── page helpers ───────────── */
 
@@ -44,6 +46,11 @@ function setStat(key, value) {
   if (el) el.textContent = String(value);
 }
 
+function setCaption(key, text) {
+  var el = document.querySelector('.mw-stat__caption[data-stat-caption="' + key + '"]');
+  if (el) el.textContent = text;
+}
+
 // Shows the list when it has rows, the card's empty state when it doesn't.
 function fillList(listId, emptyId, html) {
   var list = document.getElementById(listId);
@@ -57,15 +64,18 @@ function fillList(listId, emptyId, html) {
 /* ───────────── facilities: KPIs and "Needs updating" ───────────── */
 
 function renderFacilities(facilities) {
-  var participating = facilities.filter(isParticipating);
+  var published = facilities.filter(isParticipating);
+  var verified = facilities.filter(function (f) { return hmbStatus(f) === "verified"; }).length;
 
-  setStat("participating", participating.length);
-  setStat("verified", facilities.filter(function (f) { return hmbStatus(f) === "verified"; }).length);
-  setStat("donor_milk", facilities.filter(hasDonorMilk).length);
-  setStat("overdue", participating.filter(isOverdue).length);
+  setStat("listed", facilities.length);
+  setCaption("listed", published.length ? published.length + " published with service info" : "No facilities published yet");
+  setStat("verified", verified);
+  setCaption("verified", verified ? "Verification on file" : "No confirmed HMB among listed facilities");
+  setStat("milk_services", facilities.filter(hasMilkServices).length);
+  setStat("overdue", published.filter(isOverdue).length);
 
   // Oldest update first; never-updated facilities come before everything else.
-  var stale = participating.slice().sort(function (a, b) {
+  var stale = published.slice().sort(function (a, b) {
     var ta = Date.parse(facilityUpdatedAt(a)) || 0;
     var tb = Date.parse(facilityUpdatedAt(b)) || 0;
     return ta - tb || String(a.name).localeCompare(String(b.name));
@@ -100,15 +110,13 @@ function renderSubmissions(submissions) {
   fillList("activity_list", "activity_empty", submissions.slice(0, LIST_SIZE).map(activityItem).join(""));
 }
 
+// Reference number, then the kind of inquiry and the facility (mothers' names aren't shown here)
 function activityItem(s) {
-  var contact = s.contact || {};
-  var name = String(contact.name || "").trim();
-  var type = TYPES[s.type];
-  var verb = type ? type.verb : (s.typeLabel || "sent a form");
-  var meta = verb + (s.facilityName ? " · " + s.facilityName : "");
+  var type = ACTIVITY_TYPES[s.type] || s.typeLabel || "Inquiry";
+  var meta = type + (s.facilityName ? " · " + s.facilityName : "");
 
   return '<li class="mw-list__item">' +
-    '<p class="mw-list__title">' + esc(name || s.ref) + "</p>" +
+    '<p class="mw-list__title">' + esc(s.ref) + "</p>" +
     '<p class="mw-list__meta">' + esc(meta) + "</p>" +
     submissionChip(s) +
     "</li>";

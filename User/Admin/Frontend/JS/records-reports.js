@@ -113,7 +113,7 @@ function statusText(status, type) {
   return chipText.textContent;
 }
 
-// Facility status in the History: public and fresh, public but overdue, or unpublished
+// Facility status in the History: published and fresh, published but overdue, or unpublished
 function facilityState(f) {
   if (!isParticipating(f)) return { label: "Unpublished", tone: "" };
   if (isOverdue(f)) return { label: "Needs updating", tone: "warning" };
@@ -210,24 +210,22 @@ function scaleStep(max) {
   return Math.max(1, Math.ceil(max / 4));
 }
 
-// Participating facilities by HMB status, as bars
+// Published facilities by HMB status (admin-data.js hmbStatus), as bars
 function renderHmbChart() {
   var figure = document.querySelector("#hmb_chart_title") && document.querySelector("#hmb_chart_title").closest(".mw-card").querySelector(".mw-chart");
   if (!figure) return;
   var svg = figure.querySelector(".mw-chart__svg");
   var caption = figure.querySelector("figcaption");
 
-  var participating = state.facilities.filter(isParticipating);
-  var counts = { verified: 0, no: 0, not_verified: 0, unknown: 0 };
-  participating.forEach(function (f) { counts[hmbStatus(f)] += 1; });
+  var published = state.facilities.filter(isParticipating);
+  var counts = { verified: 0, not_verified: 0, none: 0 };
+  published.forEach(function (f) { counts[hmbStatus(f)] += 1; });
 
-  // lines: how a label wraps when all four bars are shown
   var bars = [
-    { key: "verified", label: "Verified", lines: ["Verified"], series: "mw-chart__series--1" },
-    { key: "no", label: "No HMB", lines: ["No HMB"], series: "mw-chart__series--muted" },
-    { key: "not_verified", label: "Not verified", lines: ["Not", "verified"], series: "mw-chart__series--2" }
+    { key: "verified", label: "Verified", series: "mw-chart__series--1" },
+    { key: "not_verified", label: "Not verified", series: "mw-chart__series--2" },
+    { key: "none", label: "No confirmed HMB", series: "mw-chart__series--muted" }
   ];
-  if (counts.unknown) bars.push({ key: "unknown", label: "Not reported", lines: ["Not", "reported"], series: "mw-chart__series--muted" });
 
   var left = 40, right = 428, bottom = 228, top = 16;
   var step = scaleStep(Math.max.apply(null, bars.map(function (b) { return counts[b.key]; })));
@@ -264,35 +262,19 @@ function renderHmbChart() {
   out.push('<line class="mw-chart__axis" x1="40" x2="40" y1="12" y2="228"/>');
   out.push('<line class="mw-chart__axis" x1="40" x2="428" y1="228" y2="228"/>');
 
-  // Four labels don't fit on one line on a phone, so with the "Not reported"
-  // bar "Not verified" and "Not reported" go on two lines and the chart grows to fit them.
-  var twoLines = bars.length > 3;
-  svg.setAttribute("viewBox", twoLines ? "0 0 440 280" : "0 0 440 264");
-
+  // Three labels fit on one line, even on a phone.
   bars.forEach(function (bar, index) {
     var cx = n2(left + slot * (index + 0.5));
     out.push('<line class="mw-chart__axis" x1="' + cx + '" x2="' + cx + '" y1="228" y2="233"/>');
-    if (twoLines && bar.lines.length > 1) {
-      out.push('<text class="mw-chart__label" x="' + cx + '" y="250" text-anchor="middle">' +
-        '<tspan x="' + cx + '">' + esc(bar.lines[0]) + "</tspan>" +
-        '<tspan x="' + cx + '" dy="1.15em">' + esc(bar.lines[1]) + "</tspan></text>");
-    } else {
-      out.push('<text class="mw-chart__label" x="' + cx + '" y="' + (twoLines ? 250 : 256) + '" text-anchor="middle">' + esc(bar.label) + "</text>");
-    }
+    out.push('<text class="mw-chart__label" x="' + cx + '" y="256" text-anchor="middle">' + esc(bar.label) + "</text>");
   });
 
   svg.innerHTML = out.join("");
 
-  var parts = [
-    plural(counts.verified, "verified Human Milk Bank", "verified Human Milk Banks"),
-    counts.no + " with no HMB",
-    plural(counts.not_verified, "HMB not yet verified", "HMBs not yet verified")
-  ];
-  if (counts.unknown) {
-    parts.push(counts.unknown + (counts.unknown === 1 ? " that hasn't reported its HMB status" : " that haven't reported their HMB status"));
-  }
-  caption.textContent = plural(participating.length, "published facility", "published facilities") + ": " +
-    parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] + ".";
+  caption.textContent = plural(published.length, "published facility", "published facilities") + ": " +
+    plural(counts.verified, "verified Human Milk Bank", "verified Human Milk Banks") + ", " +
+    plural(counts.not_verified, "HMB not yet verified", "HMBs not yet verified") + " and " +
+    counts.none + " with no confirmed HMB.";
 }
 
 // SMS sent per week by type: Update (updates, status updates, "form received"), Reminder, Referral
@@ -625,7 +607,7 @@ function load(fresh) {
 function showUnavailable() {
   statValues.forEach(function (value) { if (value.textContent === "…") value.textContent = "–"; });
   var hmbCaption = document.querySelector("#hmb_chart_title") && document.querySelector("#hmb_chart_title").closest(".mw-card").querySelector("figcaption");
-  if (hmbCaption) hmbCaption.textContent = "Facilities by HMB status couldn't be loaded.";
+  if (hmbCaption) hmbCaption.textContent = "Published facilities by HMB status couldn't be loaded.";
 }
 
 if (dateInput) {
