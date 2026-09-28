@@ -221,9 +221,9 @@
       var requestHref = f.infoOnly ? 'hospitals.html?service=request' : formHref('request');
       avail = '<div class="fac-avail">' +
           '<p class="fac-avail__label">Donor milk</p>' +
-          '<div class="fac-avail__row">' + ui.statusChip({ text: 'Not available locally', tone: 'no' }) + '</div>' +
+          '<div class="fac-avail__row">' + ui.statusChip({ text: 'Not reported', tone: 'no' }) + '</div>' +
           '<p class="fac-avail__updated">' + ui.icon('i-send', 'icon--xs') +
-            '<span>Need donor milk? <a href="' + esc(requestHref) + '">Submit a request</a> to ask about referral options.</span></p>' +
+            '<span>Need donor milk? <a href="' + esc(requestHref) + '">Submit a receiving inquiry</a> to ask about referral options.</span></p>' +
         '</div>';
     }
 
@@ -269,8 +269,8 @@
   }
 
   var CHOICE_SUB = {
-    donate: 'Submit a donation inquiry. A health worker will review your information and provide the appropriate next steps.',
-    request: 'Submit a request for donor milk. A health worker will review your request and provide referral or next-step information.'
+    donate: 'Submit a donation inquiry. A MOWMMAS administrator will review your information and provide the appropriate next steps.',
+    request: 'Submit a receiving inquiry for donor milk. A MOWMMAS administrator will review your inquiry and provide referral or next-step information.'
   };
 
   function choiceHtml(type) {
@@ -289,7 +289,7 @@
       return '<section class="fac-choose" id="nextStep" aria-labelledby="chooseTitle">' +
         '<div class="fac-choose__copy">' +
           '<h2 class="fac-choose__title" id="chooseTitle">For information only</h2>' +
-          '<p class="fac-choose__text">MOWMMAS lists ' + esc(f.name) + ' for information only, so it can\'t receive forms here. ' +
+          '<p class="fac-choose__text">MOWMMAS lists ' + esc(f.name) + ' for information only, so you can\'t send a form about it here. ' +
             'Please contact the facility directly, or choose another facility.</p>' +
         '</div>' +
         '<div class="fac-choose__actions">' +
@@ -300,8 +300,8 @@
     return '<section class="fac-choose" id="nextStep" aria-labelledby="chooseTitle">' +
       '<div class="fac-choose__copy">' +
         '<h2 class="fac-choose__title" id="chooseTitle">What would you like to do here?</h2>' +
-        '<p class="fac-choose__text">Your form goes to the health workers of the selected facility. ' +
-          'They will review your inquiry and provide the appropriate information or referral. ' +
+        '<p class="fac-choose__text">A MOWMMAS administrator reviews your inquiry and gives you information or a referral. ' +
+          'Contact the facility to confirm availability, requirements, and schedule. ' +
           '<strong>MOWMMAS is not a milk bank.</strong></p>' +
       '</div>' +
       '<div class="fac-choose__actions">' +

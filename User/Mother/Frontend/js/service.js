@@ -2,8 +2,8 @@
    MOWMMAS · Mother side · Choose a Service (flow step 5)
    service.html?facility=<facility id>(&service=donate|request|inquire)
 
-   Three big choices for the chosen facility — Donate Breast Milk,
-   Request Breast Milk, Inquire. None is ever disabled: a health worker
+   Three big choices for the chosen facility — Donation Inquiry,
+   Receiving Inquiry, Inquire. None is ever disabled: a MOWMMAS administrator
    reviews the form and gives next steps or a referral. The choice the
    mother came with (?service=) is highlighted and receives focus.
    Needs: api.js (window.MOWMMAS).
@@ -20,15 +20,15 @@
   var CARDS = [
     {
       type: 'donate', tone: 'rose', icon: 'i-hand-heart',
-      title: 'Donate Breast Milk',
-      text: 'Have breast milk to donate? Submit a donation inquiry to a participating health facility. A health worker will provide information about the appropriate donation process or referral.',
+      title: 'Donation Inquiry',
+      text: 'Have breast milk to donate? Submit a donation inquiry. A MOWMMAS administrator will provide information about the appropriate donation process or referral.',
       go: 'Start donation inquiry'
     },
     {
       type: 'request', tone: 'violet', icon: 'i-bottle',
-      title: 'Request Breast Milk',
-      text: 'Need donor milk for your baby? Send a request. A health worker will review it and tell you the next steps.',
-      go: 'Start request form'
+      title: 'Receiving Inquiry',
+      text: 'Need donor milk for your baby? Send a receiving inquiry. A MOWMMAS administrator will review it and tell you the next steps.',
+      go: 'Start receiving inquiry'
     },
     {
       type: 'inquire', tone: 'mint', icon: 'i-chat',
@@ -76,7 +76,7 @@
       els.backLabel.textContent = 'Back to facility details';
     } else {
       els.back.setAttribute('href', 'hospitals.html' + serviceQuery);
-      els.backLabel.textContent = 'Back to Participating Health Facilities Near Me';
+      els.backLabel.textContent = 'Back to Health Facilities Near Me';
     }
   }
 
@@ -104,10 +104,10 @@
   function renderNoFacility() {
     // No valid facility → the way back is the facility list, not a broken details link
     els.back.setAttribute('href', 'hospitals.html' + serviceQuery);
-    els.backLabel.textContent = 'Back to Participating Health Facilities Near Me';
+    els.backLabel.textContent = 'Back to Health Facilities Near Me';
     renderProblem(ui.emptyState(
       'We couldn\'t find that facility',
-      'Choose a health facility first. Then you can send a donation inquiry, a request, or a question.',
+      'Choose a health facility first. Then you can send a donation inquiry, a receiving inquiry, or a question.',
       '<a class="btn btn--primary btn--sm" href="hospitals.html' + serviceQuery + '">' +
         ui.icon('i-pin', 'icon--sm') + 'Find a facility</a>'
     ), 'We couldn\'t find that facility.');
@@ -128,7 +128,7 @@
     var ds = f.dataStatus || {};
     var honesty = '';
     if (!ds.hasProfile) {
-      honesty = '<p class="svc-fac__note">' + ui.icon('i-info', 'icon--xs') + 'Services not verified yet. The facility will tell you.</p>';
+      honesty = '<p class="svc-fac__note">' + ui.icon('i-info', 'icon--xs') + 'Services not verified yet. Please ask the facility.</p>';
     } else if (ds.sample) {
       honesty = '<p class="svc-fac__note">' + ui.icon('i-alert', 'icon--xs') + 'Sample information. Please call to confirm.</p>';
     }
@@ -184,12 +184,12 @@
         '<li class="svc-step"><span class="svc-step__num">1</span><span class="svc-step__body">' +
           '<strong>Fill in a short form</strong><span>Your name, mobile number and a few details.</span></span></li>' +
         '<li class="svc-step"><span class="svc-step__num">2</span><span class="svc-step__body">' +
-          '<strong>A health worker reviews it</strong><span>At ' + esc(f.name) + '.</span></span></li>' +
+          '<strong>A MOWMMAS administrator reviews it</strong><span>They look at your details.</span></span></li>' +
         '<li class="svc-step"><span class="svc-step__num">3</span><span class="svc-step__body">' +
           '<strong>You get updates</strong><span>Check anytime on <a href="status.html">Track Submission</a> with your reference number.</span></span></li>' +
       '</ol>' +
       '<p class="svc-foot">' + ui.icon('i-shield', 'icon--sm') +
-        '<span>MOWMMAS sends your form to a health worker, who gives you information or a referral. <strong>MOWMMAS is not a milk bank.</strong></span></p>' +
+        '<span>A MOWMMAS administrator gives you information or a referral. Contact the facility to confirm availability, requirements, and schedule. <strong>MOWMMAS is not a milk bank.</strong></span></p>' +
     '</section>';
   }
 
@@ -212,7 +212,7 @@
     renderHead(f);
     if (f.infoOnly) {
       els.body.innerHTML = '<div class="svc-state">' + ui.emptyState('For information only',
-        'MOWMMAS lists ' + f.name + ' for information only, so it can\'t receive forms here. Please contact the facility directly, or choose another facility.',
+        'MOWMMAS lists ' + f.name + ' for information only, so you can\'t send a form about it here. Please contact the facility directly, or choose another facility.',
         '<a class="btn btn--primary btn--sm" href="hospitals.html' + serviceQuery + '">' + ui.icon('i-pin', 'icon--sm') + 'Find another facility</a>') + '</div>';
       els.body.setAttribute('aria-busy', 'false');
       announce(f.name + ' is listed for information only.');
@@ -222,7 +222,7 @@
       '<div class="svc-grid">' + CARDS.map(cardHtml).join('') + '</div>' +
       nextHtml(f);
     els.body.setAttribute('aria-busy', 'false');
-    announce('Services at ' + f.name + ' loaded. Choose Donate, Request, or Inquire.');
+    announce('Services at ' + f.name + ' loaded. Choose Donation Inquiry, Receiving Inquiry, or Inquire.');
     focusSuggested();
   }
 

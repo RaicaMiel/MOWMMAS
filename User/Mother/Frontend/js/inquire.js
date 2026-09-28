@@ -243,7 +243,7 @@
     els.form.classList.add('is-flash');
     els.form.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' });
     (selected || els.btn.disabled ? els.submit : els.btn).focus({ preventScroll: true });
-    announce('Topic chosen: ' + TOPICS[key] + '. ' + (selected ? 'Press Write my question.' : 'Now choose the facility you want to ask.'));
+    announce('Topic chosen: ' + TOPICS[key] + '. ' + (selected ? 'Press Write my question.' : 'Now choose the facility your question is about.'));
   });
 
   /* ───────────── continue to the question form ───────────── */
@@ -251,7 +251,7 @@
     e.preventDefault();
     if (els.btn.disabled) return;
     if (!selected) {
-      setError('Please choose the facility you want to ask.');
+      setError('Please choose the facility your question is about.');
       els.btn.focus();
       return;
     }

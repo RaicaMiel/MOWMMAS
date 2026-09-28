@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Inquire | MOWMMAS</title>
-  <meta name="description" content="Ask a health facility in Antique about donor milk, requirements, donating or requesting breast milk, or breastfeeding help. Your question goes to a health worker through MOWMMAS." />
+  <meta name="description" content="Ask about a health facility in Antique: donor milk, requirements, donating or requesting breast milk, or breastfeeding help. Your question goes to a MOWMMAS administrator." />
   <meta name="theme-color" content="#FFF7FA" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -126,12 +126,12 @@
       <div class="container inq-hero">
         <div class="inq-intro">
           <p class="eyebrow"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-chat"/></svg> Inquire</p>
-          <h1 class="page-title" id="pageTitle">Ask a health facility a question</h1>
-          <p class="page-lede">Not sure where to start? Ask about donor milk, what to bring, or how donating and requesting work. Your question goes to a health worker through MOWMMAS, and they reply by SMS or a call.</p>
+          <h1 class="page-title" id="pageTitle">Ask a question about a health facility</h1>
+          <p class="page-lede">Not sure where to start? Ask about donor milk, what to bring, or how donating and requesting work. Your question goes to a MOWMMAS administrator, who replies by SMS or a call.</p>
           <ul class="inq-points">
             <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check-circle"/></svg> Free to ask</li>
             <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-message"/></svg> Reply by SMS or call</li>
-            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-lock"/></svg> Only the health workers handling it see it</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-lock"/></svg> Only MOWMMAS administrators can see these details</li>
           </ul>
         </div>
 
@@ -141,8 +141,8 @@
             Start your question
           </h2>
           <div class="field" data-field="facility">
-            <label class="field__label" id="facLabel" for="f-facility">Which facility do you want to ask?</label>
-            <p class="field__help" id="help-facility">Search by name or town. Not sure? <a href="hospitals.html">Browse Participating Health Facilities Near Me</a>.</p>
+            <label class="field__label" id="facLabel" for="f-facility">Which facility is your question about?</label>
+            <p class="field__help" id="help-facility">Search by name or town. Not sure? <a href="hospitals.html">Browse Health Facilities Near Me</a>.</p>
             <!-- Facility picker: a button that opens a searchable list, grouped by municipality -->
             <div class="picker" id="facPicker">
               <button class="picker__btn" type="button" id="f-facility" aria-haspopup="listbox" aria-expanded="false"
@@ -197,7 +197,7 @@
           <li class="inq-step">
             <span class="inq-step__num">1</span>
             <h3 class="inq-step__title">Choose a facility</h3>
-            <p class="inq-step__text">Pick the hospital or health center you want to ask, above or from <a href="hospitals.html">Participating Health Facilities Near Me</a>.</p>
+            <p class="inq-step__text">Pick the hospital or health center your question is about, above or from <a href="hospitals.html">Health Facilities Near Me</a>.</p>
           </li>
           <li class="inq-step">
             <span class="inq-step__num">2</span>
@@ -212,7 +212,7 @@
           <li class="inq-step">
             <span class="inq-step__num">4</span>
             <h3 class="inq-step__title">Get your answer</h3>
-            <p class="inq-step__text">A health worker replies by SMS or a call. Check anytime on <a href="status.html">Track Submission</a>.</p>
+            <p class="inq-step__text">A MOWMMAS administrator replies by SMS or a call. Check anytime on <a href="status.html">Track Submission</a>.</p>
           </li>
         </ol>
       </section>
@@ -257,7 +257,7 @@
           <article class="inq-example">
             <span class="inq-example__icon"><svg class="icon" aria-hidden="true"><use href="#i-help"/></svg></span>
             <p class="inq-example__topic">Something else</p>
-            <p class="inq-example__q">&ldquo;Are you open on Saturdays?&rdquo;</p>
+            <p class="inq-example__q">&ldquo;Is the facility open on Saturdays?&rdquo;</p>
             <button class="inq-example__btn" type="button" data-topic="other">Ask about this <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
           </article>
         </div>
@@ -268,7 +268,7 @@
         <span class="inq-urgent__icon"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg></span>
         <div class="inq-urgent__text">
           <p class="inq-urgent__title">Need an answer today?</p>
-          <p>Call or visit the facility directly. Its number is on the facility page in <a href="hospitals.html">Participating Health Facilities Near Me</a>. MOWMMAS passes your question on, but it is not a milk bank and does not give out milk.</p>
+          <p>Call or visit the facility directly. Its number is on the facility page in <a href="hospitals.html">Health Facilities Near Me</a>. MOWMMAS reviews your question, but it is not a milk bank and does not give out milk.</p>
         </div>
         <a class="btn btn--outline inq-urgent__btn" href="hospitals.html"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-search"/></svg> Find a facility</a>
       </aside>
@@ -296,7 +296,7 @@
         <ul>
           <li><a href="guide.html">Breast Milk Information</a></li>
           <li><a href="inquire.html">Inquire About Services</a></li>
-          <li><a href="hospitals.html">Participating Health Facilities Near Me</a></li>
+          <li><a href="hospitals.html">Health Facilities Near Me</a></li>
         </ul>
       </nav>
 

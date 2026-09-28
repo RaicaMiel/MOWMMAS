@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════
-   MOWMMAS · Mother side · Participating Health Facilities Near Me (flow step 3)
+   MOWMMAS · Mother side · Health Facilities Near Me (flow step 3)
    - List + OpenStreetMap of every facility: address, contact number,
      hours, about, and its three statuses (breastfeeding/lactation support,
      HMB status, human milk-related information & referral)
@@ -37,17 +37,17 @@
     donate: {
       tone: 'rose',
       lead: 'You want to donate breast milk',
-      first: 'Choose a facility to send your donation inquiry to. A health worker will review it and give you the next steps.'
+      first: 'Choose a facility for your donation inquiry. A MOWMMAS administrator will review it and give you the next steps.'
     },
     request: {
       tone: 'violet',
-      lead: 'You want to request breast milk',
-      first: 'Choose a facility to send your request to. A health worker will review it and give you referral or next-step information.'
+      lead: 'You want to receive breast milk',
+      first: 'Choose a facility for your receiving inquiry. A MOWMMAS administrator will review it and give you referral or next-step information.'
     },
     inquire: {
       tone: 'mint',
       lead: 'You want to ask a question',
-      first: 'You can ask any facility. Facilities that shared their services are shown first.'
+      first: 'You can ask about any facility. Facilities that shared their services are shown first.'
     }
   };
 

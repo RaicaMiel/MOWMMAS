@@ -21,20 +21,20 @@
     donate: {
       title: 'Your donation inquiry has been submitted.', eyebrow: 'Donation inquiry sent', noun: 'donation inquiry',
       label: 'Donation inquiry', icon: 'i-hand-heart', example: 'Information Sent', referred: true,
-      note: 'A health worker reviews your inquiry and gives you the next steps or a referral. Screening, collection and sharing of breast milk are done only by authorized facilities.'
+      note: 'A MOWMMAS administrator reviews your inquiry and gives you the next steps or a referral. Screening, collection and sharing of breast milk are done only by authorized facilities.'
     },
     request: {
-      title: 'Your request has been submitted.', eyebrow: 'Request sent', noun: 'request',
-      label: 'Donor milk request', icon: 'i-bottle', example: 'Information Sent', referred: true,
-      note: 'A health worker reviews your request and gives you referral or next-step information. Donor milk is given out only by authorized facilities and Human Milk Banks.'
+      title: 'Your receiving inquiry has been submitted.', eyebrow: 'Receiving inquiry sent', noun: 'receiving inquiry',
+      label: 'Receiving inquiry', icon: 'i-bottle', example: 'Information Sent', referred: true,
+      note: 'A MOWMMAS administrator reviews your inquiry and gives you referral or next-step information. Donor milk is given out only by authorized facilities and Human Milk Banks.'
     },
     inquire: {
       title: 'Your question has been submitted.', eyebrow: 'Question sent', noun: 'question',
       label: 'Question', icon: 'i-chat', example: 'Answered',
-      note: 'A health worker answers your question. MOWMMAS only passes it on and keeps you updated.'
+      note: 'A MOWMMAS administrator answers your question and keeps you updated.'
     }
   };
-  var LEDE = 'A health worker will review it and update you by SMS.'; // under the title, after "Thank you."
+  var LEDE = 'A MOWMMAS administrator will review it and update you by SMS.'; // under the title, after "Thank you."
   var LETTER = { D: 'donate', R: 'request', I: 'inquire' };
 
   var ref = util.normalizeRef(util.param('ref'));
@@ -106,8 +106,8 @@
   });
 
   /* ───────────── what happens next ───────────── */
-  // A health worker reviews it and gives information or a referral; a donation
-  // inquiry or request then ends with her contacting the referred facility
+  // A MOWMMAS administrator reviews it and gives information or a referral; a donation
+  // inquiry or receiving inquiry then ends with her contacting the referred facility
   function renderSteps(mobile) {
     var sms = mobile
       ? 'You receive an SMS on <strong>' + esc(util.formatMobile(mobile)) + '</strong>.'
@@ -115,7 +115,7 @@
     var then = T.referred ? ' Then contact the referred facility to confirm availability, requirements and schedule.' : '';
     els.steps.innerHTML =
       '<li class="cf-step"><span class="cf-step__num" aria-hidden="true">1</span><div>' +
-        '<p class="cf-step__title">A health worker reviews it</p>' +
+        '<p class="cf-step__title">A MOWMMAS administrator reviews it</p>' +
         '<p class="cf-step__text">They look at your ' + esc(T.noun) + '.</p></div></li>' +
       '<li class="cf-step"><span class="cf-step__num" aria-hidden="true">2</span><div>' +
         '<p class="cf-step__title">They send information or a referral</p>' +
@@ -133,13 +133,13 @@
   function phoneHtml(number) {
     return number
       ? '<a class="cf-phone" href="' + esc(util.telHref(number)) + '">' + ui.icon('i-phone', 'icon--sm') + esc(number) + '</a>'
-      : '<span class="muted">No number listed yet. The health workers will contact you by SMS.</span>';
+      : '<span class="muted">No number listed yet. MOWMMAS will contact you by SMS.</span>';
   }
 
   function renderStatus(view) {
     var f = view.facility || {};
     var meaning = view.status === 'submitted'
-      ? 'Waiting for a health worker to review it.'
+      ? 'Waiting for a MOWMMAS administrator to review it.'
       : 'Updated ' + esc(util.timeAgo(view.updatedAt)) + '. See every update on the tracking page.';
     els.status.innerHTML =
       '<div class="cf-now">' + ui.statusPill(view.status, view.statusLabel, 'lg') +

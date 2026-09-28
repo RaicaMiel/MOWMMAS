@@ -5,7 +5,7 @@
    - Look-up form: reference number (typed any way: "mow r 2026 12" →
      MOW-R-2026-00012) + mobile number → MOWMMAS.api.status()
    - Result: type, facility (with call link), current status, a timeline
-     of the status history and the messages from health workers
+     of the status history and the messages from MOWMMAS
    - Opens the result on its own when ?ref= is in the link and this
      device knows the mobile number used for it
    ══════════════════════════════════════════════════════════════════ */
@@ -19,9 +19,9 @@
   function $(id) { return document.getElementById(id); }
 
   var TYPE_INFO = {
-    donate:  { label: 'Donation inquiry',   icon: 'i-hand-heart' },
-    request: { label: 'Donor milk request', icon: 'i-bottle' },
-    inquire: { label: 'Question',           icon: 'i-chat' }
+    donate:  { label: 'Donation inquiry',  icon: 'i-hand-heart' },
+    request: { label: 'Receiving inquiry', icon: 'i-bottle' },
+    inquire: { label: 'Question',          icon: 'i-chat' }
   };
   var LETTER = { D: 'donate', R: 'request', I: 'inquire' };
 
@@ -29,15 +29,15 @@
      (the admin hint "She'll see: …" in admin-submission.js uses the same words) */
   var MEANING = {
     submitted: {
-      donate: 'Your donation inquiry was sent. A health worker will review it and give you the next steps.',
-      request: 'Your request was sent. A health worker will review it and give you referral or next-step information.',
-      inquire: 'Your question was sent. A health worker will reply soon.'
+      donate: 'Your donation inquiry was sent. A MOWMMAS administrator will review it and give you the next steps.',
+      request: 'Your receiving inquiry was sent. A MOWMMAS administrator will review it and give you referral or next-step information.',
+      inquire: 'Your question was sent. A MOWMMAS administrator will reply soon.'
     },
-    under_review: 'A health worker is reviewing your details.',
-    referral_needed: 'A health worker is finding the right facility for you. You will get the referral details by SMS.',
-    next_steps: 'A health worker has worked out the next steps or a referral for your donation. You will get the details by SMS.',
+    under_review: 'A MOWMMAS administrator is reviewing your details.',
+    referral_needed: 'A MOWMMAS administrator is finding the right facility for you. You will get the referral details by SMS.',
+    next_steps: 'A MOWMMAS administrator has worked out the next steps or a referral for your donation inquiry. You will get the details by SMS.',
     information_sent: 'The referral or next-step information was sent to you. Please contact the referred facility to confirm current availability, requirements, and schedule.',
-    answered: 'A health worker answered your question. See the messages below or your SMS.',
+    answered: 'A MOWMMAS administrator answered your question. See the messages below or your SMS.',
     completed: 'All done. Thank you for using MOWMMAS.',
     closed: 'This is closed. You can send a new form anytime.'
   };
@@ -286,7 +286,7 @@
   function meaning(view) {
     var m = MEANING[view.status];
     if (m && typeof m === 'object') m = m[view.type];
-    return m || 'Your status was updated by the health workers.';
+    return m || 'Your status was updated by MOWMMAS.';
   }
 
   function whenHtml(iso) {
@@ -323,7 +323,7 @@
       return '<div class="trk-empty">' +
         '<span class="trk-empty__icon">' + ui.icon('i-message') + '</span>' +
         '<p class="trk-empty__title">No messages yet</p>' +
-        '<p class="trk-empty__text">When the health workers send you a message or an SMS about this, it appears here.</p></div>';
+        '<p class="trk-empty__text">When MOWMMAS sends you a message or an SMS about this, it appears here.</p></div>';
     }
     return '<ul class="msgs">' + list.map(function (m) {
       return '<li class="msg">' +
@@ -378,9 +378,9 @@
           '</section>' +
           '<section class="panel trk-panel" aria-labelledby="msgTitle">' +
             '<div class="panel__head"><span class="panel__icon panel__icon--mint">' + ui.icon('i-message') + '</span>' +
-              '<h3 class="panel__title" id="msgTitle">Messages from health workers' +
+              '<h3 class="panel__title" id="msgTitle">Messages from MOWMMAS' +
               (count ? ' <span class="badge trk-count">' + count + '</span>' : '') + '</h3></div>' +
-            (count ? '<p class="trk-panel__sub">Newest first. The texts a health worker sent to ' + esc(util.formatMobile(mobile)) + ' show here too.</p>' : '') +
+            (count ? '<p class="trk-panel__sub">Newest first. The texts MOWMMAS sent to ' + esc(util.formatMobile(mobile)) + ' show here too.</p>' : '') +
             messagesHtml(view, mobile) +
           '</section>' +
         '</div>' +

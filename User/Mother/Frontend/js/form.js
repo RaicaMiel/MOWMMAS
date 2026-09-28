@@ -33,12 +33,12 @@
 
   var TYPES = {
     donate: {
-      title: 'Donate breast milk', eyebrow: 'Donate Breast Milk', icon: 'i-hand-heart',
+      title: 'Send a donation inquiry', eyebrow: 'Donation Inquiry', icon: 'i-hand-heart',
       submit: 'Submit donation inquiry', minutes: 4
     },
     request: {
-      title: 'Request donor breast milk', eyebrow: 'Request Breast Milk', icon: 'i-bottle',
-      submit: 'Submit request', minutes: 3
+      title: 'Send a receiving inquiry', eyebrow: 'Receiving Inquiry', icon: 'i-bottle',
+      submit: 'Submit receiving inquiry', minutes: 3
     },
     inquire: {
       title: 'Ask a question', eyebrow: 'Inquire', icon: 'i-chat',
@@ -178,7 +178,7 @@
 
   /* ═════════════════════════ facility summary chip ═════════════════════════ */
 
-  /* "Sending to" bar at the top of the form panel:
+  /* "Selected facility" bar at the top of the form panel:
      facility · donor milk right now (a verified milk bank, on a request) · phone · change facility */
   function chipHtml(f) {
     var facts = '';
@@ -200,7 +200,7 @@
     return '<div class="send-to__main">' +
         '<span class="send-to__icon">' + ui.icon('i-hospital') + '</span>' +
         '<div class="send-to__id">' +
-          '<p class="send-to__label">Sending to</p>' +
+          '<p class="send-to__label">Selected facility</p>' +
           '<p class="send-to__name">' + esc(f.name) + '</p>' +
           '<p class="send-to__meta">' + esc([f.kindLabel, f.municipality].filter(Boolean).join(' · ')) + '</p>' +
         '</div>' +
@@ -295,27 +295,27 @@
 
     var about = {
       key: 'about', title: 'About you', short: 'About you',
-      desc: 'So a health worker can contact you.',
+      desc: 'So a MOWMMAS administrator can contact you.',
       tip: { icon: 'i-message', text: 'Updates about this form are sent by SMS to your mobile number.' },
       fields: [
         ['name', { kind: 'text', label: 'Your full name', span: 'full',
           attrs: { autocomplete: 'name', autocapitalize: 'words', maxlength: 80, placeholder: 'e.g. Juana Dela Cruz' } }],
         ['mobile', { kind: 'tel', label: 'Mobile number', help: 'We send your updates here. For example 0917 123 4567.',
           attrs: { autocomplete: 'tel', inputmode: 'tel', maxlength: 20, placeholder: '09XX XXX XXXX' } }],
-        ['email', { kind: 'email', label: 'Email', optional: true, help: 'Another way for the health workers to reach you.',
+        ['email', { kind: 'email', label: 'Email', optional: true, help: 'Another way for MOWMMAS administrators to reach you.',
           attrs: { autocomplete: 'email', inputmode: 'email', maxlength: 254, placeholder: 'e.g. juana@example.com' } }],
         ['municipality', muniField],
         ['barangay', { kind: 'text', label: 'Barangay', optional: true, attrs: { maxlength: 80, placeholder: 'e.g. Atabay' } }]
       ]
     };
 
-    var notes = ['notes', { kind: 'textarea', label: 'Anything else the health workers should know?', optional: true, span: 'full',
+    var notes = ['notes', { kind: 'textarea', label: 'Anything else MOWMMAS administrators should know?', optional: true, span: 'full',
       attrs: { maxlength: 1000 } }];
 
     var byType = {
       donate: [
         { key: 'donor', title: 'You and your baby', short: 'Your baby',
-          desc: 'A few details help the health worker give you the right next steps.',
+          desc: 'A few details help MOWMMAS give you the right next steps.',
           tip: { icon: 'i-info', text: 'Milk donors need to be 18 to 55 years old.' },
           fields: [
             ['age', { kind: 'text', label: 'Your age', help: 'In years, for example 28.',
@@ -332,13 +332,13 @@
               help: 'Only the last one is required.', options: OPT.screening, mustKey: 'willingToScreen' }]
           ] },
         { key: 'handover', title: 'Drop-off or pick-up', short: 'Drop-off',
-          desc: 'Tell the facility how and when your milk can reach them.',
-          tip: { icon: 'i-calendar', text: 'This is only your preference. The facility will confirm the date and time with you.' },
+          desc: 'Tell us how and when your milk can reach the facility.',
+          tip: { icon: 'i-calendar', text: 'This is only your preference. Contact the facility to confirm the date and time.' },
           fields: [
             ['delivery', { kind: 'cards', label: 'How will the milk reach the facility?', span: 'full', options: OPT.delivery, cols: 2 }],
             ['preferredDate', { kind: 'date', label: 'Preferred date', help: 'Today or any later day.',
               attrs: { min: TODAY, max: MAX_DATE } }],
-            ['preferredTime', { kind: 'select', label: 'Preferred time of day', help: 'We pass this on to the facility.',
+            ['preferredTime', { kind: 'select', label: 'Preferred time of day', help: 'This helps MOWMMAS give you the next steps.',
               options: OPT.preferredTime, selected: 'any' }],
             notes
           ] }
@@ -346,7 +346,7 @@
       request: [
         { key: 'baby', title: 'About the baby', short: 'The baby',
           desc: 'Tell us who the donor milk is for.',
-          tip: { icon: 'i-shield', text: 'Only the health workers handling your form see these details.' },
+          tip: { icon: 'i-shield', text: 'Only MOWMMAS administrators can see these details.' },
           fields: [
             ['babyName', { kind: 'text', label: 'Baby\'s name or initials', help: 'Initials are fine, for example “Baby J.D.”',
               attrs: { maxlength: 60 } }],
@@ -355,7 +355,7 @@
             ['admitted', { kind: 'chips', label: 'Is the baby admitted in a hospital?', optional: true, span: 'full', options: OPT.admitted }]
           ] },
         { key: 'need', title: 'What the baby needs', short: 'Needs',
-          desc: 'This helps the health workers understand how soon to respond.',
+          desc: 'This helps MOWMMAS administrators understand how soon to respond.',
           tip: { icon: 'i-info', text: 'Donor milk is limited. Authorized facilities and Human Milk Banks decide how it is given out.' },
           fields: [
             ['reasons', { kind: 'checks', label: 'Why does the baby need donor milk?', help: 'Choose all that apply.',
@@ -372,7 +372,7 @@
       inquire: [
         { key: 'question', title: 'Your question', short: 'Question',
           desc: 'Ask about breast milk services at ' + f.name + '.',
-          tip: { icon: 'i-clock', text: 'Health workers reply during their working hours.' },
+          tip: { icon: 'i-clock', text: 'MOWMMAS administrators reply during their working hours.' },
           fields: [
             ['topic', { kind: 'cards', label: 'What is your question about?', span: 'full', options: OPT.topic, cols: 'topics', icons: true }],
             ['question', { kind: 'textarea', label: 'Your question', span: 'full',
@@ -404,7 +404,7 @@
         '<h2 class="form-card__title">Agree and send</h2></legend>' +
       '<p class="form-card__desc" id="desc-send">What happens after you send it:</p>' +
       '<ol class="form-next">' +
-        '<li><span class="form-next__num" aria-hidden="true">1</span><span>A health worker reviews your details.</span></li>' +
+        '<li><span class="form-next__num" aria-hidden="true">1</span><span>A MOWMMAS administrator reviews your details.</span></li>' +
         '<li><span class="form-next__num" aria-hidden="true">2</span><span>They send you information or a referral to the right facility.</span></li>' +
         '<li><span class="form-next__num" aria-hidden="true">3</span><span>You get an SMS, and can check anytime on Track Submission.' + then + '</span></li>' +
       '</ol>' +
@@ -412,12 +412,12 @@
         '<div class="field" data-field="consent">' +
           '<label class="choice form-consent" for="f-consent">' +
             '<input type="checkbox" id="f-consent" name="consent" value="yes" required />' +
-            '<span class="choice__text">I agree that MOWMMAS may share these details with ' + esc(f.name) +
-            ' and, if needed, with the facility I am referred to, and send me SMS updates about this submission</span></label>' +
+            '<span class="choice__text">I agree that MOWMMAS administrators may review these details, contact me about this submission, ' +
+            'and send me SMS updates about it.</span></label>' +
           errorHtml('consent') +
         '</div>' +
         '<p class="form-send__note">' + ui.icon('i-info', 'icon--sm') + '<span><strong>MOWMMAS is not a milk bank.</strong> ' +
-          'A health worker reviews your form and gives you information or a referral. Screening, collection and giving out of breast milk ' +
+          'A MOWMMAS administrator reviews your form and gives you information or a referral. Screening, collection and giving out of breast milk ' +
           'are done only by authorized health facilities and Human Milk Banks.</span></p>' +
         '<div class="form-send__error" id="sendError"></div>' +
         '<p class="form-send__draft">' + ui.icon('i-lock', 'icon--xs') + 'Your answers stay on this device until you send them.</p>' +
@@ -595,7 +595,7 @@
         if (!v) return 'Please enter your age.';
         if (!/^\d{1,3}$/.test(v)) return 'Please enter your age as a whole number, like 28.';
         n = Number(v);
-        if (n < 18 || n > 55) return 'Milk donors need to be between 18 and 55 years old. You can still send the facility a question.';
+        if (n < 18 || n > 55) return 'Milk donors need to be between 18 and 55 years old. You can still send a question about this facility.';
         return '';
       case 'babyAge':
         return radio('babyAge') ? '' : TYPE === 'donate' ? 'Please choose your baby\'s age.' : 'Please choose the baby\'s age.';
@@ -637,7 +637,7 @@
         if (len(v) > 1000) return 'Please keep your question under 1,000 characters.';
         return '';
       case 'consent':
-        return checked('consent') ? '' : 'Please tick the box to agree that the facility may contact you about this.';
+        return checked('consent') ? '' : 'Please tick the box to agree that MOWMMAS may contact you about this.';
       default:
         return '';
     }
@@ -1036,19 +1036,19 @@
   /* ═════════════════════════ loading ═════════════════════════ */
 
   function showBadType() {
-    setHead('Choose a service first', 'This form needs to know whether you want to send a donation inquiry, a request or a question.');
-    setBack(FACILITY_ID ? facilityHref(FACILITY_ID) : 'hospitals.html', FACILITY_ID ? 'Back to facility details' : 'Back to Participating Health Facilities Near Me');
+    setHead('Choose a service first', 'This form needs to know whether you want to send a donation inquiry, a receiving inquiry or a question.');
+    setBack(FACILITY_ID ? facilityHref(FACILITY_ID) : 'hospitals.html', FACILITY_ID ? 'Back to facility details' : 'Back to Health Facilities Near Me');
     hideSide();
     els.root.innerHTML = stateHtml('i-list', 'Please choose a service',
-      'Go back and choose Donate breast milk, Request breast milk or Inquire.',
-      FACILITY_ID ? linkBtn(facilityHref(FACILITY_ID) + '#nextStep', 'Choose Donate or Request', 'primary', 'i-arrow-left')
+      'Go back and choose Donation Inquiry, Receiving Inquiry or Inquire.',
+      FACILITY_ID ? linkBtn(facilityHref(FACILITY_ID) + '#nextStep', 'Choose a service', 'primary', 'i-arrow-left')
                   : linkBtn('hospitals.html', 'Find a facility', 'primary', 'i-search'));
     doneLoading();
   }
 
   function showNoFacility() {
     setHead(T.title, 'We couldn\'t find the health facility for this form.');
-    setBack(hospitalsHref(), 'Back to Participating Health Facilities Near Me');
+    setBack(hospitalsHref(), 'Back to Health Facilities Near Me');
     hideSide();
     els.root.innerHTML = stateHtml('i-hospital', 'Facility not found',
       'The link may be old or incomplete. Please choose the facility again from the list.',
@@ -1059,7 +1059,7 @@
   function showInfoOnly(f) {
     setHead(T.title, f.name + ' is listed on MOWMMAS for information only.');
     els.side.innerHTML = chipHtml(f);
-    els.root.innerHTML = stateHtml('i-info', 'This facility can\'t receive forms',
+    els.root.innerHTML = stateHtml('i-info', 'You can\'t send a form for this facility',
       'Please contact ' + f.name + ' directly, or choose another facility.',
       linkBtn(hospitalsHref(), 'Find another facility', 'primary', 'i-search'));
     doneLoading();
@@ -1080,7 +1080,7 @@
       setBack(facilityHref(facility.id), 'Back to facility details');
       if (facility.infoOnly) return showInfoOnly(facility);
 
-      setHead(T.title, 'A health worker will review your details and give you information or a referral.');
+      setHead(T.title, 'A MOWMMAS administrator will review your details and give you information or a referral.');
       els.meta.innerHTML = '<span>' + ui.icon('i-clock', 'icon--xs') + 'Takes about ' + T.minutes + ' minutes</span>' +
         '<span>' + ui.icon('i-edit', 'icon--xs') + 'Questions marked (optional) can be skipped</span>';
       els.meta.hidden = false;

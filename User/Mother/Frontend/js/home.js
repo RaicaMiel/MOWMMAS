@@ -38,7 +38,7 @@
     if (!els.map) return;
     if (!MAP || !MAP.available()) {
       els.map.innerHTML = MAP
-        ? MAP.fallbackHtml('The map can\'t be shown right now. Open "Participating Health Facilities Near Me" to see the list of facilities.')
+        ? MAP.fallbackHtml('The map can\'t be shown right now. Open "Health Facilities Near Me" to see the list of facilities.')
         : '';
       return;
     }

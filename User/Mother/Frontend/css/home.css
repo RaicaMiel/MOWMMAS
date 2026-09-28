@@ -80,7 +80,7 @@
   .home-top { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: 22px; align-items: stretch; }
 }
 
-/* "Find Participating Health Facilities Near Me" — the biggest card on the page */
+/* "Find Health Facilities Near Me" — the biggest card on the page */
 .find-card {
   position: relative; overflow: hidden; isolation: isolate;
   display: flex; flex-direction: column;
