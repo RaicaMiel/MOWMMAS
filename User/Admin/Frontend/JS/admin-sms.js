@@ -217,7 +217,7 @@ export var SMS_TEMPLATES = [
   { key: "visit_reminder", name: "Visit reminder", event: "Reminder", tone: "warning", type: "reminder",
     text: "Reminder: Please contact {facility} before your visit to confirm requirements and schedule. - MOWMMAS" },
   { key: "followup_reminder", name: "Follow-up reminder", event: "Reminder", tone: "warning", type: "reminder",
-    text: "Reminder: Please contact the referred facility to confirm availability, requirements and schedule. - MOWMMAS" }
+    text: "Reminder: Please contact {facility} at {facility phone} to confirm availability, requirements and schedule. - MOWMMAS" }
 ];
 
 var templatesRead = null;

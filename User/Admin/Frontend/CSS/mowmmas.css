@@ -2052,8 +2052,8 @@ a.mw-tabs__tab {
 :is(
   [data-page="dashboard"] [data-nav="dashboard"],
   [data-page="facilities"] [data-nav="facilities"],
-  [data-page="donation-inquiries"] [data-nav="donation-inquiries"],
-  [data-page="milk-requests"] [data-nav="milk-requests"],
+  [data-page="service-inquiries"] [data-nav="service-inquiries"],
+  [data-page="referrals"] [data-nav="referrals"],
   [data-page="records-reports"] [data-nav="records-reports"],
   [data-page="sms-notifications"] [data-nav="sms-notifications"],
   [data-page="settings"] [data-nav="settings"]

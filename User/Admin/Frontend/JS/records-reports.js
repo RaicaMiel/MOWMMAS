@@ -1,18 +1,24 @@
 /* ==========================================================================
-   MOWMMAS Admin · Records & reports
+   MOWMMAS Admin · Records & Reports
+
+   History and reports. Inquiries are reviewed, answered and referred on
+   Service Inquiries (service-inquiries.html); referrals are followed up on
+   Referrals (referrals.html). This page shows what happened.
 
    Everything on this page comes from Firestore:
      facilities/<id>     facility updates, the HMB chart
-     submissions/<ref>   inquiries (donation inquiries, milk requests, questions)
-                         and referrals (submission.referral, saved by Refer)
+     submissions/<ref>   service inquiries (donation inquiries, receiving
+                         inquiries, questions), named by their inquiry type
+                         (admin-data.js INQUIRY_TYPES), and referrals
+                         (submission.referral, saved by Refer)
    and from the MOWMMAS server: every SMS sent through PhilSMS (admin-sms.js getSmsLog)
 
    "Show records up to" (report_date) limits the History tabs, the CSV and
    the first two KPI cards to records on or before that day.
    Export CSV downloads the History records as a CSV file.
    A mother's name in the Inquiries and Referrals tabs opens what she sent,
-   and its status (admin-submission.js); this is where questions are
-   answered. ?ref=<reference> (the bell) opens it for that submission.
+   and its status (admin-submission.js, the same Review as on Service
+   Inquiries). ?ref=<reference> opens it for that submission.
    ========================================================================== */
 
 import { ready, esc, toast, showPageError, errorMessage } from "./admin-session.js";
@@ -24,7 +30,8 @@ import {
   STALE_AFTER_DAYS,
   isParticipating,
   isOverdue,
-  TYPES,
+  INQUIRY_TYPES,
+  inquiryType,
   statusChip,
   submissionChip,
   hmbStatus,
@@ -97,9 +104,9 @@ function onOrBefore(iso, day) {
 
 /* ───────────── what the records say ───────────── */
 
-function capitalize(text) {
-  text = String(text || "");
-  return text.charAt(0).toUpperCase() + text.slice(1);
+// "Human Milk Donation Information", "Breastfeeding Support", …
+function inquiryLabel(s) {
+  return INQUIRY_TYPES[inquiryType(s)].label;
 }
 
 function plural(n, one, many) {
@@ -418,11 +425,10 @@ function renderHistory(day) {
   }));
 
   renderPanel("panel_inquiries", "Inquiries history", inquiries(day).map(function (s) {
-    var type = TYPES[s.type];
     return '<tr data-ref="' + esc(s.ref) + '">' +
       dateCell(s.createdAt) +
       "<td>" + viewButton(s) +
-        '<span class="mw-table__sub">' + esc(type ? capitalize(type.verb) : (s.typeLabel || "Inquiry")) +
+        '<span class="mw-table__sub">' + esc(inquiryLabel(s)) +
         (s.ref ? ' · <span class="mw-table__nowrap">' + esc(s.ref) + "</span>" : "") + "</span>" +
       "</td>" +
       "<td>" + (s.facilityName ? esc(s.facilityName) : '<span class="mw-text-muted">No facility chosen</span>') + "</td>" +
@@ -431,14 +437,13 @@ function renderHistory(day) {
   }));
 
   renderPanel("panel_referrals", "Referrals history", referrals(day).map(function (s) {
-    var type = TYPES[s.type];
     var ref = s.referral;
     var chose = s.facilityName && s.facilityName !== ref.facilityName ? "Mother chose " + s.facilityName : "";
     return '<tr data-ref="' + esc(s.ref) + '">' +
       dateCell(ref.referredAt) +
       "<td>Referral information provided" +
         '<span class="mw-table__sub">' + viewButton(s) + "</span>" +
-        '<span class="mw-table__sub">' + esc(type ? capitalize(type.verb) : (s.typeLabel || "Inquiry")) +
+        '<span class="mw-table__sub">' + esc(inquiryLabel(s)) +
         (s.ref ? ' · <span class="mw-table__nowrap">' + esc(s.ref) + "</span>" : "") + "</span>" +
       "</td>" +
       "<td>" + esc(ref.facilityName || "") +
@@ -522,8 +527,7 @@ function buildCsv(day) {
 
   inquiries(day).forEach(function (s) {
     var contact = s.contact || {};
-    var type = TYPES[s.type];
-    rows.push(["Inquiry", stamp(s.createdAt), contact.name || "", type ? capitalize(type.verb) : (s.typeLabel || ""), s.facilityName || "", statusText(s.status, s.type), s.ref || ""]);
+    rows.push(["Inquiry", stamp(s.createdAt), contact.name || "", inquiryLabel(s), s.facilityName || "", statusText(s.status, s.type), s.ref || ""]);
   });
 
   referrals(day).forEach(function (s) {

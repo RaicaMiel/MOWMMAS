@@ -3,8 +3,8 @@
 
    facilities/<id>     health facilities in Antique (imported from the map,
                        or added by an admin)
-   submissions/<ref>   mothers' donations, requests and inquiries
-                       (copied from the mother backend by the Admin backend)
+   submissions/<ref>   mothers' donation inquiries, receiving inquiries and
+                       questions (copied from the mother backend by the Admin backend)
 
    Every value comes back as plain JavaScript: Firestore timestamps become ISO
    strings and GeoPoints become { lat, lon }, so pages can format them the
@@ -268,14 +268,16 @@ export function motherStatusLabel(status, type) {
   return MOTHER_STATUS_LABELS[status] || status || "Unknown";
 }
 
-// The statuses each kind of submission moves through, in order (same as the backends' statuses.js)
+/* The statuses each kind of submission moves through, in order (same as the
+   backends' statuses.js). Every kind can be referred, so each has "information_sent". */
 export var STATUS_FLOW = {
   donate: ["submitted", "under_review", "next_steps", "information_sent", "completed", "closed"],
   request: ["submitted", "under_review", "referral_needed", "information_sent", "completed", "closed"],
-  inquire: ["submitted", "answered", "closed"]
+  inquire: ["submitted", "answered", "information_sent", "closed"]
 };
 
-// Refer moves these on to "information_sent"; any other status is kept
+/* Refer moves these on to "information_sent"; any other status is kept
+   (e.g. a question already "answered" stays Answered) */
 var BEFORE_REFERRAL = ["submitted", "under_review", "referral_needed", "next_steps"];
 
 function refused(code, detail, current) {
@@ -299,14 +301,17 @@ function alreadySaved(raw, id) {
   return (Array.isArray(raw.statusHistory) ? raw.statusHistory : []).some(function (h) { return h && h.id === id; });
 }
 
-/* Refer a mother's donation or request to a facility, saved in Firestore
-   (submissions/<ref>). It runs as a Firestore transaction: it reads the
-   submission as it is in Firestore right now and decides from that, never
-   from the page's copy, so it can't undo a newer status.
+/* Refer a mother's donation inquiry, receiving inquiry or question to a
+   facility, saved in Firestore (submissions/<ref>). MOWMMAS sends nothing to
+   the facility: the mother gets its details and contacts it herself. It runs
+   as a Firestore transaction: it reads the submission as it is in Firestore
+   right now and decides from that, never from the page's copy, so it can't
+   undo a newer status.
      referral        { facilityId, facilityName, note, referredAt, referredBy }
      status          New, Under Review, Referral Needed or Referral/Next Steps
                      Provided moves to "Information Sent" (information_sent);
-                     any other status is kept
+                     any other status is kept (a question already Answered
+                     stays Answered)
      statusHistory   + "Referred to <facility>"; the mother sees this line, not the
                      note (the mother backend's notify.js and submissions.js match
                      this exact wording, so keep it)
@@ -332,7 +337,8 @@ export function referSubmission(ref, facility, note, adminEmail) {
       if (current.referral && current.referral.facilityId === facility.id) throw refused("same-facility", facility.name);
 
       var now = Timestamp.now();
-      var moveOn = BEFORE_REFERRAL.indexOf(current.status) !== -1;
+      var moveOn = BEFORE_REFERRAL.indexOf(current.status) !== -1 &&
+        (STATUS_FLOW[current.type] || []).indexOf("information_sent") !== -1;
       var status = moveOn ? "information_sent" : current.status;
       var label = motherStatusLabel(status, current.type);
       var referral = {
@@ -470,6 +476,36 @@ export var TYPES = {
   inquire: { label: "Inquiry", verb: "asked a question" }
 };
 
+/* Inquiry types: what a submission is about, whichever form it came from
+   (Service Inquiries, Referrals, Dashboard, Records & Reports) */
+export var INQUIRY_TYPES = {
+  breastfeeding: { label: "Breastfeeding Support" },
+  donation: { label: "Human Milk Donation Information" },
+  receiving: { label: "Human Milk Receiving Information" },
+  other: { label: "Other Human Milk-Related Inquiry" }
+};
+
+export var INQUIRY_TYPE_ORDER = ["breastfeeding", "donation", "receiving", "other"];
+
+/* A submission's inquiry type (a key of INQUIRY_TYPES): the donation form →
+   "donation", the receiving form → "receiving", a question by its topic */
+export function inquiryType(s) {
+  var type = s && s.type;
+  if (type === "donate") return "donation";
+  if (type === "request") return "receiving";
+  if (type === "inquire") {
+    var topic = s.details && s.details.topic;
+    if (topic === "lactation") return "breastfeeding";
+    if (topic === "donating") return "donation";
+    if (topic === "requesting" || topic === "availability") return "receiving";
+    return "other";
+  }
+  return "other";
+}
+
+// The form a submission came from
+export var FORM_KINDS = { donate: "Donation inquiry form", request: "Receiving inquiry form", inquire: "Question" };
+
 // Submission status → chip tone (mw-chip--…)
 var STATUS_TONE = {
   submitted: "warning",
@@ -494,7 +530,8 @@ export function statusChip(status, type) {
 }
 
 /* A submission's chip: its status, named for its type. One referred while
-   Refer still kept "Under Review" (before "Information Sent") shows "Referred". */
+   Refer still kept "Under Review" (before "Information Sent") shows "Referred".
+   A question referred after it was Answered keeps "Answered" (see Refer). */
 export function submissionChip(submission) {
   if (submission && submission.referral && submission.status === "under_review") {
     return '<span class="mw-chip mw-chip--brand">Referred</span>';

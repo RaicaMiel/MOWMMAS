@@ -27,11 +27,12 @@ const SUBMITTED_LABELS = {
   inquire: 'New Question'
 };
 
-// Allowed statuses for each type, in the order they normally happen
+// Allowed statuses for each type, in the order they normally happen.
+// Every kind can be referred, so each has "information_sent" (a question too).
 const STATUS_FLOW = {
   donate:  ['submitted', 'under_review', 'next_steps', 'information_sent', 'completed', 'closed'],
   request: ['submitted', 'under_review', 'referral_needed', 'information_sent', 'completed', 'closed'],
-  inquire: ['submitted', 'answered', 'closed']
+  inquire: ['submitted', 'answered', 'information_sent', 'closed']
 };
 
 // Statuses after which nothing more is expected

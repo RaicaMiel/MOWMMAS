@@ -1,16 +1,22 @@
 /* ==========================================================================
-   MOWMMAS Admin · The Send referral dialog (Donation inquiries and Milk requests)
+   MOWMMAS Admin · The Send referral dialog (Service Inquiries and Referrals)
 
-   The admin sends the mother information or a referral: the facility to
-   contact, which confirms availability, requirements and schedule with her.
-   Saving moves a New, Under Review, Referral Needed or Referral/Next Steps
-   Provided one to Information Sent, and the server texts her the facility.
+   Works for every kind of submission: donation inquiry, receiving inquiry
+   and question. A MOWMMAS administrator sends the mother information or a
+   referral: the facility to contact, which confirms availability,
+   requirements and schedule with her. Nothing is sent to the facility; she
+   contacts it herself. Saving moves a New, Under Review, Referral Needed or
+   Referral/Next Steps Provided one to Information Sent (a question already
+   Answered stays Answered), and the server texts her the facility.
 
    setUpRefer({ modal, select, note, noun, submission, facility, onOpen, onSaved })
      modal       the <dialog> (#refer_modal)
      select      its facility <select>, note its note <textarea>
-     noun        "donation inquiry" or "receiving inquiry", for messages
-     submission  ref → the submission shown in that row
+     noun        optional: what messages call it. By default it follows the
+                 submission's type: "donation inquiry", "receiving inquiry"
+                 or "question" (NOUNS)
+     submission  ref → the submission shown in that row (any element with
+                 data-ref="<reference>" around the trigger)
      facility    id → the facility chosen in the list
      onOpen      (submission, trigger) → the page's own touches (e.g. the hint)
      onSaved     (updated submission) → the page redraws its row
@@ -27,6 +33,13 @@ import { hideFormError, holdDialog } from "./admin-ui.js";
 import { textUpdate } from "./admin-sms.js";
 
 var SLOW_SAVE_MS = 12000;
+
+// What messages call each kind of submission
+var NOUNS = { donate: "donation inquiry", request: "receiving inquiry", inquire: "question" };
+
+function nounFor(s, fixed) {
+  return fixed || (s && NOUNS[s.type]) || "submission";
+}
 
 // type: the submission's type, for the name of its status ("This receiving inquiry is already completed, …")
 function referError(error, noun, type) {
@@ -56,7 +69,7 @@ export function setUpRefer(options) {
 
   modal.addEventListener("mw:modal-open", function (event) {
     var trigger = event.detail && event.detail.trigger;
-    var row = trigger && trigger.closest("tr[data-ref]");
+    var row = trigger && trigger.closest("[data-ref]");
     openRef = row ? row.getAttribute("data-ref") : null;
     hideFormError(modal);
     if (options.onOpen) options.onOpen(openRef ? options.submission(openRef) : null, trigger);
@@ -122,7 +135,7 @@ export function setUpRefer(options) {
       })
       .catch(function (error) {
         clearTimeout(slowTimer);
-        var message = referError(error, options.noun, s.type);
+        var message = referError(error, nounFor(s, options.noun), s.type);
         if (ownDialog() && (mine() || slow)) show("error", message);
         else showPageError("The referral for " + who + " wasn't saved. " + message);
         release();

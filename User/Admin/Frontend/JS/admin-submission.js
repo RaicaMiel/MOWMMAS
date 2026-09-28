@@ -1,6 +1,10 @@
 /* ==========================================================================
    MOWMMAS Admin · A mother's submission: what she sent, and its status
-   (Donation inquiries, Milk requests, Records & reports)
+   (Service Inquiries, Referrals, Records & Reports)
+
+   Works for every kind of submission (donation inquiry, receiving inquiry,
+   question) on any page that has the #submission_modal dialog and rows
+   marked data-ref="<reference>".
 
    setUpSubmissionView({ modal, submission, onSaved, reveal })
      modal       the <dialog> (#submission_modal)
@@ -11,9 +15,10 @@
    Review (a row's [data-modal-open="submission_modal"]) opens the dialog with
    everything the mother sent: her contact details, her answers, her
    question or notes, where she was referred, and the status history. Below
-   that the admin sets the status and can leave her a message, which she
-   sees on Track Submission. No status is a medical decision: the admin
-   reviews it and gives her information, next steps or a referral.
+   that the admin sets the status (STATUS_FLOW for its type) and can leave
+   her a message, which she sees on Track Submission. No status is a medical
+   decision: a MOWMMAS administrator reviews it and gives her information,
+   next steps or a referral; she contacts the facility herself.
 
    Saving: admin-data.js updateSubmissionStatus (a Firestore transaction).
    While it runs the dialog stays open. If Firebase is slow to answer, after
@@ -21,7 +26,8 @@
    later whether it was saved. One save at a time; a result only ever acts
    on the dialog it came from.
 
-   A link with ?ref=<reference> (the bell) opens that submission's dialog:
+   A link with ?ref=<reference> (the bell, the Dashboard, e.g.
+   service-inquiries.html?ref=MOW-D-2026-00002) opens that submission's dialog:
    call openFromLink() once the page has drawn its rows, or
    openFromLink({ fresh: false }) when they are the tab's saved copy because
    Firebase couldn't be read.
@@ -31,6 +37,9 @@ import { auth, esc, toast, showPageError } from "./admin-session.js";
 import {
   updateSubmissionStatus,
   STATUS_FLOW,
+  INQUIRY_TYPES,
+  inquiryType,
+  FORM_KINDS,
   motherStatusLabel,
   statusLabel,
   formatDate,
@@ -56,7 +65,7 @@ export var ANSWERS = {
       ["nonSmoker", "Doesn't smoke or vape"],
       ["noMedication", "Not taking any regular medicine"],
       ["noTransfusion", "No blood transfusion in the last 12 months"],
-      ["willingToScreen", "Willing to have the facility's screening and blood tests"]
+      ["willingToScreen", "Understands the facility will screen her before she can donate"]
     ]
   },
   request: {
@@ -96,16 +105,28 @@ export var ANSWERS = {
 var TITLES = { donate: "Review donation inquiry", request: "Review receiving inquiry", inquire: "Review question" };
 var NOUNS = { donate: "donation inquiry", request: "receiving inquiry", inquire: "question" };
 
-// What the mother reads on Track Submission for each status (User/Mother/Frontend/js/status.js)
+/* What the mother reads on Track Submission for each status (User/Mother/Frontend/js/status.js).
+   An object: the words depend on the submission's type. */
 var MOTHER_SEES = {
   under_review: "A MOWMMAS administrator is reviewing your details.",
   referral_needed: "A MOWMMAS administrator is finding the right facility for you. You will get the referral details by SMS.",
   next_steps: "A MOWMMAS administrator has worked out the next steps or a referral for your donation inquiry. You will get the details by SMS.",
-  information_sent: "The referral or next-step information was sent to you. Please contact the referred facility to confirm current availability, requirements, and schedule.",
+  information_sent: {
+    donate: "The referral or next-step information was sent to you. Please contact the referred facility to confirm current availability, requirements, and schedule.",
+    request: "The referral or next-step information was sent to you. Please contact the referred facility to confirm current availability, requirements, and schedule.",
+    inquire: "A MOWMMAS administrator sent you referral information. Please contact the facility to confirm availability, requirements, and schedule."
+  },
   answered: "A MOWMMAS administrator answered your question. See the messages below or your SMS.",
   completed: "All done. Thank you for using MOWMMAS.",
   closed: "This is closed. You can send a new form anytime."
 };
+
+// type: the submission's type ("donate" | "request" | "inquire")
+function motherSees(status, type) {
+  var words = MOTHER_SEES[status];
+  if (words && typeof words === "object") return words[type] || words.donate || "";
+  return words || "";
+}
 
 /* ───────────── what she sent, as rows ───────────── */
 
@@ -171,7 +192,8 @@ function inquireFacts(d) {
 function factsHtml(s) {
   var c = s.contact || {};
   var d = s.details || {};
-  var html = fact("Name", c.name || "Name not given") +
+  var html = fact("Inquiry type", INQUIRY_TYPES[inquiryType(s)].label, [FORM_KINDS[s.type] ? "Form: " + FORM_KINDS[s.type] : ""]) +
+    fact("Name", c.name || "Name not given") +
     fact("Mobile", formatMobile(c.mobile) || "Not given", [c.email]) +
     fact("Address", [c.barangay, c.municipality].filter(function (v) { return text(v); }).join(", ") || "Not given") +
     fact("Facility she chose", s.facilityName || "No facility chosen", [s.createdAt ? "On " + formatDateTime(s.createdAt) : ""]);
@@ -260,12 +282,13 @@ export function setUpSubmissionView(options) {
     if (shown && status === shown.expected) {
       return "This is the status now. Choose a new one, or keep it and write her a message.";
     }
-    return MOTHER_SEES[status] ? "She'll see: “" + MOTHER_SEES[status] + "”" : "";
+    var words = motherSees(status, shown && shown.type);
+    return words ? "She'll see: “" + words + "”" : "";
   }
 
   // Shows s in the dialog. keepMessage: leave what the admin typed.
   function fill(s, keepMessage) {
-    shown = s ? { ref: s.ref, expected: s.status } : null;
+    shown = s ? { ref: s.ref, expected: s.status, type: s.type } : null;
     title.textContent = (s && TITLES[s.type]) || "Submission";
     if (!keepMessage) message.value = "";
     if (!s) {

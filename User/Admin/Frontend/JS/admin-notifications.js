@@ -5,8 +5,8 @@
      - new submissions nobody has handled yet (status "submitted", shown as
        New Donation Inquiry, New Receiving Inquiry or New Question):
        "<name> sent a donation inquiry", "<name> sent a receiving inquiry", "<name> asked a question"
-       → opens it on Donation inquiries, Milk requests, or Records & reports
-         (?ref=<reference>), where the admin sets its status; then it leaves the list
+       → opens it on Service Inquiries (service-inquiries.html?ref=<reference>),
+         where the admin sets its status; then it leaves the list
      - public facilities overdue for an update (admin-data.js isOverdue)
        → opens Facilities
    Submissions update live (Firestore onSnapshot), so a new form shows up
@@ -30,7 +30,8 @@ var ICONS = {
   inquire: '<svg ' + ICON_ATTRS + '><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>',
   facility: '<svg ' + ICON_ATTRS + '><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'
 };
-var PAGES = { donate: "donation-inquiries.html", request: "milk-requests.html", inquire: "records-reports.html" };
+// Every kind of submission is reviewed on Service Inquiries
+var SUBMISSION_PAGE = "service-inquiries.html";
 
 var bell = document.querySelector(".mw-topbar__actions a[aria-label='Notifications']");
 var holder = bell && bell.parentElement;
@@ -122,7 +123,7 @@ function submissionItem(s) {
   var name = (s.contact && s.contact.name) || "A mother";
   var when = formatDate(s.createdAt);
   var meta = esc(s.facilityName || "") + (s.facilityName && when ? " · " : "") + (when ? '<span class="mw-notify__when">' + esc(when) + "</span>" : "");
-  return '<li><a class="mw-notify__item" href="' + PAGES[type] + "?ref=" + encodeURIComponent(s.ref) + '">' +
+  return '<li><a class="mw-notify__item" href="' + SUBMISSION_PAGE + "?ref=" + encodeURIComponent(s.ref) + '">' +
     '<span class="mw-notify__icon mw-notify__icon--' + type + '">' + ICONS[type] + "</span>" +
     '<span class="mw-notify__text"><span class="mw-notify__item-title">' + esc(name + " " + TYPES[type].verb) + "</span>" +
     '<span class="mw-notify__meta">' + meta + "</span></span></a></li>";

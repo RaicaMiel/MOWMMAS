@@ -3,7 +3,8 @@
 
    Everything here is read from Firestore once the admin is confirmed:
      - the four KPI cards and "Needs updating"   facilities/*
-     - "Recent inquiries & referrals"            submissions/*
+     - "Recent inquiries & referrals"            submissions/* (each reference number
+                                                 opens it on Service Inquiries)
      - "Recent SMS"                              the MOWMMAS server's SMS log (admin-sms.js)
    ========================================================================== */
 
@@ -18,6 +19,8 @@ import {
   hasMilkServices,
   isOverdue,
   submissionChip,
+  INQUIRY_TYPES,
+  inquiryType,
   hmbStatus,
   facilityUpdatedAt,
   daysAgo,
@@ -26,9 +29,6 @@ import {
 import { getSmsLog, cachedSmsLog } from "./admin-sms.js";
 
 var LIST_SIZE = 3;
-
-// "Recent inquiries & referrals": what each kind of submission is called
-var ACTIVITY_TYPES = { donate: "Donation Inquiry", request: "Receiving Inquiry", inquire: "Question" };
 
 /* The rules every page shares (published, human milk-related services, needs updating) are in admin-data.js. */
 
@@ -110,13 +110,14 @@ function renderSubmissions(submissions) {
   fillList("activity_list", "activity_empty", submissions.slice(0, LIST_SIZE).map(activityItem).join(""));
 }
 
-// Reference number, then the kind of inquiry and the facility (mothers' names aren't shown here)
+/* Reference number (a link that opens it on Service Inquiries), then the inquiry
+   type and the facility (mothers' names aren't shown here) */
 function activityItem(s) {
-  var type = ACTIVITY_TYPES[s.type] || s.typeLabel || "Inquiry";
-  var meta = type + (s.facilityName ? " · " + s.facilityName : "");
+  var meta = INQUIRY_TYPES[inquiryType(s)].label + (s.facilityName ? " · " + s.facilityName : "");
 
   return '<li class="mw-list__item">' +
-    '<p class="mw-list__title">' + esc(s.ref) + "</p>" +
+    '<p class="mw-list__title"><a class="mw-link" href="service-inquiries.html?ref=' + esc(encodeURIComponent(s.ref)) + '">' + esc(s.ref) +
+      '<span class="mw-visually-hidden"> (review on Service Inquiries)</span></a></p>' +
     '<p class="mw-list__meta">' + esc(meta) + "</p>" +
     submissionChip(s) +
     "</li>";
