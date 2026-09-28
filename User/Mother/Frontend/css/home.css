@@ -3,9 +3,10 @@
    Loaded after style.css, app.css and map.css. Only what is specific
    to home.html lives here; shared parts come from those files.
    ──────────────────────────────────────────────────────────────────
-   01 Page frame & heading band    04 Service cards
-   02 Live numbers                 05 Track a submission
-   03 Find card & map card         06 Notice
+   01 Page frame & heading band    05 Service cards
+   02 Live numbers                 06 Track a submission
+   03 Breastfeeding information    07 Notice
+   04 Find card & map card
    ══════════════════════════════════════════════════════════════════ */
 
 /* ──────────────── 01 · PAGE FRAME & HEADING BAND ──────────────── */
@@ -71,10 +72,118 @@
   .stat__icon { width: 48px; height: 48px; }
 }
 
-/* ──────────────── 03 · FIND CARD & MAP CARD ──────────────── */
+/* ──────────────── 03 · BREASTFEEDING INFORMATION ──────────────── */
 .home-body { display: flex; flex-direction: column; gap: 22px; padding-top: 22px; }
 @media (min-width: 900px) { .home-body { gap: 30px; padding-top: 30px; } }
 
+/* A calm white card, so it leads the page without competing with the
+   gradient find card. Phones: intro, facts, then the button.
+   Wide screens: intro and button on the left, facts on the right. */
+.learn-card {
+  display: grid; gap: 18px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "intro" "facts" "actions";
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-2);
+}
+@media (min-width: 640px) { .learn-card { gap: 20px; padding: 26px 28px; } }
+/* two columns from 960px: below that the left column is too narrow for the title */
+@media (min-width: 960px) {
+  .learn-card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas: "intro facts" "actions facts";
+    gap: 20px 34px;
+    padding: 30px 32px;
+  }
+}
+.learn-card__intro { grid-area: intro; min-width: 0; }
+.learn-facts { grid-area: facts; }
+.learn-card__actions { grid-area: actions; }
+
+.learn-card__head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.learn-card__icon {
+  flex: none; display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 15px;
+  background: var(--rose-100); color: var(--rose-600);
+}
+.learn-card .eyebrow { margin-bottom: 0; }
+.learn-card__title {
+  font-size: clamp(24px, 5.4vw, 31px); font-weight: 800; letter-spacing: -.028em;
+  text-wrap: balance;
+}
+.learn-card__text { margin-top: 8px; font-size: 16.5px; line-height: 1.6; color: var(--text-soft); text-wrap: pretty; }
+.learn-card__text a {
+  font-weight: 600; color: var(--ink-700);
+  text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px;
+}
+.learn-card__text a:hover { color: var(--rose-700); text-decoration-color: currentColor; }
+
+/* four short facts, each with its own brand tint */
+.learn-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 640px) { .learn-facts { gap: 12px; } }
+/* two columns: equal rows so the facts fill the height of the intro beside them */
+@media (min-width: 960px) { .learn-facts { grid-auto-rows: 1fr; } }
+
+.learn-fact {
+  --fact-bg: var(--rose-50); --fact-line: var(--rose-100); --fact-fg: var(--rose-700);
+  display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  padding: 14px;
+  border-radius: var(--r-lg);
+  background: var(--fact-bg);
+  border: 1px solid var(--fact-line);
+}
+.learn-fact--violet { --fact-bg: var(--violet-50); --fact-line: var(--violet-100); --fact-fg: var(--violet-700); }
+.learn-fact--mint   { --fact-bg: var(--mint-50);   --fact-line: var(--mint-100);   --fact-fg: var(--mint-700); }
+.learn-fact--amber  { --fact-bg: var(--amber-50);  --fact-line: var(--amber-100);  --fact-fg: var(--amber-600); }
+
+.learn-fact__top { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.learn-fact__icon {
+  flex: none; display: grid; place-items: center;
+  width: 36px; height: 36px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--fact-line); color: var(--fact-fg);
+}
+.learn-fact__icon .icon { width: 20px; height: 20px; }
+.learn-fact__num {
+  font-family: var(--font-ui); font-size: 21px; font-weight: 800; line-height: 1.15;
+  letter-spacing: -.02em; white-space: nowrap; color: var(--fact-fg);
+}
+.learn-fact__text { font-size: 14.5px; line-height: 1.5; color: var(--ink-700); text-wrap: pretty; }
+/* small phones: one fact per row, icon on the left */
+@media (max-width: 374px) {
+  .learn-facts { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .learn-fact { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 2px 12px; align-items: center; padding: 12px 14px; }
+  .learn-fact__top { display: contents; }
+  .learn-fact__icon { grid-row: 1 / span 2; }
+  .learn-fact__num { font-size: 19px; }
+}
+/* room for the icon beside the figure */
+@media (min-width: 560px) {
+  .learn-fact { padding: 16px; }
+  .learn-fact__top { flex-direction: row; align-items: center; gap: 10px; }
+  .learn-fact__num { font-size: 22px; }
+  .learn-fact__text { font-size: 15px; }
+}
+/* 960–1099px: narrower tiles, so slightly tighter text keeps every fact to two lines */
+@media (min-width: 960px) and (max-width: 1099px) {
+  .learn-fact { padding: 14px; }
+  .learn-fact__text { font-size: 14.5px; }
+}
+@media (min-width: 960px) {
+  .learn-fact__icon { width: 42px; height: 42px; border-radius: 13px; }
+  .learn-fact__icon .icon { width: 22px; height: 22px; }
+  .learn-fact__num { font-size: 23px; }
+}
+
+/* the label may wrap inside the pill on very narrow or zoomed screens */
+.learn-card__actions { display: flex; flex-direction: column; align-items: stretch; }
+.learn-card .btn { white-space: normal; text-align: center; }
+@media (min-width: 560px) { .learn-card__actions { align-items: flex-start; } }
+
+/* ──────────────── 04 · FIND CARD & MAP CARD ──────────────── */
 .home-top { display: grid; gap: 18px; }
 @media (min-width: 900px) {
   .home-top { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: 22px; align-items: stretch; }
@@ -105,7 +214,7 @@
   background: rgba(255, 255, 255, .18); border: 1px solid rgba(255, 255, 255, .32);
 }
 .find-card__icon .icon { width: 24px; height: 24px; }
-.find-card .eyebrow { margin-bottom: 0; }
+.find-card .eyebrow { margin-bottom: 0; text-wrap: balance; }
 @media (min-width: 640px) {
   .find-card__head { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 8px; }
   .find-card__icon { width: 56px; height: 56px; border-radius: 18px; }
@@ -170,7 +279,7 @@
 #mapStatus:empty { display: none; }
 .map-card .state { padding: 22px 18px; background: var(--surface-2); }
 
-/* ──────────────── 04 · SERVICE CARDS ──────────────── */
+/* ──────────────── 05 · SERVICE CARDS ──────────────── */
 .home-services__head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
 @media (min-width: 900px) {
   .home-services__head { flex-direction: row; align-items: center; justify-content: space-between; gap: 20px; }
@@ -205,7 +314,7 @@
   .home-service-grid .service__text { margin: 4px 0 2px; }
 }
 
-/* ──────────────── 05 · TRACK A SUBMISSION ──────────────── */
+/* ──────────────── 06 · TRACK A SUBMISSION ──────────────── */
 .track-card {
   display: grid; gap: 18px;
   padding: 20px;
@@ -275,7 +384,7 @@
 .recent__chev { color: var(--ink-400); }
 .recent-link:hover .recent__chev { color: var(--rose-600); }
 
-/* ──────────────── 06 · NOTICE ──────────────── */
+/* ──────────────── 07 · NOTICE ──────────────── */
 .home-notice { margin-top: 0; }
 @media (max-width: 639px) {
   .home-notice { flex-direction: row; align-items: flex-start; gap: 14px; padding: 20px 18px; }
