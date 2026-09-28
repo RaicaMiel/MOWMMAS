@@ -366,7 +366,7 @@
 .no-js .gd-nav { display: none; }
 .gd-nav__count { font-family: var(--font-ui); font-size: 13.5px; font-weight: 700; color: var(--text-mute); white-space: nowrap; }
 .gd-nav__back.is-first { visibility: hidden; }
-/* .btn sets display, so hidden needs saying: Next until the last step, then "Find a facility" */
+/* .btn sets display, so hidden needs saying: Next until the last step, then "Return to Home" */
 .gd-nav .btn[hidden] { display: none; }
 .gd-nav__back .icon { color: var(--rose-600); }
 .gd-nav__to { display: none; }
